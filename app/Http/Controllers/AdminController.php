@@ -26,11 +26,6 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
             
-        // Mock Sensei pending validation
-        $pendingSenseis = Sensei::where('is_active', false)
-            ->limit(3)
-            ->get();
-
         // Mock Recent Activity
         $recent_activities = [
             [
@@ -46,24 +41,10 @@ class AdminController extends Controller
                 'time' => '15 menit yang lalu',
                 'icon' => 'currency-dollar',
                 'color' => 'green'
-            ],
-             [
-                'type' => 'sensei_approved',
-                'description' => 'Sensei Tanaka disetujui',
-                'time' => '1 jam yang lalu',
-                'icon' => 'check-circle',
-                'color' => 'purple'
-            ],
-             [
-                'type' => 'certificate',
-                'description' => 'Sertifikat diterbitkan untuk Rizky',
-                'time' => '2 jam yang lalu',
-                'icon' => 'academic-cap',
-                'color' => 'yellow'
             ]
         ];
 
-        return view('admin.dashboard', compact('stats', 'pendingUsers', 'pendingSenseis', 'recent_activities'));
+        return view('admin.dashboard', compact('stats', 'pendingUsers', 'recent_activities'));
     }
 
     public function approve($id)

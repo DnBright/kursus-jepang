@@ -59,13 +59,10 @@ Route::middleware(['auth', 'member'])->group(function () {
 
 // SENSEI ROUTES
 Route::prefix('sensei')->name('sensei.')->group(function () {
-    // Guest Sensei Routes (Login & Register)
+    // Guest Sensei Routes (Login Only)
     Route::middleware('guest:sensei')->group(function () {
         Route::get('login', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'create'])->name('login');
         Route::post('login', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'store']);
-
-        Route::get('register', [App\Http\Controllers\Sensei\Auth\RegisteredUserController::class, 'create'])->name('register');
-        Route::post('register', [App\Http\Controllers\Sensei\Auth\RegisteredUserController::class, 'store']);
     });
 
     // Authenticated Sensei Routes
@@ -110,6 +107,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('users.approve');
         Route::post('/users/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('users.reject');
+
+        // Manual Sensei Management
+        Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
     });
 });
 

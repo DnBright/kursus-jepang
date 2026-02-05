@@ -44,33 +44,14 @@ class ValidationController extends Controller
             ]);
         }
 
-        $pendingSenseis = Sensei::where('is_active', false)
-            ->orderBy('created_at', 'desc')
-            ->get();
-            
-        // Mock Sensei data if empty
-        if($pendingSenseis->isEmpty()) {
-            $pendingSenseis = collect([
-                (object)[
-                    'id' => 201,
-                    'name' => 'Tanaka Ken',
-                    'email' => 'tanaka@sensei.com',
-                    'teaching_field' => 'N5, N4',
-                    'cv_file' => 'cv_tanaka.pdf',
-                    'experience' => '5 Tahun di Jepang',
-                    'created_at' => now()->subHours(5),
-                    'status' => 'pending'
-                ]
-            ]);
-        }
         
         $stats = [
-            'pending_total' => $pendingStudents->count() + $pendingSenseis->count(),
+            'pending_total' => $pendingStudents->count(),
             'approved_today' => 5, // Mock
             'rejected_total' => 2, // Mock
             'avg_time' => '15 Menit'
         ];
 
-        return view('admin.validations.index', compact('pendingStudents', 'pendingSenseis', 'stats'));
+        return view('admin.validations.index', compact('pendingStudents', 'stats'));
     }
 }

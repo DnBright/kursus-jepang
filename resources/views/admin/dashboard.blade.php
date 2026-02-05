@@ -167,20 +167,6 @@
                 </div>
             </div>
 
-            <!-- Pending Sensei (Mock for now) -->
-             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">Validasi Sensei Baru</h2>
-                        <p class="text-slate-500 text-sm">Review pendaftaran pengajar baru.</p>
-                    </div>
-                     <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingSenseis->count() }} Request</span>
-                </div>
-                <!-- ... Mock Table for Sensei ... -->
-                <div class="p-8 text-center text-slate-400 text-sm italic border-t border-slate-50">
-                    Fitur validasi detail sensei akan segera hadir.
-                </div>
-            </div>
         </div>
 
         <!-- Right Column: Charts & Activity -->

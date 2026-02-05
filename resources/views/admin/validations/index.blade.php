@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div x-data="{ activeTab: 'students', userDetail: null, senseiDetail: null }" class="space-y-6">
+    <div x-data="{ activeTab: 'students', userDetail: null }" class="space-y-6">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -28,14 +28,6 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     Pendaftaran Siswa
                     <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'students'">{{ $pendingStudents->count() }}</span>
-                </button>
-
-                <button @click="activeTab = 'senseis'"
-                    :class="{ 'border-red-500 text-red-600': activeTab === 'senseis', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': activeTab !== 'senseis' }"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Pendaftaran Sensei
-                     <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'senseis'">{{ $pendingSenseis->count() }}</span>
                 </button>
             </nav>
         </div>
@@ -142,80 +134,6 @@
             </div>
         </div>
 
-        <!-- Sensei Validation Tab -->
-        <div x-show="activeTab === 'senseis'" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style="display: none;">
-             <!-- Table -->
-            <div class="overflow-x-auto">
-                 <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 border-b border-slate-100">
-                        <tr>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Sensei</th>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Bidang Ajar</th>
-                             <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengalaman</th>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dokumen</th>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Daftar</th>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse($pendingSenseis as $sensei)
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
-                                        {{ substr($sensei->name, 0, 2) }}
-                                    </div>
-                                    <div>
-                                        <div class="font-bold text-slate-900 text-sm">{{ $sensei->name }}</div>
-                                        <div class="text-xs text-slate-500">{{ $sensei->email }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-100">
-                                    {{ $sensei->teaching_field ?? 'N5, N4' }}
-                                </span>
-                            </td>
-                             <td class="p-4 text-sm text-slate-600">
-                                {{ $sensei->experience ?? '-' }}
-                            </td>
-                             <td class="p-4">
-                                <button class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    Lihat CV
-                                </button>
-                            </td>
-                            <td class="p-4 text-sm text-slate-600">
-                                {{ $sensei->created_at->format('d M Y') }}
-                            </td>
-                            <td class="p-4">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-100">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Pending
-                                </span>
-                            </td>
-                            <td class="p-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                     <button @click="senseiDetail = {{ json_encode($sensei) }}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Review Sensei">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                         <tr>
-                            <td colspan="7" class="p-12 text-center">
-                                <div class="flex flex-col items-center justify-center text-slate-400">
-                                    <svg class="w-12 h-12 mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    <p class="text-sm font-medium text-slate-500">Tidak ada pendaftaran sensei pending.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
         <!-- Student Detail Modal -->
         <div x-show="userDetail" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
