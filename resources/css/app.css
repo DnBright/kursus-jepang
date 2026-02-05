@@ -1,3 +1,101 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --brand-red: 0 85% 55%;
+        --brand-red-dark: 0 75% 45%;
+        --brand-red-light: 0 100% 70%;
+        --surface-deep: 220 33% 10%;
+        --surface-soft: 215 25% 97%;
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.3);
+    }
+
+    body {
+        @apply font-sans antialiased bg-slate-50 text-slate-900;
+        scroll-behavior: smooth;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-bold tracking-tight;
+    }
+}
+
+@layer components {
+    .btn-premium {
+        @apply px-8 py-4 rounded-2xl font-bold transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2;
+    }
+
+    .btn-premium-primary {
+        @apply bg-red-600 text-white;
+        box-shadow: 0 15px 30px rgba(220, 38, 38, 0.25);
+    }
+
+    .btn-premium-primary:hover {
+        @apply bg-red-700;
+        box-shadow: 0 20px 40px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-premium-secondary {
+        @apply bg-white text-slate-800 border-2 border-slate-100 hover:border-slate-200 hover:bg-slate-50 hover:shadow-xl hover:shadow-slate-200/50;
+    }
+
+    .card-premium {
+        @apply bg-white/80 backdrop-blur-xl border border-white/40 rounded-[2.5rem] p-8 transition-all duration-500;
+        box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-premium:hover {
+        box-shadow: 0 40px 80px -15px rgba(220, 38, 38, 0.1);
+    }
+
+    .glass-effect {
+        @apply bg-white/70 backdrop-blur-2xl border border-white/30 shadow-lg;
+    }
+}
+
+@layer utilities {
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-br from-red-600 to-red-400;
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
