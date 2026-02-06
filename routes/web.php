@@ -39,9 +39,14 @@ Route::middleware(['auth', 'member'])->group(function () {
         return view('member.materials.index');
     })->name('materials.index');
 
-    Route::get('/quizzes', function () {
-        return view('member.quizzes.index');
-    })->name('quizzes.index');
+    // Quiz Routes
+    Route::prefix('quizzes')->name('quizzes.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Member\QuizController::class, 'index'])->name('index');
+        Route::get('/{quiz}', [App\Http\Controllers\Member\QuizController::class, 'show'])->name('show');
+        Route::post('/{quiz}/submit', [App\Http\Controllers\Member\QuizController::class, 'submit'])->name('submit');
+        Route::get('/results/{attempt}', [App\Http\Controllers\Member\QuizController::class, 'results'])->name('results');
+        Route::get('/{quiz}/leaderboard', [App\Http\Controllers\Member\QuizController::class, 'leaderboard'])->name('leaderboard');
+    });
 
     Route::get('/certificates', function () {
         return view('member.certificates.index');

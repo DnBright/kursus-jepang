@@ -52,7 +52,8 @@
                         </div>
                     </div>
                     @php
-                        $firstLesson = $course->modules->first()->lessons->first();
+                        $firstModule = $course->modules->first();
+                        $firstLesson = $firstModule ? $firstModule->lessons->first() : null;
                     @endphp
                     @if($firstLesson)
                     <a href="{{ route('courses.lessons.show', [$course->id, $firstLesson->id]) }}" class="w-full py-4 bg-white text-slate-900 font-bold rounded-xl shadow-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2 group">
