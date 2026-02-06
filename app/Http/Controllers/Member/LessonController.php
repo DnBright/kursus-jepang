@@ -3,110 +3,49 @@
 namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
     public function show($courseId, $lessonId)
     {
-        $lesson = [];
-        $modules = [];
+        $course = Course::with(['modules.lessons'])->findOrFail($courseId);
+        $lesson = Lesson::whereHas('module', function($q) use ($courseId) {
+                        $q->where('course_id', $courseId);
+                    })
+                    ->findOrFail($lessonId);
 
-        // Mock Data for "Japanese Culture & Manners" (Course ID 2)
-        if ($courseId == 2) {
-            $lesson = [
-                'id' => $lessonId,
-                'course_id' => $courseId,
-                'title' => 'Pengenalan Budaya Kerja di Jepang',
-                'video_url' => 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder
-                'duration' => '08:45',
-                'description' => 'Penjelasan dasar mengenai etos kerja, disiplin, dan kebiasaan umum di lingkungan kerja Jepang.',
-                'module_title' => 'Modul 1 – Budaya Kerja Jepang',
-                'breadcrumbs' => [
-                    'Kursus Saya',
-                    'Japanese Culture & Manners',
-                    'Modul 1',
-                    'Materi'
-                ],
-                'position' => 'Materi 1 dari 5', // Added dynamic position
-                'next_lesson_url' => route('courses.lessons.show', [$courseId, $lessonId + 1]),
-                'prev_lesson_url' => null,
-            ];
+        // Find Next and Prev Lesson
+        // Flatten all lessons to find position
+        $allLessons = $course->modules->flatMap->lessons;
+        $currentIndex = $allLessons->search(function($item) use ($lessonId) {
+            return $item->id == $lessonId;
+        });
 
-            $modules = [
-                [
-                    'id' => 1,
-                    'title' => 'Modul 1 – Budaya Kerja Jepang',
-                    'lessons' => [
-                        ['id' => 1, 'title' => 'Materi 1 – Budaya Kerja', 'status' => 'active', 'duration' => '08:45', 'type' => 'video', 'current' => true],
-                    ]
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Modul 2 – Etika Berkomunikasi',
-                    'lessons' => [
-                        ['id' => 2, 'title' => 'Materi 1 – Hourensou', 'status' => 'locked', 'duration' => '10:00', 'type' => 'video'],
-                    ]
-                ],
-                [
-                    'id' => 3,
-                    'title' => 'Modul 3 – Kehidupan Sehari-hari',
-                    'lessons' => []
-                ],
-                [
-                    'id' => 4,
-                    'title' => 'Modul 4 – Mindset Kerja',
-                    'lessons' => []
-                ],
-                [
-                    'id' => 5,
-                    'title' => 'Modul 5 – Studi Kasus',
-                    'lessons' => []
-                ],
-            ];
-        } 
-        // Mock Data for "Mastering N4 Grammar & Vocab" (Course ID 1)
-        else {
-            $lesson = [
-                'id' => $lessonId,
-                'course_id' => $courseId,
-                'title' => 'Video 3 – Contoh Percakapan',
-                'video_url' => 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder
-                'duration' => '12:30',
-                'description' => 'Penjelasan dasar tentang bahasa Jepang, konteks penggunaan, dan sistem penulisan.',
-                'module_title' => 'Modul 1 – Pengenalan Bahasa Jepang',
-                'breadcrumbs' => [
-                    'Kursus Saya',
-                    'Mastering N4 Grammar & Vocab',
-                    'Modul 1',
-                    'Materi'
-                ],
-                'position' => 'Materi 3 dari 6', // Added dynamic position
-                'next_lesson_url' => route('courses.lessons.show', [$courseId, $lessonId + 1]),
-                'prev_lesson_url' => $lessonId > 1 ? route('courses.lessons.show', [$courseId, $lessonId - 1]) : null,
-            ];
+        $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
+        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
 
-            $modules = [
-                 [
-                    'id' => 1,
-                    'title' => 'Modul 1 – Pengenalan',
-                    'lessons' => [
-                        ['id' => 1, 'title' => 'Materi 1 – Apa itu Bahasa Jepang', 'status' => 'completed', 'duration' => '10:00', 'type' => 'video'],
-                        ['id' => 2, 'title' => 'Materi 2 – Hiragana Dasar', 'status' => 'completed', 'duration' => '15:00', 'type' => 'video'],
-                        ['id' => 3, 'title' => 'Materi 3 – Contoh Percakapan', 'status' => 'active', 'duration' => '12:30', 'type' => 'video', 'current' => true], // Current
-                        ['id' => 4, 'title' => 'Quiz Modul 1', 'status' => 'locked', 'duration' => '5:00', 'type' => 'quiz'],
-                    ]
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Modul 2 – Hiragana Lanjut',
-                    'lessons' => [
-                        ['id' => 5, 'title' => 'Materi 1 – Dakuten', 'status' => 'locked', 'duration' => '10:00', 'type' => 'video'],
-                    ]
-                ]
-            ];
-        }
+        // Breadcrumbs
+        $breadcrumbs = [
+            'Kursus Saya',
+            $course->title,
+            $lesson->module->title,
+            'Materi'
+        ];
 
-        return view('member.lessons.show', compact('lesson', 'modules'));
+        // Prepare data for view
+        $data = [
+            'course' => $course,
+            'lesson' => $lesson,
+            'modules' => $course->modules,
+            'prev_lesson_url' => $prevLesson ? route('courses.lessons.show', [$course->id, $prevLesson->id]) : null,
+            'next_lesson_url' => $nextLesson ? route('courses.lessons.show', [$course->id, $nextLesson->id]) : null,
+            'position' => 'Materi ' . ($currentIndex + 1) . ' dari ' . $allLessons->count(),
+            'breadcrumbs' => $breadcrumbs,
+        ];
+
+        return view('member.lessons.show', $data);
     }
 }

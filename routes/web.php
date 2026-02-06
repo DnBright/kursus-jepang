@@ -24,9 +24,7 @@ Route::middleware(['auth', 'member'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/my-courses', function () {
-        return view('member.courses.index');
-    })->name('my-courses');
+    Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
 
     Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
 

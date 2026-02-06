@@ -263,7 +263,20 @@
                     </ul>
 
                     @if(Auth::check() && Auth::user()->hasActivePackage('Basic N5'))
-                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                        <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
+                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all transform group-hover:-translate-y-1">
+                                <span class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    AKSES KELAS
+                                </span>
+                            </button>
+                            <div class="absolute -top-4 -right-2">
+                                <span class="bg-white text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full shadow-md border border-emerald-100 flex items-center gap-1 transform rotate-6">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    OWNED
+                                </span>
+                            </div>
+                        </div>
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Basic N5'))
                          <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
@@ -309,7 +322,20 @@
                     </ul>
 
                     @if(Auth::check() && Auth::user()->hasActivePackage('Intensive N4'))
-                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                        <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
+                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 transition-all transform group-hover:-translate-y-1">
+                                <span class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    AKSES INTENSIF
+                                </span>
+                            </button>
+                            <div class="absolute -top-4 -right-2">
+                                <span class="bg-white text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full shadow-md border-2 border-emerald-500 flex items-center gap-1 transform rotate-6">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    OWNED
+                                </span>
+                            </div>
+                        </div>
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Intensive N4'))
                          <button disabled class="btn-premium bg-slate-800 text-slate-500 border-slate-700 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
@@ -343,7 +369,20 @@
                     </ul>
 
                     @if(Auth::check() && Auth::user()->hasActivePackage('Tokutei Ginou'))
-                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                        <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
+                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all transform group-hover:-translate-y-1">
+                                <span class="flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    AKSES KARIR
+                                </span>
+                            </button>
+                            <div class="absolute -top-4 -right-2">
+                                <span class="bg-white text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full shadow-md border border-emerald-100 flex items-center gap-1 transform rotate-6">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    OWNED
+                                </span>
+                            </div>
+                        </div>
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Tokutei Ginou'))
                          <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
