@@ -20,9 +20,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'member'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Member\DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
 
@@ -51,6 +49,19 @@ Route::middleware(['auth', 'member'])->group(function () {
     Route::get('/certificates', function () {
         return view('member.certificates.index');
     })->name('certificates.index');
+
+    
+    // Assignment Routes
+    Route::prefix('assignments')->name('assignments.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Member\AssignmentController::class, 'index'])->name('index');
+        Route::get('/{assignment}', [App\Http\Controllers\Member\AssignmentController::class, 'show'])->name('show');
+        Route::post('/{assignment}/submit', [App\Http\Controllers\Member\AssignmentController::class, 'submit'])->name('submit');
+    });
+
+    // Progress Tracking Routes
+    Route::post('/lessons/{lesson}/complete', [App\Http\Controllers\Member\ProgressController::class, 'completeLesson'])->name('lessons.complete');
+    Route::post('/lessons/{lesson}/notes', [App\Http\Controllers\Member\ProgressController::class, 'updateNotes'])->name('lessons.notes');
+    Route::get('/progress/stats', [App\Http\Controllers\Member\ProgressController::class, 'stats'])->name('progress.stats');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
