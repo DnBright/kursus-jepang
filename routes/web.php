@@ -28,6 +28,8 @@ Route::middleware(['auth', 'member'])->group(function () {
         return view('member.courses.index');
     })->name('my-courses');
 
+    Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
+
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Member\LessonController::class, 'show'])->name('courses.lessons.show');
 

@@ -12,11 +12,21 @@
 
     <!-- Navigation Menu -->
     <div class="space-y-2 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+        <a href="{{ url('/') }}" class="flex items-center gap-4 px-5 py-4 text-slate-500 hover:text-red-600 hover:bg-slate-50 rounded-2xl font-bold text-sm transition-all group mb-4 border border-transparent hover:border-slate-100">
+            <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Ke Beranda
+        </a>
+
         <p class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Main Dashboard</p>
         
         <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
             Overview
+        </x-sidebar-link>
+
+        <x-sidebar-link :href="route('packages.index')" :active="request()->routeIs('packages.index')">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            Beli Paket
         </x-sidebar-link>
 
         <x-sidebar-link :href="route('my-courses')" :active="request()->routeIs('my-courses')">

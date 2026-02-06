@@ -73,18 +73,22 @@
                     @if($transactions->isNotEmpty())
                         
                         <!-- Pending Packages -->
+                        <!-- Pending Packages -->
                         @foreach($pendingTransactions as $transaction)
-                        <div class="bg-white rounded-2xl p-6 border border-yellow-100 shadow-sm bg-yellow-50/30">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-xl animate-pulse">
-                                    ⏳
+                        <div class="bg-white rounded-2xl p-6 border-2 border-yellow-300 shadow-sm bg-yellow-50/20 relative overflow-hidden">
+                            <!-- Stripe Pattern -->
+                            <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%); background-size: 10px 10px;"></div>
+                            
+                            <div class="flex items-center gap-5 relative z-10">
+                                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-yellow-100">
+                                    <div class="animate-pulse">⏳</div>
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <h3 class="font-bold text-slate-900">{{ $transaction->package_type }}</h3>
-                                        <span class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide">Menunggu Konfirmasi</span>
+                                        <h3 class="font-black text-slate-800 text-lg">{{ $transaction->package_type }}</h3>
+                                        <span class="px-2 py-0.5 rounded-md bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase tracking-widest border border-yellow-200">Menunggu Konfirmasi</span>
                                     </div>
-                                    <p class="text-sm text-slate-500">Pembelian sedang divalidasi oleh admin. Mohon tunggu.</p>
+                                    <p class="text-sm text-slate-600 font-medium">Pembayaran Anda sedang divalidasi oleh admin. Akses akan terbuka otomatis setelah disetujui.</p>
                                 </div>
                             </div>
                         </div>
@@ -92,42 +96,61 @@
 
                         <!-- Active Packages -->
                         @foreach($activeTransactions as $transaction)
-                        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="flex flex-col md:flex-row gap-6">
-                                <div class="w-full md:w-1/3 aspect-video bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden group">
-                                     <div class="text-4xl group-hover:scale-110 transition-transform">🇯🇵</div>
-                                     <div class="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors"></div>
+                        <div class="bg-white rounded-2xl p-6 border-2 border-emerald-400 shadow-lg shadow-emerald-50 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                            <!-- Background Decoration -->
+                            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div class="flex flex-col md:flex-row gap-6 relative z-10">
+                                <div class="w-full md:w-1/3 aspect-video bg-slate-900 rounded-xl flex items-center justify-center relative overflow-hidden shadow-inner">
+                                     <div class="text-5xl group-hover:scale-110 transition-transform duration-500">🇯🇵</div>
+                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                                     <div class="absolute bottom-3 left-3">
+                                         <span class="px-2 py-1 rounded bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold border border-white/10">PREMIUM CLASS</span>
+                                     </div>
                                 </div>
                                 <div class="flex-1 flex flex-col justify-between">
                                     <div>
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Aktif</span>
-                                            <span class="text-xs text-slate-400">• Paket {{ $transaction->package_type }}</span>
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest border border-emerald-200 flex items-center gap-1.5 shadow-sm">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                AKSES TERBUKA
+                                            </span>
+                                            <span class="text-xs text-slate-400 font-bold">• {{ $transaction->package_type }}</span>
                                         </div>
-                                        <h3 class="text-lg font-bold text-slate-900 mb-1">
+                                        <h3 class="text-2xl font-black text-slate-900 mb-2">
                                             @if($transaction->package_type == 'Basic N5') Bahasa Jepang Dasar (N5)
-                                            @elseif($transaction->package_type == 'Intensive N4') Intensive N4
-                                            @elseif($transaction->package_type == 'Tokutei Ginou') Tokutei Ginou Class
+                                            @elseif($transaction->package_type == 'Intensive N4') Intensive N4 Class
+                                            @elseif($transaction->package_type == 'Tokutei Ginou') Tokutei Ginou Career
                                             @else {{ $transaction->package_type }}
                                             @endif
                                         </h3>
-                                        <p class="text-sm text-slate-500 line-clamp-2">Akses materi pembelajaran, latihan soal, dan live class untuk paket ini.</p>
+                                        
+                                        <!-- Unlocked Features -->
+                                        <div class="flex flex-wrap gap-2 mb-4">
+                                            @foreach(['Materi Lengkap', 'Live Class', 'Ujian'] as $feature)
+                                            <span class="flex items-center gap-1 text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
+                                                <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                                                {{ $feature }}
+                                            </span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                     
-                                    <div class="mt-4">
-                                        <div class="flex justify-between text-xs font-semibold mb-1">
-                                            <span class="text-slate-600">Progress</span>
-                                            <span class="text-slate-900">0%</span>
+                                    <div class="mt-4 pt-4 border-t border-slate-100">
+                                        <div class="flex justify-between text-xs font-bold mb-1.5">
+                                            <span class="text-slate-500">Progress Belajar</span>
+                                            <span class="text-emerald-600">0% Selesai</span>
                                         </div>
-                                        <div class="w-full bg-slate-100 rounded-full h-2">
-                                            <div class="bg-red-600 h-2 rounded-full" style="width: 5%"></div>
+                                        <div class="w-full bg-slate-100 rounded-full h-2.5 mb-4 overflow-hidden">
+                                            <div class="bg-emerald-500 h-full rounded-full w-[2%] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                                         </div>
-                                        <div class="mt-4 flex gap-3">
-                                            <button class="flex-1 py-2 px-4 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors">
-                                                Masuk Kelas
+                                        <div class="flex gap-3">
+                                            <button class="flex-1 py-3 px-6 bg-emerald-600 text-white text-sm font-black rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                                MASUK KELAS
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                             </button>
-                                            <button class="py-2 px-3 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors" title="Download Materi">
-                                                📥
+                                            <button class="py-3 px-4 border-2 border-slate-100 text-slate-400 rounded-xl hover:border-slate-200 hover:text-slate-600 transition-colors" title="Download Silabus">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                             </button>
                                         </div>
                                     </div>
