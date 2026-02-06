@@ -1,11 +1,7 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Beli Paket') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12 bg-slate-50 min-h-screen">
+@section('content')
+    <div class="py-12 bg-gradient-to-br from-slate-50 via-white to-red-50/30 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h2 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Upgrade Karirmu 🚀</h2>
@@ -18,7 +14,7 @@
                     $isActive = Auth::user()->hasActivePackage($pkg['name']);
                     $isPending = Auth::user()->hasPendingPackage($pkg['name']);
                 @endphp
-                <div class="card-premium flex flex-col relative {{ $pkg['type'] === 'primary' ? '!bg-slate-900 !text-white scale-105 shadow-[0_40px_100px_rgba(220,38,38,0.2)]' : 'hover:!border-slate-900/10' }}">
+                <div class="bg-white rounded-2xl p-8 shadow-lg border-2 border-slate-100 flex flex-col relative {{ $pkg['type'] === 'primary' ? '!bg-slate-900 !text-white scale-105 shadow-[0_40px_100px_rgba(220,38,38,0.2)]' : 'hover:!border-slate-900/10' }}">
                     
                     @if(isset($pkg['popular']) && $pkg['popular'])
                     <div class="absolute -top-5 left-1/2 -translate-x-1/2">
@@ -66,7 +62,7 @@
                              Menunggu Konfirmasi
                         </button>
                     @else
-                        <a href="{{ route('checkout.show', $pkg['name']) }}" class="btn-premium {{ $pkg['type'] === 'primary' ? 'btn-premium-primary' : 'btn-premium-secondary' }} w-full uppercase text-xs tracking-widest !py-5 text-center block">
+                        <a href="{{ route('checkout.show', $pkg['name']) }}" class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest text-center block {{ $pkg['type'] === 'primary' ? 'bg-white text-slate-900 hover:bg-slate-100' : 'bg-slate-900 text-white hover:bg-slate-800' }} transition-all">
                             Pilih Paket
                         </a>
                     @endif
@@ -75,4 +71,5 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
+
