@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div x-data="{ activeTab: 'students', userDetail: null }" class="space-y-6">
+    <div class="p-6" x-data="{ activeTab: 'students', userDetail: null, previewImage: null }">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -86,7 +86,7 @@
                             </td>
                             <td class="p-4">
                                 <div class="text-sm font-medium text-slate-700">{{ $transaction->payment_method ?? 'Transfer Bank' }}</div>
-                                <button class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 mt-0.5">
+                                <button @click="previewImage = '{{ $transaction->payment_proof ? asset('storage/' . $transaction->payment_proof) : '' }}'; if('{{ $transaction->payment_proof }}') { previewImage = '{{ asset('storage/' . $transaction->payment_proof) }}' } else { alert('Tidak ada bukti transfer') }" class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 mt-0.5">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                                     Lihat Bukti
                                 </button>
@@ -138,52 +138,75 @@
         <!-- Student Detail Modal -->
         <div x-show="userDetail" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div x-show="userDetail" @click="userDetail = null" class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div x-show="userDetail" class="fixed inset-0 transition-opacity" aria-hidden="true" @click="userDetail = null">
                     <div class="absolute inset-0 bg-slate-900 opacity-75"></div>
                 </div>
 
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                <div x-show="userDetail" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-bold text-slate-900" id="modal-title">
-                                    Detail Pendaftaran Siswa
-                                </h3>
-                                <div class="mt-4 space-y-4">
-                                    <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
-                                        <div class="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-lg">
-                                            <span x-text="userDetail?.user?.name.substring(0,2)"></span>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-slate-900" x-text="userDetail?.user?.name"></h4>
-                                            <p class="text-sm text-slate-500" x-text="userDetail?.user?.email"></p>
-                                            <p class="text-xs text-slate-400 mt-1">Mendaftar pada <span x-text="new Date(userDetail?.created_at).toLocaleDateString()"></span></p>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div class="p-3 border border-slate-200 rounded-xl">
-                                            <p class="text-xs text-slate-400 font-bold uppercase">Paket</p>
-                                            <p class="font-bold text-blue-600" x-text="userDetail?.package_type || 'N5 Basic'"></p>
-                                        </div>
-                                         <div class="p-3 border border-slate-200 rounded-xl">
-                                            <p class="text-xs text-slate-400 font-bold uppercase">Metode Bayar</p>
-                                            <p class="font-bold text-slate-700" x-text="userDetail?.payment_method || 'Transfer'"></p>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                         <p class="text-xs text-slate-400 font-bold uppercase mb-2">Bukti Pembayaran</p>
-                                         <div class="h-32 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 gap-2">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                            Preview Image
-                                         </div>
-                                    </div>
+                <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                    <div class="bg-white p-6">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-lg font-bold text-slate-900">
+                                Detail Pendaftaran Siswa
+                            </h3>
+                            <button @click="userDetail = null" class="text-slate-400 hover:text-slate-500">
+                                <span class="sr-only">Close</span>
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-4 space-y-4">
+                            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                                <div class="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-lg">
+                                    <span x-text="userDetail?.user?.name.substring(0,2)"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900" x-text="userDetail?.user?.name"></h4>
+                                    <p class="text-sm text-slate-500" x-text="userDetail?.user?.email"></p>
+                                    <p class="text-xs text-slate-400 mt-1">Mendaftar pada <span x-text="new Date(userDetail?.created_at).toLocaleDateString()"></span></p>
                                 </div>
                             </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-3 border border-slate-200 rounded-xl">
+                                    <p class="text-xs text-slate-400 font-bold uppercase">Paket</p>
+                                    <p class="font-bold text-blue-600" x-text="userDetail?.package_type || 'N5 Basic'"></p>
+                                </div>
+                                    <div class="p-3 border border-slate-200 rounded-xl">
+                                    <p class="text-xs text-slate-400 font-bold uppercase">Metode Bayar</p>
+                                    <p class="font-bold text-slate-700" x-text="userDetail?.payment_method || 'Transfer'"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 border border-slate-200 rounded-xl">
+                                <p class="text-xs text-slate-400 font-bold uppercase mb-2">Total Tagihan</p>
+                                <p class="font-bold text-slate-900 text-xl" x-text="'Rp ' + (userDetail?.amount ? new Intl.NumberFormat('id-ID').format(userDetail.amount) : '0')"></p>
+                            </div>
+
+                            <div x-show="userDetail?.payment_proof" class="p-3 border border-slate-200 rounded-xl">
+                                <p class="text-xs text-slate-400 font-bold uppercase mb-2">Bukti Transfer</p>
+                                <img :src="'/storage/' + userDetail?.payment_proof" alt="Bukti Transfer" class="w-full rounded-lg border border-slate-200">
+                            </div>
                         </div>
+
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button @click="userDetail = null" class="px-4 py-2 bg-white text-slate-700 font-bold border border-slate-200 rounded-lg hover:bg-slate-50 text-sm">
+                                Tutup
+                            </button>
+                            <!-- You might want to add approve/reject buttons here dynamically or keep them in the main table -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Preview Modal (Separate if needed, but included in detail now) -->
+        <div x-show="previewImage" class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
+             <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="previewImage = null">
+                    <div class="absolute inset-0 bg-slate-900 opacity-90"></div>
+                </div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                     </div>
                     <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
                         <button type="button" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">

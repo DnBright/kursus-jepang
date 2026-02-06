@@ -267,10 +267,7 @@
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Basic N5'))
                          <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
-                        <form action="{{ route('checkout', 'Basic N5') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Basic</button>
-                        </form>
+                        <a href="{{ route('checkout.show', 'Basic N5') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Pilih Basic</a>
                     @endif
                 </div>
 
@@ -316,10 +313,7 @@
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Intensive N4'))
                          <button disabled class="btn-premium bg-slate-800 text-slate-500 border-slate-700 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
-                        <form action="{{ route('checkout', 'Intensive N4') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5">Gabung Intensif</button>
-                        </form>
+                        <a href="{{ route('checkout.show', 'Intensive N4') }}" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5 text-center block">Gabung Intensif</a>
                     @endif
                 </div>
 
@@ -353,10 +347,7 @@
                     @elseif(Auth::check() && Auth::user()->hasPendingPackage('Tokutei Ginou'))
                          <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
-                        <form action="{{ route('checkout', 'Tokutei Ginou') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Karir</button>
-                        </form>
+                        <a href="{{ route('checkout.show', 'Tokutei Ginou') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Pilih Karir</a>
                     @endif
             </div>
         </div>

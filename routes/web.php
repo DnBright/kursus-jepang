@@ -15,28 +15,8 @@ Route::get('/verification/notice', function () {
 
 // USER ROUTES
 Route::middleware(['auth'])->group(function () {
-    Route::post('/checkout/{package}', function ($package) {
-        $user = request()->user();
-
-        // Check if user already has this package or pending request
-        if ($user->hasActivePackage($package)) {
-            return back()->with('error', 'Anda sudah memiliki paket ' . $package . '.');
-        }
-
-        if ($user->hasPendingPackage($package)) {
-            return back()->with('error', 'Permintaan pembelian paket ' . $package . ' Anda sedang diproses.');
-        }
-
-        // Create new transaction
-        $user->transactions()->create([
-            'package_type' => $package,
-            'status' => 'pending',
-            'amount' => 0, // Set price based on package if needed, for now 0 or placeholder
-            'payment_method' => 'Transfer Bank', // Default for now
-        ]);
-
-        return back()->with('status', 'Permintaan pembelian paket ' . $package . ' berhasil dikirim. Silakan tunggu konfirmasi Admin.');
-    })->name('checkout');
+    Route::get('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout'); // Keeping name 'checkout' for backward compatibility with form actions
 });
 
 Route::middleware(['auth', 'member'])->group(function () {
