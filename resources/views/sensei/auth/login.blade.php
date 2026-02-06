@@ -92,7 +92,6 @@
                     </div>
 
                     <div class="pt-6 text-center border-t border-slate-100 space-y-2">
-                        <p class="text-sm text-slate-500">Belum punya akun? <a href="{{ route('sensei.register') }}" class="text-slate-900 font-bold hover:text-red-600 transition-colors">Daftar sebagai Sensei</a></p>
                         <p class="text-sm text-slate-500">Bukan pengajar? <a href="{{ route('login') }}" class="text-slate-900 font-bold hover:text-red-600 transition-colors">Login sebagai Siswa</a></p>
                      </div>
                 </form>

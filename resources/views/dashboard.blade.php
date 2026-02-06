@@ -64,8 +64,34 @@
                         <a href="#" class="text-sm font-semibold text-red-600 hover:text-red-700">Lihat Semua</a>
                     </div>
 
-                    @if(Auth::user()->selected_package)
-                        <!-- Active Course Card -->
+                    @php
+                        $transactions = Auth::user()->transactions()->orderBy('created_at', 'desc')->get();
+                        $activeTransactions = $transactions->where('status', 'approved');
+                        $pendingTransactions = $transactions->where('status', 'pending');
+                    @endphp
+
+                    @if($transactions->isNotEmpty())
+                        
+                        <!-- Pending Packages -->
+                        @foreach($pendingTransactions as $transaction)
+                        <div class="bg-white rounded-2xl p-6 border border-yellow-100 shadow-sm bg-yellow-50/30">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-xl animate-pulse">
+                                    ⏳
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h3 class="font-bold text-slate-900">{{ $transaction->package_type }}</h3>
+                                        <span class="px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-[10px] font-bold uppercase tracking-wide">Menunggu Konfirmasi</span>
+                                    </div>
+                                    <p class="text-sm text-slate-500">Pembelian sedang divalidasi oleh admin. Mohon tunggu.</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+
+                        <!-- Active Packages -->
+                        @foreach($activeTransactions as $transaction)
                         <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                             <div class="flex flex-col md:flex-row gap-6">
                                 <div class="w-full md:w-1/3 aspect-video bg-slate-100 rounded-xl flex items-center justify-center relative overflow-hidden group">
@@ -76,10 +102,16 @@
                                     <div>
                                         <div class="flex items-center gap-2 mb-2">
                                             <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">Aktif</span>
-                                            <span class="text-xs text-slate-400">• Paket {{ Auth::user()->selected_package }}</span>
+                                            <span class="text-xs text-slate-400">• Paket {{ $transaction->package_type }}</span>
                                         </div>
-                                        <h3 class="text-lg font-bold text-slate-900 mb-1">Bahasa Jepang Dasar (N5)</h3>
-                                        <p class="text-sm text-slate-500 line-clamp-2">Pelajari dasar-dasar bahasa Jepang mulai dari Hiragana, Katakana, hingga percakapan sehari-hari.</p>
+                                        <h3 class="text-lg font-bold text-slate-900 mb-1">
+                                            @if($transaction->package_type == 'Basic N5') Bahasa Jepang Dasar (N5)
+                                            @elseif($transaction->package_type == 'Intensive N4') Intensive N4
+                                            @elseif($transaction->package_type == 'Tokutei Ginou') Tokutei Ginou Class
+                                            @else {{ $transaction->package_type }}
+                                            @endif
+                                        </h3>
+                                        <p class="text-sm text-slate-500 line-clamp-2">Akses materi pembelajaran, latihan soal, dan live class untuk paket ini.</p>
                                     </div>
                                     
                                     <div class="mt-4">
@@ -92,7 +124,7 @@
                                         </div>
                                         <div class="mt-4 flex gap-3">
                                             <button class="flex-1 py-2 px-4 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors">
-                                                Lanjut Belajar
+                                                Masuk Kelas
                                             </button>
                                             <button class="py-2 px-3 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors" title="Download Materi">
                                                 📥
@@ -102,6 +134,8 @@
                                 </div>
                             </div>
                         </div>
+                        @endforeach
+
                     @else
                         <!-- Empty State -->
                         <div class="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm text-center">

@@ -27,7 +27,7 @@
                     class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     Pendaftaran Siswa
-                    <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'students'">{{ $pendingStudents->count() }}</span>
+                    <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'students'">{{ $pendingTransactions->count() }}</span>
                 </button>
             </nav>
         </div>
@@ -66,33 +66,33 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @forelse($pendingStudents as $student)
+                        @forelse($pendingTransactions as $transaction)
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="p-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
-                                        {{ substr($student->name, 0, 2) }}
+                                        {{ substr($transaction->user->name, 0, 2) }}
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-900 text-sm">{{ $student->name }}</div>
-                                        <div class="text-xs text-slate-500">{{ $student->email }}</div>
+                                        <div class="font-bold text-slate-900 text-sm">{{ $transaction->user->name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $transaction->user->email }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="p-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                                    {{ $student->selected_package ?? 'N5 Basic' }}
+                                    {{ $transaction->package_type }}
                                 </span>
                             </td>
                             <td class="p-4">
-                                <div class="text-sm font-medium text-slate-700">{{ $student->payment_method ?? 'Transfer Bank' }}</div>
+                                <div class="text-sm font-medium text-slate-700">{{ $transaction->payment_method ?? 'Transfer Bank' }}</div>
                                 <button class="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 mt-0.5">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
                                     Lihat Bukti
                                 </button>
                             </td>
                             <td class="p-4 text-sm text-slate-600">
-                                {{ $student->created_at->format('d M Y') }}
+                                {{ $transaction->created_at->format('d M Y') }}
                             </td>
                             <td class="p-4">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-100">
@@ -101,16 +101,16 @@
                             </td>
                             <td class="p-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button @click="userDetail = {{ json_encode($student) }}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Lihat Detail">
+                                    <button @click="userDetail = {{ json_encode($transaction->load('user')) }}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Lihat Detail">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     </button>
-                                     <form action="{{ route('admin.users.approve', $student->id) }}" method="POST">
+                                     <form action="{{ route('admin.users.approve', $transaction->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-100" title="Setujui">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </button>
                                     </form>
-                                     <form action="{{ route('admin.users.reject', $student->id) }}" method="POST">
+                                     <form action="{{ route('admin.users.reject', $transaction->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Tolak">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -124,7 +124,7 @@
                             <td colspan="6" class="p-12 text-center">
                                 <div class="flex flex-col items-center justify-center text-slate-400">
                                     <svg class="w-12 h-12 mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    <p class="text-sm font-medium text-slate-500">Tidak ada pendaftaran siswa pending.</p>
+                                    <p class="text-sm font-medium text-slate-500">Tidak ada transaksi pending.</p>
                                 </div>
                             </td>
                         </tr>
@@ -152,13 +152,13 @@
                                     Detail Pendaftaran Siswa
                                 </h3>
                                 <div class="mt-4 space-y-4">
-                                     <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                                    <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
                                         <div class="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-lg">
-                                            <span x-text="userDetail?.name.substring(0,2)"></span>
+                                            <span x-text="userDetail?.user?.name.substring(0,2)"></span>
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-slate-900" x-text="userDetail?.name"></h4>
-                                            <p class="text-sm text-slate-500" x-text="userDetail?.email"></p>
+                                            <h4 class="font-bold text-slate-900" x-text="userDetail?.user?.name"></h4>
+                                            <p class="text-sm text-slate-500" x-text="userDetail?.user?.email"></p>
                                             <p class="text-xs text-slate-400 mt-1">Mendaftar pada <span x-text="new Date(userDetail?.created_at).toLocaleDateString()"></span></p>
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="p-3 border border-slate-200 rounded-xl">
                                             <p class="text-xs text-slate-400 font-bold uppercase">Paket</p>
-                                            <p class="font-bold text-blue-600" x-text="userDetail?.selected_package || 'N5 Basic'"></p>
+                                            <p class="font-bold text-blue-600" x-text="userDetail?.package_type || 'N5 Basic'"></p>
                                         </div>
                                          <div class="p-3 border border-slate-200 rounded-xl">
                                             <p class="text-xs text-slate-400 font-bold uppercase">Metode Bayar</p>

@@ -53,7 +53,24 @@
                                     <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=FEE2E2&color=DC2626&bold=true" class="w-full h-full rounded-lg object-cover">
                                 </div>
                             </button>
-                            <!-- Dropdown clipped for space, will reconstruct if needed -->
+                            
+                            <!-- Dropdown Menu -->
+                            <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 z-50">
+                                <div class="p-2 border-b border-slate-50">
+                                    <p class="text-xs font-bold text-slate-400 px-3 py-2 uppercase tracking-wider">Menu</p>
+                                    <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors">
+                                        Dashboard
+                                    </a>
+                                </div>
+                                <div class="p-2">
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-red-600 transition-colors">
+                                            Log Out
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     @else
                         <a href="{{ route('login') }}" class="hidden sm:block text-sm font-bold text-slate-900 hover:text-red-600 transition-colors mr-2">Masuk</a>
@@ -245,10 +262,16 @@
                         @endforeach
                     </ul>
 
-                    <form action="{{ route('checkout', 'Basic N5') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Basic</button>
-                    </form>
+                    @if(Auth::check() && Auth::user()->hasActivePackage('Basic N5'))
+                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Basic N5'))
+                         <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
+                    @else
+                        <form action="{{ route('checkout', 'Basic N5') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Basic</button>
+                        </form>
+                    @endif
                 </div>
 
                 <!-- Intensive N4 (High priority) -->
@@ -288,10 +311,16 @@
                         @endforeach
                     </ul>
 
-                    <form action="{{ route('checkout', 'Intensive N4') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5">Gabung Intensif</button>
-                    </form>
+                    @if(Auth::check() && Auth::user()->hasActivePackage('Intensive N4'))
+                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Intensive N4'))
+                         <button disabled class="btn-premium bg-slate-800 text-slate-500 border-slate-700 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
+                    @else
+                        <form action="{{ route('checkout', 'Intensive N4') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5">Gabung Intensif</button>
+                        </form>
+                    @endif
                 </div>
 
                 <!-- Tokutei Ginou -->
@@ -319,11 +348,16 @@
                         @endforeach
                     </ul>
 
-                    <form action="{{ route('checkout', 'Tokutei Ginou') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Karir</button>
-                    </form>
-                </div>
+                    @if(Auth::check() && Auth::user()->hasActivePackage('Tokutei Ginou'))
+                        <a href="{{ route('dashboard') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Akses Kelas</a>
+                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Tokutei Ginou'))
+                         <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
+                    @else
+                        <form action="{{ route('checkout', 'Tokutei Ginou') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5">Pilih Karir</button>
+                        </form>
+                    @endif
             </div>
         </div>
     </section>

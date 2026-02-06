@@ -63,4 +63,25 @@ class User extends Authenticatable
     {
         return $this->hasOne(Sensei::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function hasActivePackage($package)
+    {
+        return $this->transactions()
+            ->where('package_type', $package)
+            ->where('status', 'approved')
+            ->exists();
+    }
+
+    public function hasPendingPackage($package)
+    {
+        return $this->transactions()
+            ->where('package_type', $package)
+            ->where('status', 'pending')
+            ->exists();
+    }
 }

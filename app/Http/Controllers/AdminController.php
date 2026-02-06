@@ -49,18 +49,25 @@ class AdminController extends Controller
 
     public function approve($id)
     {
-        $user = User::findOrFail($id);
-        $user->update([
-            'role' => 'member',
-            'payment_status' => 'paid'
+        $transaction = \App\Models\Transaction::findOrFail($id);
+        $transaction->update([
+            'status' => 'approved'
         ]);
-        return back()->with('success', 'User ' . $user->name . ' has been approved as a Member.');
+        
+        // Also update user role to member if not already
+        $user = $transaction->user;
+        if ($user->role !== 'member') {
+            $user->update(['role' => 'member']);
+        }
+
+        return back()->with('success', 'Transaksi untuk ' . $user->name . ' telah disetujui.');
     }
 
     public function reject($id)
     {
-        $user = User::findOrFail($id);
-        $user->update(['status' => 'rejected']);
-        return back()->with('success', 'User ' . $user->name . ' has been rejected.');
+        $transaction = \App\Models\Transaction::findOrFail($id);
+        $transaction->update(['status' => 'rejected']);
+        
+        return back()->with('success', 'Transaksi untuk ' . $transaction->user->name . ' telah ditolak.');
     }
 }
