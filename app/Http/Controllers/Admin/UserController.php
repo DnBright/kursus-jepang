@@ -77,4 +77,20 @@ class UserController extends Controller
 
         return view('admin.users.index', compact('students', 'senseis', 'stats'));
     }
+
+    public function approve($id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'active']);
+
+        return back()->with('success', 'User ' . $user->name . ' berhasil diaktifkan.');
+    }
+
+    public function reject($id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'rejected']);
+
+        return back()->with('success', 'User ' . $user->name . ' telah ditolak.');
+    }
 }

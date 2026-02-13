@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'member' => \App\Http\Middleware\EnsureUserIsMember::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'package.active' => \App\Http\Middleware\EnsureHasActivePackage::class,
         ]);
 
         $middleware->redirectUsersTo(function () {

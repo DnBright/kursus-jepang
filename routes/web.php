@@ -19,12 +19,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout'); // Keeping name 'checkout' for backward compatibility with form actions
 });
 
+
 Route::middleware(['auth', 'member'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Member\DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
-
+    
     Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+Route::middleware(['auth', 'member', 'package.active'])->group(function () {
+    Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
 
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Member\LessonController::class, 'show'])->name('courses.lessons.show');
@@ -62,10 +70,6 @@ Route::middleware(['auth', 'member'])->group(function () {
     Route::post('/lessons/{lesson}/complete', [App\Http\Controllers\Member\ProgressController::class, 'completeLesson'])->name('lessons.complete');
     Route::post('/lessons/{lesson}/notes', [App\Http\Controllers\Member\ProgressController::class, 'updateNotes'])->name('lessons.notes');
     Route::get('/progress/stats', [App\Http\Controllers\Member\ProgressController::class, 'stats'])->name('progress.stats');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // SENSEI ROUTES
@@ -116,8 +120,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         
-        Route::post('/users/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('users.approve');
-        Route::post('/users/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('users.reject');
+        
+        Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
+        Route::post('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
+        
+        // Transaction approval routes
+        Route::post('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve');
+        Route::post('/transactions/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('reject');
 
         // Manual Sensei Management
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);

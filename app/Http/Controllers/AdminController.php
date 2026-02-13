@@ -16,12 +16,13 @@ class AdminController extends Controller
             'total_students' => User::where('role', 'member')->count(),
             'total_sensei' => Sensei::count(), 
             'active_classes' => 12, // Mock
-            'pending_registrations' => User::where('payment_status', 'pending')->count(),
+            'pending_registrations' => User::where('status', 'pending')->count(),
             'total_transactions' => 156, // Mock
             'certificates_issued' => 45, // Mock
         ];
 
-        $pendingUsers = User::where('payment_status', 'pending')
+        $pendingUsers = User::where('status', 'pending')
+            ->orWhere('payment_status', 'pending')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -54,11 +55,14 @@ class AdminController extends Controller
             'status' => 'approved'
         ]);
         
-        // Also update user role to member if not already
+        // Update user's selected package and role
         $user = $transaction->user;
         if ($user->role !== 'member') {
             $user->update(['role' => 'member']);
         }
+        
+        // Set the selected package so middleware can validate access
+        $user->update(['selected_package' => $transaction->package_type]);
 
         return back()->with('success', 'Transaksi untuk ' . $user->name . ' telah disetujui.');
     }

@@ -21,10 +21,9 @@ class EnsureUserIsActive
                 return $next($request);
             }
             
-            if (Auth::user()->status === 'pending') {
-                Auth::logout();
-                return redirect()->route('login')->with('status', 'Akun Anda sedang menunggu validasi Admin.');
-            }
+           if (Auth::check() && Auth::user()->status !== 'active') {
+            return redirect()->route('verification.notice');
+        }
 
             if (Auth::user()->status === 'rejected') {
                 Auth::logout();
