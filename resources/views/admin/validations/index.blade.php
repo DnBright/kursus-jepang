@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div class="p-6" x-data="{ activeTab: 'students', userDetail: null, previewImage: null }">
+    <div class="p-6" x-data="{ activeTab: 'accounts', userDetail: null, previewImage: null }">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -22,18 +22,102 @@
         <!-- Tab Navigation -->
         <div class="border-b border-slate-200">
             <nav class="-mb-px flex space-x-8">
+                <button @click="activeTab = 'accounts'"
+                    :class="{ 'border-red-500 text-red-600': activeTab === 'accounts', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': activeTab !== 'accounts' }"
+                    class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Validasi Akun Baru
+                    <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'accounts'">{{ $pendingUsers->count() }}</span>
+                </button>
+
                 <button @click="activeTab = 'students'"
                     :class="{ 'border-red-500 text-red-600': activeTab === 'students', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': activeTab !== 'students' }"
                     class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Pendaftaran Siswa
+                    Validasi Pembayaran Paket
                     <span class="ml-1 bg-slate-100 text-slate-600 py-0.5 px-2 rounded-full text-xs" x-show="activeTab !== 'students'">{{ $pendingTransactions->count() }}</span>
                 </button>
             </nav>
         </div>
 
+        <!-- Account Validation Tab -->
+        <div x-show="activeTab === 'accounts'" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6" style="display: none;">
+            <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 justify-between">
+                <div class="relative w-full sm:w-64">
+                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-full shadow-sm" placeholder="Cari nama atau email...">
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                 <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pendaftar</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Daftar</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                            <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($pendingUsers as $user)
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                                        {{ substr($user->name, 0, 2) }}
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900 text-sm">{{ $user->name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $user->email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-sm text-slate-600">
+                                {{ $user->created_at->format('d M Y, H:i') }}
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span> Pending Approval
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                     <form action="{{ route('admin.accounts.approve', $user->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-100" title="Setujui Akun">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </button>
+                                    </form>
+                                     <form action="{{ route('admin.accounts.reject', $user->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menolak dan menghapus pendaftaran ini?');">
+                                        @csrf
+                                        <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Tolak">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                         <tr>
+                            <td colspan="4" class="p-12 text-center">
+                                <div class="flex flex-col items-center justify-center text-slate-400">
+                                    <svg class="w-12 h-12 mb-3 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <p class="text-sm font-medium text-slate-500">Tidak ada pendaftaran akun baru.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Student Validation Tab -->
-        <div x-show="activeTab === 'students'" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style="display: none;">
+        <div x-show="activeTab === 'students'" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6" style="display: none;">
             <!-- Filter & Search -->
             <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row gap-3 justify-between">
                 <div class="relative w-full sm:w-64">
