@@ -89,14 +89,77 @@
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <!-- Left Column: Validation Panel -->
         <div class="xl:col-span-2 space-y-8">
-            <!-- Pending Users -->
+            <!-- Pending Account Registrations -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Validasi Pendaftaran Akun</h2>
+                        <p class="text-slate-500 text-sm">Persetujuan akun baru untuk dapat login ke platform.</p>
+                    </div>
+                    <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingUsers->count() }} Menunggu</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pendaftar</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($pendingUsers as $user)
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                                            {{ substr($user->name, 0, 2) }}
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-slate-900 text-sm">{{ $user->name }}</div>
+                                            <div class="text-xs text-slate-500">{{ $user->email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-sm text-slate-600">
+                                    {{ $user->created_at->format('d M Y, H:i') }}
+                                </td>
+                                <td class="p-4 text-right space-x-1">
+                                    <form action="{{ route('admin.accounts.approve', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Setujui Akun">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.accounts.reject', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin menolak dan menghapus akun ini?');">
+                                        @csrf
+                                        <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Tolak Akun">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="p-8 text-center text-slate-500 text-sm italic">
+                                    Tidak ada pendaftaran akun baru.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Transactions -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900">Validasi Pendaftaran Siswa</h2>
-                        <p class="text-slate-500 text-sm">Konfirmasi pembayaran dan akses member baru.</p>
+                        <h2 class="text-lg font-bold text-slate-900">Validasi Transaksi / Paket</h2>
+                        <p class="text-slate-500 text-sm">Konfirmasi pembayaran untuk akses paket.</p>
                     </div>
-                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingUsers->count() }} Pending</span>
+                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingTransactions->count() }} Pending</span>
                 </div>
                 
                 @if(session('success'))
@@ -117,22 +180,22 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            @forelse($pendingUsers as $user)
+                            @forelse($pendingTransactions as $transaction)
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="p-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
-                                            {{ substr($user->name, 0, 2) }}
+                                            {{ substr($transaction->user->name, 0, 2) }}
                                         </div>
                                         <div>
-                                            <div class="font-bold text-slate-900 text-sm">{{ $user->name }}</div>
-                                            <div class="text-xs text-slate-500">{{ $user->email }}</div>
+                                            <div class="font-bold text-slate-900 text-sm">{{ $transaction->user->name }}</div>
+                                            <div class="text-xs text-slate-500">{{ $transaction->user->email }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="p-4">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 uppercase">
-                                        {{ $user->selected_package ?? 'N5 Basic' }}
+                                        {{ $transaction->package_type ?? 'N5 Basic' }}
                                     </span>
                                 </td>
                                 <td class="p-4">
@@ -141,13 +204,13 @@
                                     </span>
                                 </td>
                                 <td class="p-4 text-right space-x-1">
-                                    <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.users.approve', $transaction->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         <button type="submit" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Approve">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.users.reject', $transaction->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>

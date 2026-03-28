@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'status' => 'active',
+            'status' => 'pending',
             'role' => 'user', 
         ]);
 
@@ -47,6 +47,6 @@ class RegisteredUserController extends Controller
 
         // Auth::login($user);
 
-        return redirect('/')->with('status', 'Pendaftaran berhasil! Silakan klik tombol Masuk di pojok kanan atas untuk login.');
+        return redirect('/')->with('status', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan admin.');
     }
 }

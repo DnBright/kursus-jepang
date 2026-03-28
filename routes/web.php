@@ -118,6 +118,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('users.approve');
         Route::post('/users/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('users.reject');
+        
+        Route::post('/accounts/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveAccount'])->name('accounts.approve');
+        Route::post('/accounts/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectAccount'])->name('accounts.reject');
 
         // Manual Sensei Management
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
