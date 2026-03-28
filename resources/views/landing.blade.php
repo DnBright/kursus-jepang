@@ -480,5 +480,6 @@
             }
         });
     </script>
+    <x-whatsapp-button />
 </body>
 </html>

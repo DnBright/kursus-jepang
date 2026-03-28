@@ -92,5 +92,6 @@
                 <x-footer />
             </div>
         </div>
+        <x-whatsapp-button />
     </body>
 </html>
