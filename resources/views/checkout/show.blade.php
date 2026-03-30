@@ -1,10 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pembayaran Paket') }}
-        </h2>
-    </x-slot>
+@extends(Auth::user()->isMember() ? 'layouts.app' : 'layouts.onboarding')
 
+@section('content')
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-slate-100">
@@ -97,4 +93,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

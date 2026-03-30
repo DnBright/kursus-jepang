@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.onboarding')
 
 @section('content')
     <div class="py-24 bg-gradient-to-br from-slate-50 via-white to-red-50/30 min-h-screen">
