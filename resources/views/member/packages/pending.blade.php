@@ -29,8 +29,8 @@
                     </div>
 
                     <div class="pt-6">
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-10 py-5 border border-transparent text-base font-bold rounded-full text-white bg-slate-900 hover:bg-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                            Kembali ke Dasbor
+                        <a href="{{ url('/') }}" class="inline-flex items-center justify-center px-10 py-5 border border-transparent text-base font-bold rounded-full text-white bg-slate-900 hover:bg-slate-800 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            Kembali ke Beranda
                             <svg class="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
                             </svg>

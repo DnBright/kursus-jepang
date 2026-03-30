@@ -84,8 +84,8 @@
                             <button type="submit" class="w-full py-4 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/30 transition-all transform hover:-translate-y-0.5">
                                 Konfirmasi Pembayaran
                             </button>
-                            <a href="{{ route('dashboard') }}" class="block text-center mt-4 text-sm font-bold text-slate-400 hover:text-slate-600">
-                                Batalkan
+                            <a href="{{ url('/') }}" class="block text-center mt-4 text-sm font-bold text-slate-400 hover:text-slate-600">
+                                Batalkan & Kembali ke Beranda
                             </a>
                         </div>
                     </form>
