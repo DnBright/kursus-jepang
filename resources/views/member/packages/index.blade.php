@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(Auth::user()->isMember() ? 'layouts.app' : 'layouts.onboarding')
 
 @section('content')
     <div class="py-12 bg-gradient-to-br from-slate-50 via-white to-red-50/30 min-h-screen">
