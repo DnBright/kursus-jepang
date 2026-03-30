@@ -11,6 +11,23 @@ use Illuminate\Validation\Rules;
 class SenseiController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $senseis = Sensei::orderBy('created_at', 'desc')->get();
+        return view('admin.senseis.index', compact('senseis'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('admin.senseis.create');
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -36,8 +53,18 @@ class SenseiController extends Controller
             'years_of_experience' => 0,
         ]);
 
-        return redirect()->back()->with('success', 'Sensei berhasil ditambahkan secara manual.');
+        return redirect()->route('admin.senseis.index')->with('success', 'Sensei berhasil ditambahkan secara manual.');
     }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $sensei = Sensei::findOrFail($id);
+        return view('admin.senseis.edit', compact('sensei'));
+    }
+
 
     /**
      * Update the specified resource in storage.
@@ -72,7 +99,7 @@ class SenseiController extends Controller
             'is_active' => $request->status === 'active',
         ]);
 
-        return redirect()->back()->with('success', 'Data Sensei berhasil diperbarui.');
+        return redirect()->route('admin.senseis.index')->with('success', 'Data Sensei berhasil diperbarui.');
     }
 
     /**
@@ -83,6 +110,6 @@ class SenseiController extends Controller
         $sensei = Sensei::findOrFail($id);
         $sensei->delete();
 
-        return redirect()->back()->with('success', 'Akun Sensei berhasil dihapus.');
+        return redirect()->route('admin.senseis.index')->with('success', 'Akun Sensei berhasil dihapus.');
     }
 }
