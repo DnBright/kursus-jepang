@@ -17,6 +17,12 @@ Route::get('/verification/notice', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout'); // Keeping name 'checkout' for backward compatibility with form actions
+    
+    Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
+    
+    Route::get('/payment/pending', function () {
+        return view('member.packages.pending');
+    })->name('payment.pending');
 });
 
 Route::middleware(['auth', 'member'])->group(function () {
@@ -24,7 +30,6 @@ Route::middleware(['auth', 'member'])->group(function () {
 
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
 
-    Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
 
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Member\LessonController::class, 'show'])->name('courses.lessons.show');

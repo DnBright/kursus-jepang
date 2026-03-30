@@ -16,7 +16,11 @@ class EnsureUserIsMember
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->user() && $request->user()->role !== 'member') {
-            return redirect('/#program')->with('status', 'Silakan beli paket untuk mengakses dashboard!');
+            $hasPending = $request->user()->transactions()->where('status', 'pending')->exists();
+            if ($hasPending) {
+                return redirect()->route('payment.pending');
+            }
+            return redirect()->route('packages.index')->with('status', 'Silakan pilih paket Anda terlebih dahulu!');
         }
 
         return $next($request);
