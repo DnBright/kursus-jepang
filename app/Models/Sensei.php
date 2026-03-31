@@ -42,4 +42,14 @@ class Sensei extends Authenticatable
     {
         return $this->hasMany(LiveSession::class, 'instructor_id');
     }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class, 'instructor_id');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'instructor_id');
+    }
 }
