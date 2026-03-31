@@ -91,6 +91,14 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/classes', [App\Http\Controllers\Sensei\ClassController::class, 'index'])->name('classes.index');
         Route::get('/live-class', [App\Http\Controllers\Sensei\LiveClassController::class, 'index'])->name('live.index');
         Route::get('/materials', [App\Http\Controllers\Sensei\MaterialController::class, 'index'])->name('materials.index');
+        Route::post('/materials/modules', [App\Http\Controllers\Sensei\MaterialController::class, 'storeModule'])->name('materials.modules.store');
+        Route::delete('/materials/modules/{module}', [App\Http\Controllers\Sensei\MaterialController::class, 'destroyModule'])->name('materials.modules.destroy');
+        
+        Route::get('/materials/lessons/create', [App\Http\Controllers\Sensei\MaterialController::class, 'createLesson'])->name('materials.lessons.create');
+        Route::post('/materials/lessons', [App\Http\Controllers\Sensei\MaterialController::class, 'storeLesson'])->name('materials.lessons.store');
+        Route::get('/materials/lessons/{lesson}/edit', [App\Http\Controllers\Sensei\MaterialController::class, 'editLesson'])->name('materials.lessons.edit');
+        Route::put('/materials/lessons/{lesson}', [App\Http\Controllers\Sensei\MaterialController::class, 'updateLesson'])->name('materials.lessons.update');
+        Route::delete('/materials/lessons/{lesson}', [App\Http\Controllers\Sensei\MaterialController::class, 'destroyLesson'])->name('materials.lessons.destroy');
         Route::resource('/quizzes', App\Http\Controllers\Sensei\QuizController::class)->names([
             'index' => 'quizzes.index',
             'create' => 'quizzes.create',
