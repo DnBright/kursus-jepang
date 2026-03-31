@@ -27,7 +27,7 @@ class LiveClassController extends Controller
         $sessions = LiveSession::whereIn('course_id', $courseIds)
             ->with(['instructor', 'course'])
             ->get()
-            ->sortBy('start_at');
+            ->sortBy('scheduled_at');
 
         // Categorize by status (using the model's calculated_status attribute)
         $liveNow = $sessions->filter(fn($s) => $s->calculated_status === 'live')->first();

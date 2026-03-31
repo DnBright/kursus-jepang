@@ -25,8 +25,8 @@
                 <!-- Date Badge -->
                 <div class="flex-shrink-0 text-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 w-full md:w-24">
                     <span class="block text-red-200 text-xs font-bold uppercase tracking-wider mb-1">Hari Ini</span>
-                    <span class="block text-3xl font-bold">{{ $liveNow->start_at->format('d') }}</span>
-                    <span class="block text-sm font-medium">{{ $liveNow->start_at->format('M') }}</span>
+                    <span class="block text-3xl font-bold">{{ $liveNow->scheduled_at->format('d') }}</span>
+                    <span class="block text-sm font-medium">{{ $liveNow->scheduled_at->format('M') }}</span>
                 </div>
 
                 <!-- Content -->
@@ -37,7 +37,7 @@
                     </div>
                     <h3 class="text-3xl font-bold mb-2">{{ $liveNow->title }}</h3>
                     <p class="text-red-100 mb-4 flex items-center justify-center md:justify-start gap-4">
-                        <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $liveNow->start_at->format('H:i') }} - {{ $liveNow->start_at->addMinutes($liveNow->duration)->format('H:i') }} WIB</span>
+                        <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $liveNow->scheduled_at->format('H:i') }} - {{ $liveNow->scheduled_at->addMinutes($liveNow->duration)->format('H:i') }} WIB</span>
                         <span class="flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> {{ $liveNow->instructor->name }}</span>
                     </p>
                     <a href="{{ $liveNow->zoom_link }}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-red-700 font-bold rounded-xl hover:bg-red-50 transition-colors shadow-lg">
@@ -58,15 +58,15 @@
             <div class="bg-white rounded-2xl p-6 border border-slate-200 hover:border-red-200 hover:shadow-lg transition-all group flex flex-col md:flex-row gap-6">
                 <!-- Date Box -->
                 <div class="flex-shrink-0 w-full md:w-20 bg-slate-50 rounded-xl flex flex-col items-center justify-center p-4 border border-slate-100 group-hover:bg-red-50 group-hover:border-red-100 transition-colors">
-                    <span class="text-slate-400 text-xs font-bold uppercase mb-1">{{ $session->start_at->isToday() ? 'Hari Ini' : ($session->start_at->isTomorrow() ? 'Besok' : $session->start_at->format('D')) }}</span>
-                    <span class="text-2xl font-bold text-slate-900 group-hover:text-red-600">{{ $session->start_at->format('d') }}</span>
-                    <span class="text-sm font-medium text-slate-500">{{ $session->start_at->format('M') }}</span>
+                    <span class="text-slate-400 text-xs font-bold uppercase mb-1">{{ $session->scheduled_at->isToday() ? 'Hari Ini' : ($session->scheduled_at->isTomorrow() ? 'Besok' : $session->scheduled_at->format('D')) }}</span>
+                    <span class="text-2xl font-bold text-slate-900 group-hover:text-red-600">{{ $session->scheduled_at->format('d') }}</span>
+                    <span class="text-sm font-medium text-slate-500">{{ $session->scheduled_at->format('M') }}</span>
                 </div>
 
                 <div class="flex-1">
                     <div class="flex justify-between items-start mb-2">
                         <span class="px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-wider">{{ $session->course->title }}</span>
-                        <span class="text-sm font-medium text-slate-500">{{ $session->start_at->format('H:i') }} WIB</span>
+                        <span class="text-sm font-medium text-slate-500">{{ $session->scheduled_at->format('H:i') }} WIB</span>
                     </div>
                     <h4 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-red-700 transition-colors">{{ $session->title }}</h4>
                     <p class="text-slate-500 text-sm mb-4 line-clamp-2">{{ $session->description ?? 'Tidak ada deskripsi.' }}</p>
@@ -100,8 +100,8 @@
                 <!-- Date Box -->
                 <div class="flex-shrink-0 w-full md:w-20 bg-slate-50 rounded-xl flex flex-col items-center justify-center p-4 border border-slate-100">
                     <span class="text-slate-400 text-xs font-bold uppercase mb-1">Selesai</span>
-                    <span class="text-2xl font-bold text-slate-400">{{ $session->start_at->format('d') }}</span>
-                    <span class="text-sm font-medium text-slate-400">{{ $session->start_at->format('M') }}</span>
+                    <span class="text-2xl font-bold text-slate-400">{{ $session->scheduled_at->format('d') }}</span>
+                    <span class="text-sm font-medium text-slate-400">{{ $session->scheduled_at->format('M') }}</span>
                 </div>
 
                 <div class="flex-1">
