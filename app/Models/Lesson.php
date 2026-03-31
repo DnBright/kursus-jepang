@@ -9,7 +9,12 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['module_id', 'title', 'type', 'content', 'duration', 'order', 'is_free'];
+    protected $fillable = ['module_id', 'instructor_id', 'title', 'type', 'content', 'duration', 'order', 'is_free'];
+
+    public function instructor()
+    {
+        return $this->belongsTo(Sensei::class, 'instructor_id');
+    }
 
     public function module()
     {

@@ -52,4 +52,14 @@ class Sensei extends Authenticatable
     {
         return $this->hasMany(Assignment::class, 'instructor_id');
     }
+
+    public function modules()
+    {
+        return $this->hasMany(Module::class, 'instructor_id');
+    }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class, 'instructor_id');
+    }
 }
