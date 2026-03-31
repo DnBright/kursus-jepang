@@ -29,6 +29,21 @@ class LiveSession extends Model
         'scheduled_at' => 'datetime',
     ];
 
+    public function getCalculatedStatusAttribute()
+    {
+        $now = now();
+        $start = $this->scheduled_at;
+        $end = (clone $start)->addMinutes($this->duration);
+
+        if ($now->between($start, $end)) {
+            return 'live';
+        } elseif ($now->lt($start)) {
+            return 'upcoming';
+        } else {
+            return 'completed';
+        }
+    }
+
     public function course()
     {
         return $this->belongsTo(Course::class);

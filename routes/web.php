@@ -90,6 +90,11 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
 
         Route::get('/classes', [App\Http\Controllers\Sensei\ClassController::class, 'index'])->name('classes.index');
         Route::get('/live-class', [App\Http\Controllers\Sensei\LiveClassController::class, 'index'])->name('live.index');
+        Route::get('/live-class/create', [App\Http\Controllers\Sensei\LiveClassController::class, 'create'])->name('live.create');
+        Route::post('/live-class', [App\Http\Controllers\Sensei\LiveClassController::class, 'store'])->name('live.store');
+        Route::get('/live-class/{live_class}/edit', [App\Http\Controllers\Sensei\LiveClassController::class, 'edit'])->name('live.edit');
+        Route::put('/live-class/{live_class}', [App\Http\Controllers\Sensei\LiveClassController::class, 'update'])->name('live.update');
+        Route::delete('/live-class/{live_class}', [App\Http\Controllers\Sensei\LiveClassController::class, 'destroy'])->name('live.destroy');
         Route::get('/materials', [App\Http\Controllers\Sensei\MaterialController::class, 'index'])->name('materials.index');
         Route::post('/materials/modules', [App\Http\Controllers\Sensei\MaterialController::class, 'storeModule'])->name('materials.modules.store');
         Route::delete('/materials/modules/{module}', [App\Http\Controllers\Sensei\MaterialController::class, 'destroyModule'])->name('materials.modules.destroy');
