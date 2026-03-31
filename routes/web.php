@@ -85,7 +85,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
     Route::middleware(['auth:sensei'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Sensei\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/api/courses/{course}/modules', function (\App\Models\Course $course) {
-            return $course->modules;
+            return $course->modules()->where('instructor_id', Auth::guard('sensei')->id())->get();
         })->name('api.course.modules');
 
         Route::get('/classes', [App\Http\Controllers\Sensei\ClassController::class, 'index'])->name('classes.index');
