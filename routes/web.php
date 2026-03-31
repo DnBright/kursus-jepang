@@ -91,7 +91,27 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/classes', [App\Http\Controllers\Sensei\ClassController::class, 'index'])->name('classes.index');
         Route::get('/live-class', [App\Http\Controllers\Sensei\LiveClassController::class, 'index'])->name('live.index');
         Route::get('/materials', [App\Http\Controllers\Sensei\MaterialController::class, 'index'])->name('materials.index');
-        Route::get('/quizzes', [App\Http\Controllers\Sensei\QuizController::class, 'index'])->name('quizzes.index');
+        Route::resource('/quizzes', App\Http\Controllers\Sensei\QuizController::class)->names([
+            'index' => 'quizzes.index',
+            'create' => 'quizzes.create',
+            'store' => 'quizzes.store',
+            'edit' => 'quizzes.edit',
+            'update' => 'quizzes.update',
+            'destroy' => 'quizzes.destroy',
+        ]);
+        Route::get('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'questions'])->name('quizzes.questions');
+        Route::post('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
+        Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
+
+        Route::resource('/assignments', App\Http\Controllers\Sensei\AssignmentController::class)->names([
+            'create' => 'assignments.create',
+            'store' => 'assignments.store',
+            'edit' => 'assignments.edit',
+            'update' => 'assignments.update',
+            'destroy' => 'assignments.destroy',
+        ]);
+        Route::get('/assignments/{assignment}/grading', [App\Http\Controllers\Sensei\AssignmentController::class, 'grading'])->name('assignments.grading');
+        Route::post('/assignments/submissions/{submission}/grade', [App\Http\Controllers\Sensei\AssignmentController::class, 'submitGrade'])->name('assignments.submit-grade');
         Route::get('/students', [App\Http\Controllers\Sensei\StudentController::class, 'index'])->name('students.index');
         Route::resource('/schedule', App\Http\Controllers\Sensei\ScheduleController::class)->names([
             'index' => 'schedule.index',

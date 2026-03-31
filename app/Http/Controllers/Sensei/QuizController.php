@@ -132,4 +132,29 @@ class QuizController extends Controller
         $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->with('questions')->findOrFail($id);
         return view('sensei.quizzes.questions', compact('quiz'));
     }
+
+    public function storeQuestion(Request $request, $quizId)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);
+
+        $request->validate([
+            'question_text' => 'required|string',
+            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching',
+            'options' => 'nullable|array',
+            'correct_answer' => 'required|string',
+            'points' => 'required|integer|min:1',
+        ]);
+
+        $quiz->questions()->create($request->all());
+
+        return back()->with('success', 'Pertanyaan berhasil ditambahkan.');
+    }
+
+    public function destroyQuestion($quizId, $questionId)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);
+        $quiz->questions()->findOrFail($questionId)->delete();
+
+        return back()->with('success', 'Pertanyaan berhasil dihapus.');
+    }
 }
