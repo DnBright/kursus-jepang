@@ -100,7 +100,10 @@ class LiveClassController extends Controller
             'zoom_link' => 'required|url',
         ]);
 
-        $session->update($request->all());
+        $session->update($request->only([
+            'title', 'description', 'scheduled_at', 'duration', 'zoom_link', 
+            'meeting_id', 'meeting_password', 'max_participants'
+        ]));
 
         return redirect()->route('sensei.live.index')->with('success', 'Jadwal live class diperbarui.');
     }

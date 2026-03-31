@@ -35,7 +35,7 @@
                     <!-- Course Selection -->
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700">Pilih Kursus <span class="text-red-500">*</span></label>
-                        <select name="course_id" required x-model="courseId" @change="fetchModules()"
+                        <select name="course_id" id="course_id" required x-model="courseId" @change="fetchModules()"
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
                             <option value="">Pilih Kursus</option>
                             @foreach($courses as $course)
