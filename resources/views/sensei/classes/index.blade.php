@@ -98,14 +98,14 @@
                 <!-- Footer Actions -->
                 <div class="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center gap-3">
                     @if($class['is_today'])
-                        <button class="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg shadow-sm shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/40 transition-all flex items-center justify-center gap-2">
+                        <a href="{{ route('sensei.live.index') }}" class="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg shadow-sm shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/40 transition-all flex items-center justify-center gap-2">
                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Mulai
-                        </button>
+                        </a>
                     @endif
-                    <button class="flex-1 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all">
+                    <a href="{{ route('sensei.materials.index') }}" class="flex-1 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all text-center">
                         Detail
-                    </button>
+                    </a>
                 </div>
             </div>
             @endforeach
