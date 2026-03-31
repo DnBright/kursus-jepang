@@ -47,9 +47,7 @@ Route::middleware(['auth', 'member'])->group(function () {
         Route::get('/{quiz}/leaderboard', [App\Http\Controllers\Member\QuizController::class, 'leaderboard'])->name('leaderboard');
     });
 
-    Route::get('/certificates', function () {
-        return view('member.certificates.index');
-    })->name('certificates.index');
+    Route::get('/certificates', [App\Http\Controllers\Member\CertificateController::class, 'index'])->name('certificates.index');
 
     
     // Assignment Routes
