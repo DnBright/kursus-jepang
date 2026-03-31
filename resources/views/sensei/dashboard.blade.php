@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Kelas Aktif</h4>
-                    <p class="text-2xl font-bold text-slate-900">5</p>
+                    <p class="text-2xl font-bold text-slate-900">{{ $stats['active_classes'] }}</p>
                 </div>
             </div>
 
@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Total Siswa</h4>
-                    <p class="text-2xl font-bold text-slate-900">128</p>
+                    <p class="text-2xl font-bold text-slate-900">{{ $stats['total_students'] }}</p>
                 </div>
             </div>
 
@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Jadwal Hari Ini</h4>
-                    <p class="text-2xl font-bold text-slate-900">2 <span class="text-sm font-medium text-slate-400">Kelas</span></p>
+                    <p class="text-2xl font-bold text-slate-900">{{ $stats['today_schedule'] }} <span class="text-sm font-medium text-slate-400">Kelas</span></p>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <h4 class="text-red-500 text-xs font-bold uppercase tracking-wide">Perlu Dinilai</h4>
-                    <p class="text-2xl font-bold text-slate-900">8 <span class="text-sm font-medium text-slate-400">Tugas</span></p>
+                    <p class="text-2xl font-bold text-slate-900">{{ $stats['grading_needed'] }} <span class="text-sm font-medium text-slate-400">Tugas</span></p>
                 </div>
             </div>
         </div>
@@ -153,7 +153,7 @@
                  <section>
                     <h3 class="text-lg font-bold text-slate-900 mb-4">Aksi Cepat</h3>
                     <div class="grid gap-3">
-                        <button class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
+                        <a href="{{ route('sensei.materials.index') }}" class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
                             <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             </div>
@@ -161,9 +161,9 @@
                                 <h4 class="font-bold text-slate-900 group-hover:text-red-600">Buat Materi Baru</h4>
                                 <p class="text-xs text-slate-500">Upload video atau PDF</p>
                             </div>
-                        </button>
+                        </a>
 
-                         <button class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
+                         <a href="{{ route('sensei.live.index') }}" class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
                             <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </div>
@@ -171,9 +171,9 @@
                                 <h4 class="font-bold text-slate-900 group-hover:text-red-600">Jadwalkan Live Class</h4>
                                 <p class="text-xs text-slate-500">Buat sesi Zoom baru</p>
                             </div>
-                        </button>
+                        </a>
 
-                         <button class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
+                         <a href="{{ route('sensei.quizzes.index') }}" class="flex items-center gap-3 w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-red-200 hover:shadow-md transition-all text-left group">
                             <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                             </div>
@@ -181,7 +181,7 @@
                                 <h4 class="font-bold text-slate-900 group-hover:text-red-600">Buat Quiz</h4>
                                 <p class="text-xs text-slate-500">Evaluasi pemahaman siswa</p>
                             </div>
-                        </button>
+                        </a>
                     </div>
                 </section>
             </div>

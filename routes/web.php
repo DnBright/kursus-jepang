@@ -83,9 +83,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
 
     // Authenticated Sensei Routes
     Route::middleware(['auth:sensei'])->group(function () {
-        Route::get('/dashboard', function () {
-            return view('sensei.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Sensei\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/classes', [App\Http\Controllers\Sensei\ClassController::class, 'index'])->name('classes.index');
         Route::get('/live-class', [App\Http\Controllers\Sensei\LiveClassController::class, 'index'])->name('live.index');
