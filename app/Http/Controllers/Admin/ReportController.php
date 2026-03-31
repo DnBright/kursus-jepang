@@ -33,7 +33,7 @@ class ReportController extends Controller
         ];
 
         // 3. Class Metrics
-        $courses = \App\Models\Course::with('transactions')->get();
+        $courses = \App\Models\Course::all();
         $classMetrics = $courses->map(function($course) {
             $studentCount = \App\Models\Transaction::where('package_type', $course->title)
                 ->where('status', 'approved')
