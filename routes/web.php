@@ -34,9 +34,7 @@ Route::middleware(['auth', 'member'])->group(function () {
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Member\LessonController::class, 'show'])->name('courses.lessons.show');
 
-    Route::get('/live-class', function () {
-        return view('member.live.index');
-    })->name('live-class');
+    Route::get('/live-class', [App\Http\Controllers\Member\LiveClassController::class, 'index'])->name('live-class');
 
     Route::get('/materials', function () {
         return view('member.materials.index');
