@@ -4,9 +4,9 @@
     <div class="min-h-screen bg-white" x-data="{ 
         completeModalOpen: false, 
         markAsComplete() {
-            this.completeModalOpen = true;
+            markAsComplete();
         }
-    }">
+    }" @lesson-completed.window="completeModalOpen = true">
         
         <!-- 1. Top Bar (Breadcrumbs & Title) -->
         <div class="border-b border-slate-100 bg-white sticky top-0 z-40">
@@ -186,14 +186,50 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
-                     <button @click="markAsComplete()" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-600/30 transition-all hover:-translate-y-1 flex items-center gap-2">
+                 <div class="flex items-center gap-3">
+                     <button @click="markAsComplete()" id="btn-complete" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-600/30 transition-all hover:-translate-y-1 flex items-center gap-2">
                         Selesai & Lanjut
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </button>
                 </div>
             </div>
         </div>
+
+        <script>
+            function markAsComplete() {
+                const btn = document.getElementById('btn-complete');
+                btn.disabled = true;
+                btn.innerHTML = 'Memproses...';
+
+                fetch('{{ route('lessons.complete', $lesson->id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        time_spent: 0 // Optional
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Open success modal
+                        window.dispatchEvent(new CustomEvent('lesson-completed'));
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Selesai & Lanjut';
+                        alert('Gagal menyimpan progres.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Selesai & Lanjut';
+                });
+            }
+        </script>
         
         <!-- PADDING FOR BOTTOM NAV -->
         <div class="h-24"></div>
