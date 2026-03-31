@@ -58,8 +58,20 @@ class AdminController extends Controller
 
         $recent_activities = $recentUsers->concat($recentPayments)->sortByDesc('timestamp')->take(6)->values()->toArray();
 
-        return view('admin.dashboard', compact('stats', 'pendingTransactions', 'pendingUsers', 'recent_activities'));
-        return view('admin.dashboard', compact('stats', 'pendingTransactions', 'pendingUsers', 'recent_activities'));
+        // Registration Statistics (Last 5 Days)
+        $registration_stats = collect();
+        for ($i = 4; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $count = User::whereDate('created_at', $date->toDateString())->count();
+            $registration_stats->push([
+                'label' => $date->translatedFormat('D'),
+                'count' => $count,
+                'is_today' => $i === 0
+            ]);
+        }
+        $maxRegistration = $registration_stats->max('count') ?: 1;
+
+        return view('admin.dashboard', compact('stats', 'pendingTransactions', 'pendingUsers', 'recent_activities', 'registration_stats', 'maxRegistration'));
     }
 
     public function approve($id)
