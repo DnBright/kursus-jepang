@@ -85,7 +85,11 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 p-8 lg:p-12 animate-fade-in-up">
-                    @yield('content')
+                    @isset($slot)
+                        {{ $slot }}
+                    @else
+                        @yield('content')
+                    @isset
                 </main>
 
                 <!-- Dashboard Footer -->
