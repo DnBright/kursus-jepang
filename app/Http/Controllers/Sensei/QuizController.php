@@ -3,71 +3,133 @@
 namespace App\Http\Controllers\Sensei;
 
 use App\Http\Controllers\Controller;
+use App\Models\Quiz;
+use App\Models\Course;
+use App\Models\Assignment;
+use App\Models\AssignmentSubmission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
     public function index()
     {
-        // Mock summary stats
+        $sensei = Auth::guard('sensei')->user();
+        
+        // Summary stats
         $summary = [
-            'active_quizzes' => 8,
-            'essay_assignments' => 4,
-            'needs_grading' => 25,
-            'avg_score' => 86,
+            'active_quizzes' => $sensei->quizzes()->where('is_active', true)->count(),
+            'essay_assignments' => $sensei->assignments()->count(),
+            'needs_grading' => AssignmentSubmission::whereIn('assignment_id', $sensei->assignments()->pluck('id'))
+                ->where('status', 'pending')
+                ->count(),
+            'avg_score' => 0, // In a real app, calculate this from attempts/submissions
         ];
 
-        // Mock quizzes
-        $quizzes = [
-            [
-                'id' => 1,
-                'title' => 'Evaluasi Bab 1-5 (Tata Bahasa N5)',
-                'level' => 'N5',
-                'question_count' => 50,
-                'type' => 'Pilihan Ganda',
-                'deadline' => '10 Jan 2024',
-                'status' => 'active',
-            ],
-            [
-                'id' => 2,
-                'title' => 'Latihan Kanji Mingguan',
-                'level' => 'N4',
-                'question_count' => 20,
-                'type' => 'Pilihan Ganda',
-                'deadline' => 'Hari Ini',
-                'status' => 'active',
-            ],
-            [
-                'id' => 3,
-                'title' => 'Ujian Akhir Semester Ganjil',
-                'level' => 'N3',
-                'question_count' => 100,
-                'type' => 'Campuran',
-                'deadline' => '-',
-                'status' => 'draft',
-            ],
-        ];
+        // Quizzes
+        $quizzes = $sensei->quizzes()->withCount('questions')->get()->map(function($quiz) {
+            return [
+                'id' => $quiz->id,
+                'title' => $quiz->title,
+                'level' => $quiz->difficulty === 'beginner' ? 'N5' : ($quiz->difficulty === 'intermediate' ? 'N4' : 'N3'),
+                'question_count' => $quiz->questions_count,
+                'type' => ucfirst($quiz->type),
+                'deadline' => $quiz->available_until ? $quiz->available_until->format('d M Y') : '-',
+                'status' => $quiz->is_active ? 'active' : 'draft',
+            ];
+        });
 
-        // Mock assignments (for Manual Grading)
-        $assignments = [
-            [
-                'id' => 101,
-                'title' => 'Essay: Ceritakan Liburan Musim Panas',
-                'class' => 'N4 Intensive A',
-                'submitted_count' => 15,
-                'deadline' => 'Kemarin',
-                'status' => 'needs_grading', // completed, needs_grading
-            ],
-             [
-                'id' => 102,
-                'title' => 'Video: Perkenalan Diri (Jikoshoukai)',
-                'class' => 'N5 Basic B',
-                'submitted_count' => 20,
-                'deadline' => 'Lusa',
-                'status' => 'completed',
-            ],
-        ];
+        // Assignments
+        $assignments = $sensei->assignments()->withCount(['submissions as pending_count' => function($query) {
+            $query->where('status', 'pending');
+        }])->get()->map(function($assignment) {
+            return [
+                'id' => $assignment->id,
+                'title' => $assignment->title,
+                'class' => $assignment->module->course->title ?? 'General',
+                'submitted_count' => $assignment->submissions()->count(),
+                'deadline' => $assignment->due_date ? $assignment->due_date->format('d M Y') : '-',
+                'status' => $assignment->pending_count > 0 ? 'needs_grading' : 'completed',
+            ];
+        });
 
         return view('sensei.quizzes.index', compact('summary', 'quizzes', 'assignments'));
+    }
+
+    public function create()
+    {
+        $courses = Course::all();
+        return view('sensei.quizzes.create', compact('courses'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:daily,weekly,module_test,mock_jlpt',
+            'difficulty' => 'required|in:beginner,intermediate,advanced',
+            'time_limit' => 'nullable|integer',
+            'passing_score' => 'required|integer|min:0|max:100',
+            'is_active' => 'boolean',
+        ]);
+
+        $quiz = Quiz::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'instructor_id' => Auth::guard('sensei')->id(),
+            'type' => $request->type,
+            'difficulty' => $request->difficulty,
+            'time_limit' => $request->time_limit,
+            'passing_score' => $request->passing_score,
+            'is_active' => $request->has('is_active'),
+        ]);
+
+        return redirect()->route('sensei.quizzes.edit', $quiz->id)->with('success', 'Quiz berhasil dibuat. Sekarang tambahkan pertanyaan.');
+    }
+
+    public function edit($id)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->with('questions')->findOrFail($id);
+        $courses = Course::all();
+        return view('sensei.quizzes.edit', compact('quiz', 'courses'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($id);
+        
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:daily,weekly,module_test,mock_jlpt',
+            'difficulty' => 'required|in:beginner,intermediate,advanced',
+            'time_limit' => 'nullable|integer',
+            'passing_score' => 'required|integer|min:0|max:100',
+        ]);
+
+        $quiz->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+            'difficulty' => $request->difficulty,
+            'time_limit' => $request->time_limit,
+            'passing_score' => $request->passing_score,
+            'is_active' => $request->has('is_active'),
+        ]);
+
+        return redirect()->route('sensei.quizzes.index')->with('success', 'Quiz berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($id);
+        $quiz->delete();
+        return redirect()->route('sensei.quizzes.index')->with('success', 'Quiz berhasil dihapus.');
+    }
+
+    // Question Management
+    public function questions($id)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->with('questions')->findOrFail($id);
+        return view('sensei.quizzes.questions', compact('quiz'));
     }
 }
