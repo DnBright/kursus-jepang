@@ -36,9 +36,7 @@ Route::middleware(['auth', 'member'])->group(function () {
 
     Route::get('/live-class', [App\Http\Controllers\Member\LiveClassController::class, 'index'])->name('live-class');
 
-    Route::get('/materials', function () {
-        return view('member.materials.index');
-    })->name('materials.index');
+    Route::get('/materials', [App\Http\Controllers\Member\MaterialController::class, 'index'])->name('materials.index');
 
     // Quiz Routes
     Route::prefix('quizzes')->name('quizzes.')->group(function () {
