@@ -16,12 +16,14 @@ class CourseController extends Controller
         return view('member.courses.index', compact('courses'));
     }
 
-    public function show(Course $course)
+    public function show($id)
     {
-        // Ideally check if user has access to this course
-        // if (!Auth::user()->hasActivePackage($course->level)) { abort(403); }
+        $course = Course::with(['modules.lessons'])->findOrFail($id);
 
-        $course->load('modules.lessons');
+        if (!Auth::user()->hasActivePackage($course->level)) {
+            return redirect()->route('packages.index')->with('error', 'Anda harus membeli paket ini terlebih dahulu.');
+        }
+
         return view('member.courses.show', compact('course'));
     }
 }

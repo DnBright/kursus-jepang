@@ -12,6 +12,11 @@ class LessonController extends Controller
     public function show($courseId, $lessonId)
     {
         $course = Course::with(['modules.lessons'])->findOrFail($courseId);
+        
+        if (!Auth::user()->hasActivePackage($course->level)) {
+            return redirect()->route('packages.index')->with('error', 'Akses ditolak.');
+        }
+
         $lesson = Lesson::whereHas('module', function($q) use ($courseId) {
                         $q->where('course_id', $courseId);
                     })

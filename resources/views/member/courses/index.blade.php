@@ -29,7 +29,7 @@
                 <!-- Cover Image/Icon Area -->
                 <div class="h-32 bg-slate-50 relative flex items-center justify-center border-b border-slate-100 group-hover:bg-red-50 transition-colors">
                     <div class="text-6xl group-hover:scale-110 transition-transform duration-300">
-                        @if($course->level == 'Basic N5') 🇯🇵 @elseif($course->level == 'Intensive N4') 🎎 @else 🎓 @endif
+                        @if($course->level == 'N5') 🇯🇵 @elseif($course->level == 'N4') 🎎 @elseif($course->level == 'TG') 💼 @else 🎓 @endif
                     </div>
                     <div class="absolute top-4 right-4">
                         @if($isActive)
