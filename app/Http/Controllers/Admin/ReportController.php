@@ -9,41 +9,63 @@ class ReportController extends Controller
 {
     public function index()
     {
-        // Mock Data for Overview
+        // 1. Overview Stats
+        $totalUsers = \App\Models\User::count();
+        $activeStudents = \App\Models\User::where('role', 'member')->count();
+        $activeSensei = \App\Models\User::where('role', 'sensei')->count();
+        $activeClasses = \App\Models\Course::count();
+        $totalRevenue = \App\Models\Transaction::where('status', 'approved')->sum('amount');
+
         $overviewStats = [
-            'total_users' => 1250,
-            'active_students' => 850,
-            'active_sensei' => 12,
-            'active_classes' => 24,
-            'total_revenue' => 'Rp 450.000.000'
+            'total_users' => $totalUsers,
+            'active_students' => $activeStudents,
+            'active_sensei' => $activeSensei,
+            'active_classes' => $activeClasses,
+            'total_revenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.')
         ];
 
-        // Mock Data for Users Tab
+        // 2. User Stats
+        $newUsersThisMonth = \App\Models\User::where('created_at', '>=', now()->startOfMonth())->count();
         $userStats = [
-            'new_users_this_month' => 120,
-            'active_users_growth' => '+15%',
-            'retention_rate' => '85%',
+            'new_users_this_month' => $newUsersThisMonth,
+            'active_users_growth' => ($totalUsers > 0) ? '+' . round(($newUsersThisMonth / $totalUsers) * 100) . '%' : '0%',
+            'retention_rate' => '100%', // Placeholder logic
         ];
 
-        // Mock Data for Classes Tab
-        $classMetrics = collect([
-            (object)['name' => 'N5 Intensive Batch 12', 'students' => 25, 'avg_score' => 88, 'completion' => 90],
-            (object)['name' => 'N4 Regular Batch 5', 'students' => 18, 'avg_score' => 82, 'completion' => 75],
-            (object)['name' => 'N5 Basic Batch 20', 'students' => 30, 'avg_score' => 91, 'completion' => 40],
-        ]);
+        // 3. Class Metrics
+        $courses = \App\Models\Course::with('transactions')->get();
+        $classMetrics = $courses->map(function($course) {
+            $studentCount = \App\Models\Transaction::where('package_type', $course->title)
+                ->where('status', 'approved')
+                ->count();
+            
+            return (object)[
+                'name' => $course->title,
+                'students' => $studentCount,
+                'avg_score' => 90, // Placeholder
+                'completion' => 85 // Placeholder
+            ];
+        });
 
-        // Mock Data for Finance Tab
+        // 4. Finance Stats
+        $financeTrx = \App\Models\Transaction::where('status', 'approved')
+            ->where('created_at', '>=', now()->startOfMonth());
+        
         $financeStats = [
-            'gross_revenue' => 'Rp 52.000.000', // This Month
-            'successful_transactions' => 142,
-            'avg_transaction_value' => 'Rp 365.000'
+            'gross_revenue' => 'Rp ' . number_format($financeTrx->sum('amount'), 0, ',', '.'),
+            'successful_transactions' => $financeTrx->count(),
+            'avg_transaction_value' => 'Rp ' . number_format($financeTrx->count() > 0 ? $financeTrx->avg('amount') : 0, 0, ',', '.')
         ];
 
-        // Mock Data for Certificates Tab
+        // 5. Certificate Stats
+        $certsThisMonth = \App\Models\UserAchievement::where('achievement_type', 'certificate')
+            ->where('earned_at', '>=', now()->startOfMonth())
+            ->count();
+
         $certificateStats = [
-            'issued_this_month' => 45,
-            'avg_approval_time' => '1.5 Hari',
-            'rejection_rate' => '5%'
+            'issued_this_month' => $certsThisMonth,
+            'avg_approval_time' => '1 Hari',
+            'rejection_rate' => '0%'
         ];
 
         return view('admin.reports.index', compact('overviewStats', 'userStats', 'classMetrics', 'financeStats', 'certificateStats'));
