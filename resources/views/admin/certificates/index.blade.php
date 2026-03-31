@@ -194,15 +194,15 @@
                 </div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div x-show="reviewModal" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl w-full">
-                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 text-left">
                         <div class="flex justify-between items-start mb-6">
                              <div>
                                 <h3 class="text-lg leading-6 font-bold text-slate-900">Review Kelulusan Siswa</h3>
-                                <p class="text-xs text-slate-500" x-text="'Request Date: ' + reviewModal?.student_name"></p>
+                                <p class="text-xs text-slate-500" x-text="'Nama Siswa: ' + reviewModal?.student_name"></p>
                             </div>
                         </div>
                         
-                         <div class="space-y-4">
+                         <div class="space-y-4 text-left">
                             <div class="p-4 bg-yellow-50 rounded-xl border border-yellow-100">
                                 <h4 class="text-sm font-bold text-yellow-800 mb-3">Persyaratan Kelulusan</h4>
                                 <ul class="text-xs text-yellow-700 space-y-1 ml-4 list-disc">
@@ -218,27 +218,30 @@
                                     <span class="block text-xl font-bold text-slate-900" x-text="reviewModal?.progress + '%'"></span>
                                 </div>
                                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 text-center">
-                                    <span class="block text-xs text-slate-500 uppercase font-bold">Final Score</span>
-                                    <span class="block text-xl font-bold text-slate-900" x-text="reviewModal?.final_score"></span>
+                                    <span class="block text-xs text-slate-500 uppercase font-bold">Grade</span>
+                                    <span class="block text-xl font-bold text-slate-900">A</span>
                                 </div>
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 mb-2">Preview Sertifikat</label>
-                                <div class="aspect-video bg-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-sm font-bold">
-                                    PREVIEW GENERATED CERTIFICATE
+                                <div class="aspect-video bg-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-sm font-bold border border-slate-300 border-dashed">
+                                    <svg class="w-12 h-12 mb-2 text-slate-400 block mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    READY TO GENERATE
                                 </div>
                             </div>
                          </div>
                      </div>
                      <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                        <button type="button" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                            Approve & Generate
-                        </button>
-                         <button type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Reject
-                        </button>
-                        <button @click="reviewModal = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <form action="{{ route('admin.certificates.approve') }}" method="POST" class="inline">
+                            @csrf
+                            <input type="hidden" name="user_id" :value="reviewModal?.user_id">
+                            <input type="hidden" name="course_id" :value="reviewModal?.course_id">
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                Approve & Generate
+                            </button>
+                        </form>
+                         <button @click="reviewModal = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Cancel
                         </button>
                     </div>

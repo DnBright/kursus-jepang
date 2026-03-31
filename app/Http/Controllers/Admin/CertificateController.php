@@ -9,73 +9,99 @@ class CertificateController extends Controller
 {
     public function index()
     {
-        // Mock Pending Approvals
-        $pendingApprovals = collect([
-            (object)[
-                'id' => 1,
-                'student_name' => 'Budi Santoso',
-                'program' => 'N5 Intensive',
-                'class_name' => 'N5 Intensive Batch 12',
-                'progress' => 100,
-                'final_score' => 95,
-                'status' => 'pending',
-                'request_date' => now()->subDays(1)
-            ],
-             (object)[
-                'id' => 2,
-                'student_name' => 'Siti Aminah',
-                'program' => 'N4 Regular',
-                'class_name' => 'N4 Regular Batch 5',
-                'progress' => 100,
-                'final_score' => 88,
-                'status' => 'pending',
-                'request_date' => now()->subHours(5)
-            ]
-        ]);
+        // 1. Detect graduates (100% progress but no certificate yet)
+        $members = \App\Models\User::where('role', 'member')->with('transactions')->get();
+        $pendingApprovals = collect();
 
-        // Mock Issued Certificates
-        $issuedCertificates = collect([
-            (object)[
-                'certificate_no' => 'KJ-202512-001',
-                'student_name' => 'Rudi Hartono',
-                'program' => 'N5 Basic',
-                'issue_date' => now()->subWeeks(2),
-                'status' => 'valid'
-            ],
-            (object)[
-                'certificate_no' => 'KJ-202512-002',
-                'student_name' => 'Dewi Lestari',
-                'program' => 'N5 Basic',
-                'issue_date' => now()->subWeeks(1),
-                'status' => 'valid'
-            ]
-        ]);
+        foreach ($members as $user) {
+            $approvedTransactions = $user->transactions->where('status', 'approved');
+            foreach ($approvedTransactions as $trx) {
+                $course = \App\Models\Course::where('title', $trx->package_type)->first();
+                if (!$course) continue;
 
-        // Mock Templates
+                // Check if already has certificate
+                $hasCert = \App\Models\UserAchievement::where('user_id', $user->id)
+                    ->where('achievement_type', 'certificate')
+                    ->where('title', 'LIKE', '%' . $course->title . '%')
+                    ->exists();
+
+                if ($hasCert) continue;
+
+                // Calculate progress
+                $modules = $course->modules()->with('lessons')->get();
+                $lessonIds = $modules->pluck('lessons')->flatten()->pluck('id');
+                if ($lessonIds->isEmpty()) continue;
+
+                $completedCount = \App\Models\LessonProgress::where('user_id', $user->id)
+                    ->whereIn('lesson_id', $lessonIds)
+                    ->where('status', 'completed')
+                    ->count();
+
+                $progress = ($completedCount / $lessonIds->count()) * 100;
+
+                if ($progress >= 100) {
+                    $pendingApprovals->push((object)[
+                        'user_id' => $user->id,
+                        'course_id' => $course->id,
+                        'student_name' => $user->name,
+                        'program' => $course->level,
+                        'class_name' => $course->title,
+                        'progress' => 100,
+                        'final_score' => 100, // Placeholder for actual grading
+                        'status' => 'pending',
+                        'request_date' => now()
+                    ]);
+                }
+            }
+        }
+
+        // 2. Issued Certificates
+        $issuedCertificates = \App\Models\UserAchievement::where('achievement_type', 'certificate')
+            ->with('user')
+            ->get()
+            ->map(function($ach) {
+                return (object)[
+                    'certificate_no' => 'CERT-' . strtoupper(substr(md5($ach->id), 0, 8)),
+                    'student_name' => $ach->user ? $ach->user->name : 'Unknown',
+                    'program' => $ach->title,
+                    'issue_date' => $ach->earned_at,
+                    'status' => 'valid'
+                ];
+            });
+
+        // 3. Templates (Stay mock for now as requested for "100% functional" of core flow)
         $templates = collect([
-            (object)[
-                'id' => 1,
-                'name' => 'Standard Certificate N5',
-                'level' => 'N5',
-                'thumbnail' => 'https://via.placeholder.com/150',
-                'is_active' => true
-            ],
-            (object)[
-                'id' => 2,
-                'name' => 'Premium Certificate N4',
-                'level' => 'N4',
-                'thumbnail' => 'https://via.placeholder.com/150',
-                'is_active' => true
-            ]
+            (object)['id' => 1, 'name' => 'Standard Certificate N5', 'level' => 'N5', 'thumbnail' => '', 'is_active' => true],
+            (object)['id' => 2, 'name' => 'Premium Certificate N4', 'level' => 'N4', 'thumbnail' => '', 'is_active' => true]
         ]);
 
         $stats = [
-            'total_issued' => 1250,
+            'total_issued' => $issuedCertificates->count(),
             'pending_count' => $pendingApprovals->count(),
-            'this_month' => 45,
-            'rejected_count' => 3
+            'this_month' => $issuedCertificates->where('issue_date', '>=', now()->startOfMonth())->count(),
+            'rejected_count' => 0
         ];
 
         return view('admin.certificates.index', compact('pendingApprovals', 'issuedCertificates', 'templates', 'stats'));
+    }
+
+    public function approve(Request $request)
+    {
+        $userId = $request->user_id;
+        $courseId = $request->course_id;
+
+        $user = \App\Models\User::findOrFail($userId);
+        $course = \App\Models\Course::findOrFail($courseId);
+
+        \App\Models\UserAchievement::create([
+            'user_id' => $user->id,
+            'achievement_type' => 'certificate',
+            'title' => 'Certificate of Completion: ' . $course->title,
+            'description' => 'Successfully completed ' . $course->title . ' (' . $course->level . ')',
+            'earned_at' => now(),
+            'icon' => 'academic-cap'
+        ]);
+
+        return back()->with('success', 'Sertifikat untuk ' . $user->name . ' berhasil diterbitkan.');
     }
 }
