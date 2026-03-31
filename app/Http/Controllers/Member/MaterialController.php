@@ -48,7 +48,7 @@ class MaterialController extends Controller
         $lessonIds = $modules->pluck('lessons')->flatten()->pluck('id');
         $completedLessonIds = LessonProgress::where('user_id', $user->id)
             ->whereIn('lesson_id', $lessonIds)
-            ->where('is_completed', true)
+            ->where('status', 'completed')
             ->pluck('lesson_id')
             ->toArray();
 
