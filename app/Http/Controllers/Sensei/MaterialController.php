@@ -83,7 +83,7 @@ class MaterialController extends Controller
     public function createLesson()
     {
         $sensei = Auth::guard('sensei')->user();
-        $courses = Course::all();
+        $courses = Course::where('instructor_id', $sensei->id)->get();
         $modules = Module::where('instructor_id', $sensei->id)->get();
         return view('sensei.materials.lessons.create', compact('courses', 'modules'));
     }

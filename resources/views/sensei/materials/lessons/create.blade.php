@@ -24,15 +24,24 @@
                             placeholder="Contoh: Pengenalan Partikel WA & GA">
                     </div>
 
+                    <!-- Course Selection -->
+                    <div class="space-y-2">
+                        <label for="course_id" class="text-sm font-bold text-slate-700">Pilih Kursus <span class="text-red-500">*</span></label>
+                        <select name="course_id" id="course_id" required onchange="loadModules(this.value)"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
+                            <option value="">Pilih Kursus</option>
+                            @foreach($courses as $course)
+                            <option value="{{ $course->id }}">{{ $course->title }} ({{ $course->level }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Module Selection -->
                     <div class="space-y-2">
                         <label for="module_id" class="text-sm font-bold text-slate-700">Pilih Modul <span class="text-red-500">*</span></label>
                         <select name="module_id" id="module_id" required 
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
-                            <option value="">Pilih Modul</option>
-                            @foreach($modules as $module)
-                            <option value="{{ $module->id }}">{{ $module->title }} ({{ $module->course->level }})</option>
-                            @endforeach
+                            <option value="">Pilih Kursus Terlebih Dahulu</option>
                         </select>
                     </div>
 
@@ -94,4 +103,29 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function loadModules(courseId) {
+            if (!courseId) return;
+
+            const moduleSelect = document.getElementById('module_id');
+            moduleSelect.innerHTML = '<option value="">Memuat modul...</option>';
+
+            fetch(`/sensei/api/courses/${courseId}/modules`)
+                .then(response => response.json())
+                .then(modules => {
+                    moduleSelect.innerHTML = '<option value="">Pilih Modul</option>';
+                    modules.forEach(module => {
+                        const option = document.createElement('option');
+                        option.value = module.id;
+                        option.textContent = module.title;
+                        moduleSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading modules:', error);
+                    moduleSelect.innerHTML = '<option value="">Gagal memuat modul</option>';
+                });
+        }
+    </script>
 </x-sensei-layout>
