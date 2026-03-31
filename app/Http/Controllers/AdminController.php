@@ -11,14 +11,14 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // Real data where possible, mock for others
+        // Real data
         $stats = [
             'total_students' => User::where('role', 'member')->count(),
             'total_sensei' => Sensei::count(), 
-            'active_classes' => 12, // Mock
+            'active_classes' => \App\Models\Course::count(),
             'pending_registrations' => \App\Models\Transaction::where('status', 'pending')->count(),
-            'total_transactions' => \App\Models\Transaction::count(), // Mock replaced
-            'certificates_issued' => 45, // Mock
+            'total_transactions' => \App\Models\Transaction::count(),
+            'certificates_issued' => \App\Models\UserAchievement::where('achievement_type', 'certificate')->count(),
         ];
 
         $pendingTransactions = \App\Models\Transaction::with('user')
@@ -32,24 +32,33 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
             
-        // Mock Recent Activity
-        $recent_activities = [
-            [
+        // Dynamic Recent Activity
+        $recentUsers = User::orderBy('created_at', 'desc')->limit(3)->get()->map(function($user) {
+            return [
                 'type' => 'user_register',
-                'description' => 'User baru mendaftar: Budi Santoso',
-                'time' => 'Baru saja',
+                'description' => 'User baru mendaftar: ' . $user->name,
+                'time' => $user->created_at->diffForHumans(),
                 'icon' => 'user-plus',
-                'color' => 'blue'
-            ],
-             [
-                'type' => 'payment',
-                'description' => 'Pembayaran diterima dari Siti Aminah',
-                'time' => '15 menit yang lalu',
-                'icon' => 'currency-dollar',
-                'color' => 'green'
-            ]
-        ];
+                'color' => 'blue',
+                'timestamp' => $user->created_at
+            ];
+        });
 
+        $recentPayments = \App\Models\Transaction::with('user')->orderBy('updated_at', 'desc')->limit(3)->get()->map(function($trx) {
+            $statusText = $trx->status === 'approved' ? 'diterima dari ' : 'menunggu konfirmasi dari ';
+            return [
+                'type' => 'payment',
+                'description' => 'Pembayaran ' . $statusText . ($trx->user->name ?? 'User'),
+                'time' => $trx->updated_at->diffForHumans(),
+                'icon' => $trx->status === 'approved' ? 'check-circle' : 'currency-dollar',
+                'color' => $trx->status === 'approved' ? 'green' : 'yellow',
+                'timestamp' => $trx->updated_at
+            ];
+        });
+
+        $recent_activities = $recentUsers->concat($recentPayments)->sortByDesc('timestamp')->take(6)->values()->toArray();
+
+        return view('admin.dashboard', compact('stats', 'pendingTransactions', 'pendingUsers', 'recent_activities'));
         return view('admin.dashboard', compact('stats', 'pendingTransactions', 'pendingUsers', 'recent_activities'));
     }
 
