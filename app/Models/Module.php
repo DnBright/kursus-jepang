@@ -9,7 +9,12 @@ class Module extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['course_id', 'title', 'description', 'order'];
+    protected $fillable = ['course_id', 'instructor_id', 'title', 'description', 'order'];
+
+    public function instructor()
+    {
+        return $this->belongsTo(Sensei::class, 'instructor_id');
+    }
 
     public function course()
     {
