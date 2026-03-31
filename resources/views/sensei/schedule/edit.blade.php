@@ -108,4 +108,27 @@
             </form>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.getElementById('course_id').addEventListener('change', function() {
+            const courseId = this.value;
+            const moduleSelect = document.getElementById('module_id');
+            moduleSelect.innerHTML = '<option value="">-- Pilih Modul --</option>';
+            
+            if (courseId) {
+                fetch(`/sensei/api/courses/${courseId}/modules`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(module => {
+                            const option = document.createElement('option');
+                            option.value = module.id;
+                            option.textContent = module.title;
+                            moduleSelect.appendChild(option);
+                        });
+                    });
+            }
+        });
+    </script>
+    @endpush
 </x-sensei-layout>

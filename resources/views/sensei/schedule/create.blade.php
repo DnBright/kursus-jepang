@@ -99,7 +99,7 @@
             moduleSelect.innerHTML = '<option value="">-- Pilih Modul --</option>';
             
             if (courseId) {
-                fetch(`/api/courses/${courseId}/modules`)
+                fetch(`/sensei/api/courses/${courseId}/modules`)
                     .then(response => response.json())
                     .then(data => {
                         data.forEach(module => {
