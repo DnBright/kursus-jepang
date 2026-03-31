@@ -134,17 +134,21 @@
                 </div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div x-show="transactionDetail" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h3 class="text-lg leading-6 font-bold text-slate-900">Detail Pembayaran</h3>
-                                <p class="text-xs text-slate-500" x-text="transactionDetail?.id"></p>
+                                <p class="text-xs text-slate-500" x-text="'ID: ' + transactionDetail?.id"></p>
                             </div>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-100" x-text="transactionDetail?.status"></span>
+                            <span :class="{
+                                'bg-green-50 text-green-700 border-green-100': transactionDetail?.status === 'success',
+                                'bg-yellow-50 text-yellow-700 border-yellow-100': transactionDetail?.status === 'pending',
+                                'bg-red-50 text-red-700 border-red-100': transactionDetail?.status === 'failed'
+                            }" class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border" x-text="transactionDetail?.status.toUpperCase()"></span>
                         </div>
                         
                          <div class="space-y-4">
-                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 text-left">
                                 <div class="flex justify-between mb-2">
                                     <span class="text-sm text-slate-500">Siswa</span>
                                     <span class="text-sm font-bold text-slate-900" x-text="transactionDetail?.student_name"></span>
@@ -159,22 +163,40 @@
                                 </div>
                             </div>
 
-                            <div>
+                            <div class="text-left">
                                 <label class="block text-sm font-medium text-slate-700 mb-2">Bukti Pembayaran</label>
-                                <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center bg-slate-50">
-                                    <span class="text-sm text-slate-400">Placeholder Bukti Transfer</span>
-                                </div>
+                                <template x-if="transactionDetail?.proof_url">
+                                    <div class="rounded-lg overflow-hidden border border-slate-200">
+                                        <img :src="transactionDetail?.proof_url" class="w-full h-auto max-h-64 object-contain bg-slate-100" alt="Bukti Transfer">
+                                    </div>
+                                </template>
+                                <template x-if="!transactionDetail?.proof_url">
+                                    <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center bg-slate-50">
+                                        <span class="text-sm text-slate-400">Bukti transfer belum diunggah.</span>
+                                    </div>
+                                </template>
                             </div>
                          </div>
                      </div>
-                     <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                        <button type="button" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                            Konfirmasi Pembayaran
-                        </button>
-                         <button type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Tolak
-                        </button>
+                     <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" x-show="transactionDetail?.raw_status === 'pending'">
+                        <form :action="'/admin/payments/' + transactionDetail?.id + '/approve'" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                Konfirmasi Pembayaran
+                            </button>
+                        </form>
+                        <form :action="'/admin/payments/' + transactionDetail?.id + '/reject'" method="POST" class="inline">
+                            @csrf
+                             <button type="submit" class="mt-3 w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                Tolak
+                            </button>
+                        </form>
                         <button @click="transactionDetail = null" type="button" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Tutup
+                        </button>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2" x-show="transactionDetail?.raw_status !== 'pending'">
+                         <button @click="transactionDetail = null" type="button" class="w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Tutup
                         </button>
                     </div>
