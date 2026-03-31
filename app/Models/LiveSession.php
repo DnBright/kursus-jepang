@@ -41,7 +41,7 @@ class LiveSession extends Model
 
     public function instructor()
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->belongsTo(Sensei::class, 'instructor_id');
     }
 
     public function attendances()

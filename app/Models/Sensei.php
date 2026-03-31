@@ -37,4 +37,9 @@ class Sensei extends Authenticatable
         'social_links' => 'array',
         'is_active' => 'boolean',
     ];
+
+    public function liveSessions()
+    {
+        return $this->hasMany(LiveSession::class, 'instructor_id');
+    }
 }
