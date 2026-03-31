@@ -9,74 +9,29 @@ class ClassController extends Controller
 {
     public function index()
     {
-        // Mock Classes Data
-        $classes = collect([
-            (object)[
-                'id' => 1,
-                'name' => 'N5 Intensive Batch 12',
-                'program_name' => 'N5 Intensive',
-                'sensei_name' => 'Tanaka Ken',
-                'student_count' => 18,
-                'schedule' => 'Senin, Rabu, Jumat (19:00)',
-                'status' => 'active', // active, finished, draft
-                'created_at' => now()->subWeeks(4)
-            ],
-            (object)[
-                'id' => 2,
-                'name' => 'N4 Regular Batch 5',
-                'program_name' => 'N4 Regular',
-                'sensei_name' => 'Sato Yuki',
-                'student_count' => 12,
-                'schedule' => 'Selasa, Kamis (20:00)',
-                'status' => 'active',
-                'created_at' => now()->subWeeks(8)
-            ],
-             (object)[
-                'id' => 3,
-                'name' => 'N5 Basic Batch 20',
-                'program_name' => 'N5 Basic',
-                'sensei_name' => '-',
-                'student_count' => 0,
-                'schedule' => 'Belum ditentukan',
-                'status' => 'draft',
-                'created_at' => now()->subDay()
-            ]
-        ]);
+        // 1. Get all courses with their primary instructors
+        $classes = \App\Models\Course::with('instructor')->get()->map(function($course) {
+            return (object)[
+                'id' => $course->id,
+                'name' => $course->title,
+                'program_name' => $course->level,
+                'sensei_name' => $course->instructor ? $course->instructor->name : '-',
+                'student_count' => $course->studentsCount(), // Using model method
+                'schedule' => 'Sesuai Jadwal Live', // Dynamic schedule logic could be added later
+                'status' => 'active', 
+                'created_at' => $course->created_at,
+                'price' => 'Rp ' . number_format($course->price, 0, ',', '.'),
+                'description' => $course->description,
+                'level' => $course->level
+            ];
+        });
 
-        // Mock Programs Data
-        $programs = collect([
-            (object)[
-                'id' => 1,
-                'name' => 'N5 Intensive',
-                'level' => 'N5',
-                'description' => 'Program intensif persiapan JLPT N5 dalam 3 bulan.',
-                'duration' => '3 Bulan',
-                'price' => 'Rp 2.500.000',
-                'status' => 'active'
-            ],
-             (object)[
-                'id' => 2,
-                'name' => 'N4 Regular',
-                'level' => 'N4',
-                'description' => 'Program lanjutan santai untuk level N4.',
-                'duration' => '6 Bulan',
-                'price' => 'Rp 3.000.000',
-                'status' => 'active'
-            ],
-             (object)[
-                'id' => 3,
-                'name' => 'Tokutei Ginou Kaigo',
-                'level' => 'N4/TG',
-                'description' => 'Persiapan khusus skill workers bidang care worker.',
-                'duration' => '4 Bulan',
-                'price' => 'Rp 5.000.000',
-                'status' => 'active'
-            ]
-        ]);
+        // 2. Programs (same as classes in this context but could be a different grouping)
+        $programs = $classes;
         
         $stats = [
-            'total_active_classes' => $classes->where('status', 'active')->count(),
-            'total_programs' => $programs->count(),
+            'total_active_classes' => $classes->count(),
+            'total_programs' => $classes->unique('program_name')->count(),
             'popular_class' => $classes->sortByDesc('student_count')->first()->name ?? '-'
         ];
 
