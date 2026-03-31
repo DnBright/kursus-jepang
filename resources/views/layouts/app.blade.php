@@ -89,7 +89,7 @@
                         {{ $slot }}
                     @else
                         @yield('content')
-                    @isset
+                    @endisset
                 </main>
 
                 <!-- Dashboard Footer -->
