@@ -19,6 +19,7 @@ class AdminController extends Controller
             'pending_registrations' => \App\Models\Transaction::where('status', 'pending')->count(),
             'total_transactions' => \App\Models\Transaction::count(),
             'certificates_issued' => \App\Models\UserAchievement::where('achievement_type', 'certificate')->count(),
+            'home_visitors' => \App\Models\VisitorStat::where('page_path', '/')->first()->views_count ?? 0,
         ];
 
         $pendingTransactions = \App\Models\Transaction::with('user')
