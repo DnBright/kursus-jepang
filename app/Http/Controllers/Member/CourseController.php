@@ -11,8 +11,15 @@ class CourseController extends Controller
 {
     public function index()
     {
-        // Get all courses with active flag for styling
-        $courses = Course::all();
+        // Get only courses the user has purchased
+        $user = Auth::user();
+        
+        $courses = Course::with('modules')
+            ->get()
+            ->filter(function($course) use ($user) {
+                return $user->hasActivePackage($course->level);
+            });
+
         return view('member.courses.index', compact('courses'));
     }
 
