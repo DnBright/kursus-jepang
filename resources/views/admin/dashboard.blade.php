@@ -247,31 +247,24 @@
         <div class="space-y-8">
             <!-- Charts (Placeholder) -->
              <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-900 mb-4">Statistik Pendaftaran</h3>
+                <h3 class="font-bold text-slate-900 mb-4">Statistik Pendaftaran (5 Hari Terakhir)</h3>
                 <div class="h-48 bg-slate-50 rounded-xl flex items-end justify-between p-4 px-6 gap-2">
-                    <!-- Mock Bars -->
-                    <div class="w-full bg-red-100 rounded-t-lg h-[40%] hover:bg-red-200 transition-colors relative group">
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">12</div>
+                    @foreach($registration_stats as $stat)
+                    @php 
+                        $percent = ($stat['count'] / $maxRegistration) * 100;
+                        if($percent < 5 && $stat['count'] > 0) $percent = 5; // Minimal visibility
+                    @endphp
+                    <div class="w-full {{ $stat['is_today'] ? 'bg-red-500' : 'bg-red-100' }} rounded-t-lg hover:bg-red-600 transition-colors relative group" style="height: {{ $percent }}%">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                            {{ $stat['count'] }} User
+                        </div>
                     </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[60%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">18</div>
-                    </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[30%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">8</div>
-                    </div>
-                    <div class="w-full bg-red-500 rounded-t-lg h-[80%] hover:bg-red-600 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">24</div>
-                    </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[50%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">15</div>
-                    </div>
+                    @endforeach
                 </div>
                  <div class="flex justify-between mt-2 text-[10px] text-slate-400 font-bold uppercase">
-                    <span>Sen</span>
-                    <span>Sel</span>
-                    <span>Rab</span>
-                    <span>Kam</span>
-                    <span>Jum</span>
+                    @foreach($registration_stats as $stat)
+                    <span class="w-full text-center">{{ $stat['label'] }}</span>
+                    @endforeach
                 </div>
             </div>
 
