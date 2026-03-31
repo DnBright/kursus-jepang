@@ -90,7 +90,14 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/materials', [App\Http\Controllers\Sensei\MaterialController::class, 'index'])->name('materials.index');
         Route::get('/quizzes', [App\Http\Controllers\Sensei\QuizController::class, 'index'])->name('quizzes.index');
         Route::get('/students', [App\Http\Controllers\Sensei\StudentController::class, 'index'])->name('students.index');
-        Route::get('/schedule', [App\Http\Controllers\Sensei\ScheduleController::class, 'index'])->name('schedule.index');
+        Route::resource('/schedule', App\Http\Controllers\Sensei\ScheduleController::class)->names([
+            'index' => 'schedule.index',
+            'create' => 'schedule.create',
+            'store' => 'schedule.store',
+            'edit' => 'schedule.edit',
+            'update' => 'schedule.update',
+            'destroy' => 'schedule.destroy',
+        ]);
         
         Route::post('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
     });
