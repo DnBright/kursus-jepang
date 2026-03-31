@@ -48,7 +48,7 @@ class SenseiController extends Controller
             'title' => $request->title ?? 'Sensei',
             'specialization' => $request->specialization ?? 'General Japanese',
             'phone_number' => $request->phone_number,
-            'status' => 'active', // Bypass pending status
+            'status' => 'approved', // Bypass pending status
             'is_active' => true,  // Automatically active
             'years_of_experience' => 0,
         ]);
@@ -79,7 +79,7 @@ class SenseiController extends Controller
             'title' => ['nullable', 'string', 'max:100'],
             'specialization' => ['nullable', 'string', 'max:100'],
             'phone_number' => ['nullable', 'string', 'max:20'],
-            'status' => ['required', 'in:active,inactive,suspended'],
+            'status' => ['required', 'in:approved,pending,rejected'],
         ]);
 
         if ($request->filled('password')) {
@@ -96,7 +96,7 @@ class SenseiController extends Controller
             'specialization' => $request->specialization,
             'phone_number' => $request->phone_number,
             'status' => $request->status,
-            'is_active' => $request->status === 'active',
+            'is_active' => $request->status === 'approved',
         ]);
 
         return redirect()->route('admin.senseis.index')->with('success', 'Data Sensei berhasil diperbarui.');
