@@ -21,6 +21,11 @@ class Course extends Model
         return $this->hasMany(Module::class)->orderBy('order');
     }
 
+    public function lessons()
+    {
+        return $this->hasManyThrough(Lesson::class, Module::class);
+    }
+
     public function studentsCount()
     {
         // Assuming selected_package in users table matches course title for now
