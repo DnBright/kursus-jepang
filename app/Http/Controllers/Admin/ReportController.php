@@ -59,7 +59,7 @@ class ReportController extends Controller
             $completionRate = $totalPossibleProgress > 0 ? round(($actualProgress / $totalPossibleProgress) * 100) : 0;
             
             // Average Quiz Score
-            $avgScore = \App\Models\UserQuizAttempt::whereIn('quiz_id', \App\Models\Quiz::where('course_id', $course->id)->pluck('id'))
+            $avgScore = \App\Models\UserQuizAttempt::whereIn('quiz_id', \App\Models\Quiz::whereIn('lesson_id', $courseLessonIds)->pluck('id'))
                 ->avg('score') ?? 0;
 
             return (object)[
