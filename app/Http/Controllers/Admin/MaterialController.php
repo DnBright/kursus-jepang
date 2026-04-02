@@ -55,4 +55,29 @@ class MaterialController extends Controller
 
         return view('admin.materials.index', compact('materials', 'files', 'quizzes', 'stats'));
     }
+
+    public function create()
+    {
+        $courses = \App\Models\Course::with('modules')->get();
+        $instructors = \App\Models\Sensei::where('is_active', true)->get();
+        return view('admin.materials.create', compact('courses', 'instructors'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'module_id' => 'required|exists:modules,id',
+            'instructor_id' => 'required|exists:senseis,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:video,text,audio,pdf',
+            'content' => 'required|string',
+            'duration' => 'nullable|string',
+            'order' => 'required|integer|min:1',
+            'is_free' => 'boolean',
+        ]);
+
+        \App\Models\Lesson::create($validated);
+
+        return redirect()->route('admin.materials.index')->with('success', 'Materi baru berhasil ditambahkan.');
+    }
 }
