@@ -157,6 +157,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/certificates', [App\Http\Controllers\Admin\CertificateController::class, 'index'])->name('certificates.index');
         Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('users.approve');
