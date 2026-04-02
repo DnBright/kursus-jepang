@@ -35,6 +35,9 @@ class ClassController extends Controller
             'popular_class' => $classes->sortByDesc('student_count')->first()->name ?? '-'
         ];
 
+        return view('admin.classes.index', compact('classes', 'programs', 'stats'));
+    }
+
     public function create()
     {
         $instructors = \App\Models\Sensei::where('is_active', true)->get();
