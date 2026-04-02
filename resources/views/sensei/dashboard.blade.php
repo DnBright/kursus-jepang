@@ -12,41 +12,41 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
             <!-- Active Classes -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">📘</div>
-                <div>
-                    <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Kelas Aktif</h4>
-                    <p class="text-2xl font-bold text-slate-900">{{ $stats['active_classes'] }}</p>
+            <div class="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-3 lg:gap-4 hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg lg:text-xl font-bold shrink-0">📘</div>
+                <div class="text-center sm:text-left">
+                    <h4 class="text-slate-500 text-[10px] lg:text-xs font-bold uppercase tracking-wide">Kelas Aktif</h4>
+                    <p class="text-xl lg:text-2xl font-bold text-slate-900">{{ $stats['active_classes'] }}</p>
                 </div>
             </div>
 
             <!-- Total Students -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-xl font-bold">👥</div>
-                <div>
-                    <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Total Siswa</h4>
-                    <p class="text-2xl font-bold text-slate-900">{{ $stats['total_students'] }}</p>
+            <div class="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-3 lg:gap-4 hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-lg lg:text-xl font-bold shrink-0">👥</div>
+                <div class="text-center sm:text-left">
+                    <h4 class="text-slate-500 text-[10px] lg:text-xs font-bold uppercase tracking-wide">Total Siswa</h4>
+                    <p class="text-xl lg:text-2xl font-bold text-slate-900">{{ $stats['total_students'] }}</p>
                 </div>
             </div>
 
             <!-- Today's Schedule -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">🗓</div>
-                <div>
-                    <h4 class="text-slate-500 text-xs font-bold uppercase tracking-wide">Jadwal Hari Ini</h4>
-                    <p class="text-2xl font-bold text-slate-900">{{ $stats['today_schedule'] }} <span class="text-sm font-medium text-slate-400">Kelas</span></p>
+            <div class="bg-white p-4 lg:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-3 lg:gap-4 hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg lg:text-xl font-bold shrink-0">🗓</div>
+                <div class="text-center sm:text-left">
+                    <h4 class="text-slate-500 text-[10px] lg:text-xs font-bold uppercase tracking-wide">Jadwal Hari Ini</h4>
+                    <p class="text-xl lg:text-2xl font-bold text-slate-900">{{ $stats['today_schedule'] }} <span class="text-xs lg:text-sm font-medium text-slate-400">Kelas</span></p>
                 </div>
             </div>
 
             <!-- Grading Needed -->
-            <div class="bg-white p-6 rounded-2xl border border-red-50 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow relative overflow-hidden">
-                <div class="absolute right-0 top-0 w-16 h-16 bg-red-500 rounded-full blur-2xl opacity-10 -mr-8 -mt-8"></div>
-                <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold {{ $stats['grading_needed'] > 0 ? 'animate-pulse' : '' }}">📝</div>
-                <div>
-                    <h4 class="text-red-500 text-xs font-bold uppercase tracking-wide">Perlu Dinilai</h4>
-                    <p class="text-2xl font-bold text-slate-900">{{ $stats['grading_needed'] }} <span class="text-sm font-medium text-slate-400">Tugas</span></p>
+            <div class="bg-white p-4 lg:p-6 rounded-2xl border border-red-50 shadow-sm flex flex-col sm:flex-row items-center gap-3 lg:gap-4 hover:shadow-md transition-shadow relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-12 h-12 lg:w-16 lg:h-16 bg-red-500 rounded-full blur-2xl opacity-10 -mr-6 lg:-mr-8 -mt-6 lg:-mt-8"></div>
+                <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-lg lg:text-xl font-bold shrink-0 {{ $stats['grading_needed'] > 0 ? 'animate-pulse' : '' }}">📝</div>
+                <div class="text-center sm:text-left">
+                    <h4 class="text-red-500 text-[10px] lg:text-xs font-bold uppercase tracking-wide">Perlu Dinilai</h4>
+                    <p class="text-xl lg:text-2xl font-bold text-slate-900">{{ $stats['grading_needed'] }} <span class="text-xs lg:text-sm font-medium text-slate-400">Tugas</span></p>
                 </div>
             </div>
         </div>
