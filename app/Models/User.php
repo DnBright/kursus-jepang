@@ -72,8 +72,12 @@ class User extends Authenticatable
     public function hasActivePackage($package)
     {
         return $this->transactions()
-            ->where('package_type', $package)
             ->where('status', 'approved')
+            ->where(function($q) use ($package) {
+                $q->where('package_type', $package)
+                  ->orWhere('package_type', 'LIKE', '%' . $package . '%')
+                  ->orWhereRaw('? LIKE CONCAT("%", package_type, "%")', [$package]);
+            })
             ->exists();
     }
 

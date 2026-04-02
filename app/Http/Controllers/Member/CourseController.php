@@ -17,7 +17,7 @@ class CourseController extends Controller
         $courses = Course::with('modules')
             ->get()
             ->filter(function($course) use ($user) {
-                return $user->hasActivePackage($course->level);
+                return $user->hasActivePackage($course->title) || $user->hasActivePackage($course->level);
             });
 
         return view('member.courses.index', compact('courses'));
@@ -27,7 +27,7 @@ class CourseController extends Controller
     {
         $course = Course::with(['modules.lessons', 'instructor'])->findOrFail($id);
 
-        if (!Auth::user()->hasActivePackage($course->level)) {
+        if (!Auth::user()->hasActivePackage($course->title) && !Auth::user()->hasActivePackage($course->level)) {
             return redirect()->route('packages.index')->with('error', 'Anda harus membeli paket ini terlebih dahulu.');
         }
 
