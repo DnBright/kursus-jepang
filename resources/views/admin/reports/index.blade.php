@@ -60,27 +60,29 @@
             <!-- Mock Chart Area -->
              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-900 mb-4">Pertumbuhan User (30 Hari Terakhir)</h3>
+                    <h3 class="font-bold text-slate-900 mb-4">Pertumbuhan User (15 Hari Terakhir)</h3>
                     <div class="h-64 flex items-end gap-2 justify-between px-2">
-                        @for($i = 0; $i < 15; $i++)
-                            <div class="w-full bg-blue-100 rounded-t-sm hover:bg-blue-200 transition-colors relative group" style="height: {{ rand(20, 100) }}%">
+                        @foreach($userGrowthChart as $data)
+                            @php $percent = $maxUserGrowth > 0 ? ($data['count'] / $maxUserGrowth * 100) : 0; @endphp
+                            <div class="w-full bg-blue-100 rounded-t-sm hover:bg-blue-200 transition-colors relative group" style="height: {{ max($percent, 2) }}%">
                                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                   {{ rand(10, 50) }} User
+                                   {{ $data['count'] }} User ({{ $data['label'] }})
                                 </div>
                             </div>
-                        @endfor
+                        @endforeach
                     </div>
                 </div>
                  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-                    <h3 class="font-bold text-slate-900 mb-4">Pendapatan Bulanan (2025-2026)</h3>
+                    <h3 class="font-bold text-slate-900 mb-4">Pendapatan Bulanan (6 Bulan Terakhir)</h3>
                     <div class="h-64 flex items-end gap-4 justify-between px-2">
-                         @for($i = 0; $i < 6; $i++)
-                            <div class="w-full bg-green-100 rounded-t-sm hover:bg-green-200 transition-colors relative group" style="height: {{ rand(40, 100) }}%">
+                         @foreach($monthlyRevenueChart as $data)
+                            @php $percent = $maxMonthlyRevenue > 0 ? ($data['amount'] / $maxMonthlyRevenue * 100) : 0; @endphp
+                            <div class="w-full bg-green-100 rounded-t-sm hover:bg-green-200 transition-colors relative group" style="height: {{ max($percent, 2) }}%">
                                 <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                   Rp {{ rand(20, 100) }}jt
+                                   {{ $data['display'] }} ({{ $data['label'] }})
                                 </div>
                             </div>
-                        @endfor
+                        @endforeach
                     </div>
                 </div>
             </div>
