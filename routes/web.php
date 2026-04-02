@@ -150,6 +150,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/validations', [App\Http\Controllers\Admin\ValidationController::class, 'index'])->name('validations.index');
         Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
         Route::get('/classes', [App\Http\Controllers\Admin\ClassController::class, 'index'])->name('classes.index');
+        Route::get('/classes/create', [App\Http\Controllers\Admin\ClassController::class, 'create'])->name('classes.create');
+        Route::post('/classes', [App\Http\Controllers\Admin\ClassController::class, 'store'])->name('classes.store');
         Route::get('/materials', [App\Http\Controllers\Admin\MaterialController::class, 'index'])->name('materials.index');
         Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
         Route::get('/payments/export', [App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');

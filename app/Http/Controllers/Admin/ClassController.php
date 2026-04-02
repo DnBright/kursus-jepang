@@ -35,6 +35,27 @@ class ClassController extends Controller
             'popular_class' => $classes->sortByDesc('student_count')->first()->name ?? '-'
         ];
 
-        return view('admin.classes.index', compact('classes', 'programs', 'stats'));
+    public function create()
+    {
+        $instructors = \App\Models\Sensei::where('is_active', true)->get();
+        return view('admin.classes.create', compact('instructors'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'level' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0',
+            'instructor_id' => 'required|exists:senseis,id',
+            'description' => 'nullable|string',
+            'thumbnail' => 'nullable|string', // Temporary simple string, can be improved to file upload
+        ]);
+
+        $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . rand(100, 999);
+
+        \App\Models\Course::create($validated);
+
+        return redirect()->route('admin.classes.index')->with('success', 'Kelas/Program baru berhasil dibuat.');
     }
 }
