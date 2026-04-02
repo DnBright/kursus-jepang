@@ -11,7 +11,6 @@ $navItems = [
         'route' => 'admin.validations.index', 
         'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
         'active' => request()->routeIs('admin.validations.index'),
-        'badge' => 12, // Mock notification badge
     ],
     [
         'label' => 'Manajemen User',
