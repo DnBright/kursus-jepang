@@ -67,5 +67,6 @@
                 </main>
             </div>
         </div>
+        <x-whatsapp-button />
     </body>
 </html>
