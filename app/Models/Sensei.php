@@ -37,4 +37,34 @@ class Sensei extends Authenticatable
         'social_links' => 'array',
         'is_active' => 'boolean',
     ];
+
+    public function liveSessions()
+    {
+        return $this->hasMany(LiveSession::class, 'instructor_id');
+    }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class, 'instructor_id');
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'instructor_id');
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'instructor_id');
+    }
+
+    public function modules()
+    {
+        return $this->hasMany(Module::class, 'instructor_id');
+    }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class, 'instructor_id');
+    }
 }

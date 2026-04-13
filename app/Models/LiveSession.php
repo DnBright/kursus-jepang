@@ -29,6 +29,21 @@ class LiveSession extends Model
         'scheduled_at' => 'datetime',
     ];
 
+    public function getCalculatedStatusAttribute()
+    {
+        $now = now();
+        $start = $this->scheduled_at;
+        $end = (clone $start)->addMinutes($this->duration);
+
+        if ($now->between($start, $end)) {
+            return 'live';
+        } elseif ($now->lt($start)) {
+            return 'upcoming';
+        } else {
+            return 'completed';
+        }
+    }
+
     public function course()
     {
         return $this->belongsTo(Course::class);
@@ -41,7 +56,7 @@ class LiveSession extends Model
 
     public function instructor()
     {
-        return $this->belongsTo(User::class, 'instructor_id');
+        return $this->belongsTo(Sensei::class, 'instructor_id');
     }
 
     public function attendances()

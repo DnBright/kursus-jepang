@@ -84,35 +84,38 @@
             </div>
             <div class="text-2xl font-bold text-slate-900">{{ $stats['certificates_issued'] }}</div>
         </div>
+
+        <!-- Pengunjung Home -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-3 mb-2">
+                 <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pengunjung Home</span>
+            </div>
+            <div class="text-2xl font-bold text-slate-900">{{ number_format($stats['home_visitors'], 0, ',', '.') }}</div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <!-- Left Column: Validation Panel -->
         <div class="xl:col-span-2 space-y-8">
-            <!-- Pending Users -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <!-- Pending Account Registrations -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
                 <div class="p-6 border-b border-slate-100 flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900">Validasi Pendaftaran Siswa</h2>
-                        <p class="text-slate-500 text-sm">Konfirmasi pembayaran dan akses member baru.</p>
+                        <h2 class="text-lg font-bold text-slate-900">Validasi Pendaftaran Akun</h2>
+                        <p class="text-slate-500 text-sm">Persetujuan akun baru untuk dapat login ke platform.</p>
                     </div>
-                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingUsers->count() }} Pending</span>
+                    <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingUsers->count() }} Menunggu</span>
                 </div>
                 
-                @if(session('success'))
-                    <div class="p-4 bg-green-50 text-green-700 border-b border-green-100 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
-
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-100">
                             <tr>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paket</th>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pendaftar</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
                                 <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -130,10 +133,92 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td class="p-4 text-sm text-slate-600">
+                                    {{ $user->created_at->format('d M Y, H:i') }}
+                                </td>
+                                <td class="p-4 text-right space-x-1">
+                                    <form action="{{ route('admin.accounts.approve', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Setujui Akun">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.accounts.reject', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin menolak dan menghapus akun ini?');">
+                                        @csrf
+                                        <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Tolak Akun">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="p-8 text-center text-slate-500 text-sm italic">
+                                    Tidak ada pendaftaran akun baru.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Transactions -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Validasi Transaksi / Paket</h2>
+                        <p class="text-slate-500 text-sm">Konfirmasi pembayaran untuk akses paket.</p>
+                    </div>
+                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full">{{ $pendingTransactions->count() }} Pending</span>
+                </div>
+                
+                @if(session('success'))
+                    <div class="p-4 bg-green-50 text-green-700 border-b border-green-100 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paket</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Bukti</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($pendingTransactions as $transaction)
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                                            {{ substr($transaction->user->name, 0, 2) }}
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-slate-900 text-sm">{{ $transaction->user->name }}</div>
+                                            <div class="text-xs text-slate-500">{{ $transaction->user->email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td class="p-4">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 uppercase">
-                                        {{ $user->selected_package ?? 'N5 Basic' }}
+                                        {{ $transaction->package_type ?? 'N5 Basic' }}
                                     </span>
+                                </td>
+                                <td class="p-4">
+                                    @if($transaction->payment_proof)
+                                        <a href="{{ asset('storage/' . $transaction->payment_proof) }}" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-xs font-medium">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                            Lihat Bukti
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-slate-400 italic">Tidak ada</span>
+                                    @endif
                                 </td>
                                 <td class="p-4">
                                     <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-100">
@@ -141,13 +226,13 @@
                                     </span>
                                 </td>
                                 <td class="p-4 text-right space-x-1">
-                                    <form action="{{ route('admin.users.approve', $user->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.users.approve', $transaction->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         <button type="submit" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Approve">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         </button>
                                     </form>
-                                    <form action="{{ route('admin.users.reject', $user->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.users.reject', $transaction->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         <button type="submit" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -173,31 +258,24 @@
         <div class="space-y-8">
             <!-- Charts (Placeholder) -->
              <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-900 mb-4">Statistik Pendaftaran</h3>
+                <h3 class="font-bold text-slate-900 mb-4">Statistik Pendaftaran (5 Hari Terakhir)</h3>
                 <div class="h-48 bg-slate-50 rounded-xl flex items-end justify-between p-4 px-6 gap-2">
-                    <!-- Mock Bars -->
-                    <div class="w-full bg-red-100 rounded-t-lg h-[40%] hover:bg-red-200 transition-colors relative group">
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">12</div>
+                    @foreach($registration_stats as $stat)
+                    @php 
+                        $percent = ($stat['count'] / $maxRegistration) * 100;
+                        if($percent < 5 && $stat['count'] > 0) $percent = 5; // Minimal visibility
+                    @endphp
+                    <div class="w-full {{ $stat['is_today'] ? 'bg-red-500' : 'bg-red-100' }} rounded-t-lg hover:bg-red-600 transition-colors relative group" style="height: {{ $percent }}%">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                            {{ $stat['count'] }} User
+                        </div>
                     </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[60%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">18</div>
-                    </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[30%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">8</div>
-                    </div>
-                    <div class="w-full bg-red-500 rounded-t-lg h-[80%] hover:bg-red-600 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">24</div>
-                    </div>
-                    <div class="w-full bg-red-100 rounded-t-lg h-[50%] hover:bg-red-200 transition-colors relative group">
-                         <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">15</div>
-                    </div>
+                    @endforeach
                 </div>
                  <div class="flex justify-between mt-2 text-[10px] text-slate-400 font-bold uppercase">
-                    <span>Sen</span>
-                    <span>Sel</span>
-                    <span>Rab</span>
-                    <span>Kam</span>
-                    <span>Jum</span>
+                    @foreach($registration_stats as $stat)
+                    <span class="w-full text-center">{{ $stat['label'] }}</span>
+                    @endforeach
                 </div>
             </div>
 

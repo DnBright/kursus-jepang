@@ -12,6 +12,7 @@ class Assignment extends Model
     protected $fillable = [
         'title',
         'description',
+        'instructor_id',
         'lesson_id',
         'module_id',
         'assignment_type',
@@ -20,6 +21,11 @@ class Assignment extends Model
         'is_required',
         'file_attachments',
     ];
+
+    public function instructor()
+    {
+        return $this->belongsTo(Sensei::class, 'instructor_id');
+    }
 
     protected $casts = [
         'file_attachments' =>  'array',

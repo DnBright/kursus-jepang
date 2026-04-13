@@ -16,13 +16,17 @@ class ValidationController extends Controller
              ->orderBy('created_at', 'desc')
              ->get();
 
+        $pendingUsers = User::where('status', 'pending')
+             ->orderBy('created_at', 'desc')
+             ->get();
+
         $stats = [
-            'pending_total' => $pendingTransactions->count(),
+            'pending_total' => $pendingTransactions->count() + $pendingUsers->count(),
             'approved_today' => Transaction::where('status', 'approved')->whereDate('updated_at', today())->count(),
             'rejected_total' => Transaction::where('status', 'rejected')->count(),
             'avg_time' => '15 Menit'
         ];
 
-        return view('admin.validations.index', compact('pendingTransactions', 'stats'));
+        return view('admin.validations.index', compact('pendingTransactions', 'pendingUsers', 'stats'));
     }
 }

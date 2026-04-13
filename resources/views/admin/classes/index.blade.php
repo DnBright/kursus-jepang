@@ -8,14 +8,14 @@
             </div>
             
             <div class="flex flex-col sm:flex-row gap-3">
-                 <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors text-sm flex items-center gap-2">
+                 <a href="{{ route('admin.classes.create') }}" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors text-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Buat Program
-                </button>
-                <button class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors text-sm flex items-center gap-2 shadow-lg shadow-red-200">
+                </a>
+                <a href="{{ route('admin.classes.create') }}" class="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors text-sm flex items-center gap-2 shadow-lg shadow-red-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     Buat Kelas Baru
-                </button>
+                </a>
             </div>
         </div>
 
@@ -151,7 +151,7 @@
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow group relative">
                      <div class="absolute top-4 right-4">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-100">
-                            {{ ucfirst($program->status) }}
+                            Active
                         </span>
                     </div>
                     <div class="p-6">
@@ -159,16 +159,16 @@
                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                         </div>
                         <h3 class="font-bold text-slate-900 text-lg mb-1">{{ $program->name }}</h3>
-                        <p class="text-sm text-slate-500 mb-4 line-clamp-2">{{ $program->description }}</p>
+                        <p class="text-sm text-slate-500 mb-4 line-clamp-2 text-left">{{ $program->description }}</p>
                         
-                        <div class="flex items-center justify-between items-end border-t border-slate-100 pt-4">
+                        <div class="flex items-center justify-between items-end border-t border-slate-100 pt-4 text-left">
                             <div>
                                 <p class="text-xs text-slate-400 font-bold uppercase mb-0.5">Harga</p>
                                 <p class="font-bold text-slate-900">{{ $program->price }}</p>
                             </div>
                              <div>
-                                <p class="text-xs text-slate-400 font-bold uppercase mb-0.5">Durasi</p>
-                                <p class="font-bold text-slate-900 text-right">{{ $program->duration }}</p>
+                                <p class="text-xs text-slate-400 font-bold uppercase mb-0.5">Level</p>
+                                <p class="font-bold text-slate-900 text-right">{{ $program->level }}</p>
                             </div>
                         </div>
                     </div>

@@ -8,13 +8,13 @@
             </div>
             
             <div class="flex items-center gap-3">
-                 <button class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">
+                 <a href="{{ route('sensei.assignments.create') }}" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">
                     Buat Tugas / Essay
-                </button>
-                <button class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/40 transition-all flex items-center gap-2 text-sm">
+                </a>
+                <a href="{{ route('sensei.quizzes.create') }}" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/40 transition-all flex items-center gap-2 text-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Buat Quiz Baru
-                </button>
+                </a>
             </div>
         </div>
 
@@ -109,7 +109,7 @@
 
                 <!-- Tab: Quizzes -->
                 <div x-show="activeTab === 'quizzes'" class="space-y-4">
-                    @foreach($quizzes as $quiz)
+                    @forelse($quizzes as $quiz)
                     <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all gap-4">
                         <div class="flex items-start gap-4">
                              <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
@@ -146,20 +146,24 @@
                         </div>
 
                         <div class="flex items-center gap-2 self-end md:self-auto">
-                            <button class="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-white hover:text-red-600 hover:border-red-200 transition-all">
-                                Preview
-                            </button>
-                             <button class="px-4 py-2 text-sm font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-all">
+                            <a href="{{ route('sensei.quizzes.questions', $quiz['id']) }}" class="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-white hover:text-red-600 hover:border-red-200 transition-all">
+                                Kelola Soal
+                            </a>
+                             <a href="{{ route('sensei.quizzes.edit', $quiz['id']) }}" class="px-4 py-2 text-sm font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-all">
                                 Edit Quiz
-                            </button>
+                            </a>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="text-center py-12">
+                        <p class="text-slate-500">Belum ada quiz yang dibuat.</p>
+                    </div>
+                    @endforelse
                 </div>
 
                  <!-- Tab: Assignments -->
                 <div x-show="activeTab === 'assignments'" class="space-y-4" style="display: none;">
-                     @foreach($assignments as $assignment)
+                     @forelse($assignments as $assignment)
                     <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:bg-slate-50 transition-all gap-4">
                         <div class="flex items-start gap-4">
                              <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
@@ -172,7 +176,7 @@
                                     <span>•</span>
                                     <span>{{ $assignment['submitted_count'] }} Siswa Mengumpulkan</span>
                                      <span>•</span>
-                                    <span class="text-red-500">Deadline: {{ $assignment['deadline'] }}</span>
+                                    <span class="{{ $assignment['deadline'] === 'Hari Ini' ? 'text-red-500' : '' }}">Deadline: {{ $assignment['deadline'] }}</span>
                                 </div>
                             </div>
                         </div>
@@ -182,20 +186,24 @@
                                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 animate-pulse">
                                     Perlu Dinilai
                                 </span>
-                                 <button class="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm shadow-red-600/20 transition-all">
+                                 <a href="{{ route('sensei.assignments.grading', $assignment['id']) }}" class="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm shadow-red-600/20 transition-all">
                                     Beri Nilai
-                                </button>
+                                </a>
                             @else
                                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
                                     Selesai Dinilai
                                 </span>
-                                 <button class="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-white transition-all">
+                                 <a href="{{ route('sensei.assignments.grading', $assignment['id']) }}" class="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-white transition-all">
                                     Lihat Hasil
-                                </button>
+                                </a>
                             @endif
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="text-center py-12">
+                        <p class="text-slate-500">Belum ada tugas yang dibuat.</p>
+                    </div>
+                    @endforelse
                 </div>
 
                 <!-- Tab: Results (Placeholder) -->

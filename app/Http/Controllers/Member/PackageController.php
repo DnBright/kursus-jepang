@@ -10,6 +10,10 @@ class PackageController extends Controller
 {
     public function index()
     {
+        if (Auth::user()->transactions()->where('status', 'pending')->exists()) {
+            return redirect()->route('payment.pending');
+        }
+
         // We can hardcode packages here or fetch from DB if we had a packages table. 
         // For now, based on previous context, they are hardcoded strings.
         $packages = [

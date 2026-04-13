@@ -45,10 +45,10 @@
                     <div class="mb-4">
                         <div class="flex justify-between text-xs font-bold text-white mb-2">
                             <span>Progress Kursus</span>
-                            <span>0%</span>
+                            <span>{{ $progress }}%</span>
                         </div>
                         <div class="w-full bg-black/20 rounded-full h-3 overflow-hidden shadow-inner">
-                            <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full" style="width: 0%"></div>
+                            <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full transition-all duration-700" style="width: {{ $progress }}%"></div>
                         </div>
                     </div>
                     @php
@@ -136,12 +136,16 @@
                 <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                     <h3 class="font-bold text-slate-900 mb-4">Instruktur Anda</h3>
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-slate-100 overflow-hidden">
-                            <img src="https://ui-avatars.com/api/?name=Sensei+Tomo&background=random" alt="Sensei" class="w-full h-full object-cover">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
+                             @if($course->instructor && $course->instructor->avatar_url)
+                                <img src="{{ $course->instructor->avatar_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($course->instructor->name ?? 'Sensei') }}&background=E11D48&color=fff" alt="Sensei" class="w-full h-full object-cover">
+                            @endif
                         </div>
                         <div>
-                            <div class="font-bold text-slate-800">Sensei Tomo</div>
-                            <div class="text-xs text-slate-500">Certified JLPT N1 Instructor</div>
+                            <div class="font-bold text-slate-800">{{ $course->instructor->name ?? 'Sensei Pengajar' }}</div>
+                            <div class="text-xs text-slate-500">{{ $course->instructor->title ?? 'Certified Instructor' }}</div>
                         </div>
                     </div>
                     <button class="w-full mt-4 py-2 border border-slate-200 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">

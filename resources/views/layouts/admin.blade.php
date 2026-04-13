@@ -15,10 +15,22 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased h-full text-slate-600 bg-slate-50">
-        <div class="min-h-full flex">
+    <body class="font-sans antialiased h-full text-slate-600 bg-slate-50" x-data="{ sidebarOpen: false }">
+        <div class="min-h-full flex relative">
+            <!-- Sidebar Mobile Backdrop -->
+            <div x-show="sidebarOpen" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="sidebarOpen = false" 
+                 class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm md:hidden"></div>
+
             <!-- Sidebar -->
-            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transition-transform duration-300 transform md:translate-x-0 md:static md:inset-auto flex flex-col items-center">
+            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white transition-transform duration-300 transform md:static md:translate-x-0 flex flex-col items-center"
+                   :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
                  <!-- Logo -->
                 <div class="flex items-center justify-center h-20 w-full border-b border-slate-800 bg-slate-950">
                      <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 group">
@@ -58,19 +70,22 @@
             </aside>
 
             <!-- Main Content -->
-            <main class="flex-1 min-w-0 overflow-y-auto bg-slate-50">
+            <main class="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto bg-slate-50">
                  <!-- Top Header Mobile -->
                 <div class="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 sticky top-0 z-40">
                      <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
                          <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-bold">🇯🇵</div>
                         <span class="font-bold text-slate-900">Admin Panel</span>
                     </a>
-                    <button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg focus:outline-none transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
                 </div>
 
-                <div class="p-4 md:p-8 max-w-7xl mx-auto">
+                <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
                     {{ $slot }}
                 </div>
             </main>

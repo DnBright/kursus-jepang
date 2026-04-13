@@ -12,6 +12,7 @@ class Quiz extends Model
     protected $fillable = [
         'title',
         'description',
+        'instructor_id',
         'lesson_id',
         'type',
         'difficulty',
@@ -21,6 +22,11 @@ class Quiz extends Model
         'available_from',
         'available_until',
     ];
+
+    public function instructor()
+    {
+        return $this->belongsTo(Sensei::class, 'instructor_id');
+    }
 
     protected $casts = [
         'is_active' => 'boolean',

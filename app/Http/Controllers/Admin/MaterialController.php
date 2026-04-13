@@ -9,76 +9,43 @@ class MaterialController extends Controller
 {
     public function index()
     {
-        // Mock Materials (Video/Text)
-        $materials = collect([
-            (object)[
-                'id' => 1,
-                'title' => 'Pengenalan Hiragana Dasar',
-                'program' => 'N5 Basic',
-                'class_name' => 'N5 Basic Batch 20',
-                'type' => 'video',
+        // 1. Get all lessons (Materials) categorized by type
+        $allLessons = \App\Models\Lesson::with(['module.course'])->get();
+        
+        $materials = $allLessons->where('type', '!=', 'pdf')->map(function($lesson) {
+            return (object)[
+                'id' => $lesson->id,
+                'title' => $lesson->title,
+                'program' => $lesson->module && $lesson->module->course ? $lesson->module->course->level : '-',
+                'class_name' => $lesson->module && $lesson->module->course ? $lesson->module->course->title : '-',
+                'type' => $lesson->type,
                 'status' => 'active',
-                'last_updated' => now()->subDays(2)
-            ],
-            (object)[
-                'id' => 2,
-                'title' => 'Partikel Wa dan Ga',
-                'program' => 'N5 Intensive',
-                'class_name' => 'N5 Intensive Batch 12',
-                'type' => 'text',
-                'status' => 'active',
-                'last_updated' => now()->subWeek()
-            ],
-             (object)[
-                'id' => 3,
-                'title' => 'Conversation Practice 1',
-                'program' => 'N4 Regular',
-                'class_name' => 'N4 Regular Batch 5',
-                'type' => 'audio',
-                'status' => 'draft',
-                'last_updated' => now()->subHours(5)
-            ]
-        ]);
+                'last_updated' => $lesson->updated_at
+            ];
+        });
 
-        // Mock Files (PDF/Doc)
-        $files = collect([
-            (object)[
-                'id' => 1,
-                'name' => 'Modul Hiragana Lengkap.pdf',
+        $files = $allLessons->where('type', 'pdf')->map(function($lesson) {
+            return (object)[
+                'id' => $lesson->id,
+                'name' => $lesson->title . '.pdf',
                 'type' => 'PDF',
-                'program' => 'N5 Basic',
-                'size' => '2.5 MB',
+                'program' => $lesson->module && $lesson->module->course ? $lesson->module->course->level : '-',
+                'size' => 'Auto', 
                 'status' => 'active'
-            ],
-            (object)[
-                'id' => 2,
-                'name' => 'Latihan Soal Partikel.docx',
-                'type' => 'DOC',
-                'program' => 'N5 Intensive',
-                'size' => '500 KB',
-                'status' => 'active'
-            ]
-        ]);
+            ];
+        });
 
-        // Mock Quizzes
-        $quizzes = collect([
-             (object)[
-                'id' => 1,
-                'title' => 'Quiz Hiragana 1',
-                'level' => 'N5',
-                'class_name' => 'N5 Basic Batch 20',
-                'question_count' => 20,
-                'status' => 'active'
-            ],
-             (object)[
-                'id' => 2,
-                'title' => 'Ujian Tengah Semester',
-                'level' => 'N4',
-                'class_name' => 'N4 Regular Batch 5',
-                'question_count' => 50,
-                'status' => 'scheduled'
-            ]
-        ]);
+        // 2. Get all quizzes
+        $quizzes = \App\Models\Quiz::with(['lesson.module.course', 'questions'])->get()->map(function($quiz) {
+            return (object)[
+                'id' => $quiz->id,
+                'title' => $quiz->title,
+                'level' => $quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course ? $quiz->lesson->module->course->level : ($quiz->difficulty ?? '-'),
+                'class_name' => $quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course ? $quiz->lesson->module->course->title : '-',
+                'question_count' => $quiz->questions->count(),
+                'status' => $quiz->is_active ? 'active' : 'draft'
+            ];
+        });
         
         $stats = [
             'total_materials' => $materials->count(),
@@ -87,5 +54,30 @@ class MaterialController extends Controller
         ];
 
         return view('admin.materials.index', compact('materials', 'files', 'quizzes', 'stats'));
+    }
+
+    public function create()
+    {
+        $courses = \App\Models\Course::with('modules')->get();
+        $instructors = \App\Models\Sensei::where('is_active', true)->get();
+        return view('admin.materials.create', compact('courses', 'instructors'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'module_id' => 'required|exists:modules,id',
+            'instructor_id' => 'required|exists:senseis,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:video,text,audio,pdf',
+            'content' => 'required|string',
+            'duration' => 'nullable|string',
+            'order' => 'required|integer|min:1',
+            'is_free' => 'boolean',
+        ]);
+
+        \App\Models\Lesson::create($validated);
+
+        return redirect()->route('admin.materials.index')->with('success', 'Materi baru berhasil ditambahkan.');
     }
 }

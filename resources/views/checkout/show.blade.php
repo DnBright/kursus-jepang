@@ -1,10 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pembayaran Paket') }}
-        </h2>
-    </x-slot>
+@extends(Auth::user()->isMember() ? 'layouts.app' : 'layouts.onboarding')
 
+@section('content')
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-slate-100">
@@ -88,8 +84,8 @@
                             <button type="submit" class="w-full py-4 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 hover:shadow-red-600/30 transition-all transform hover:-translate-y-0.5">
                                 Konfirmasi Pembayaran
                             </button>
-                            <a href="{{ route('dashboard') }}" class="block text-center mt-4 text-sm font-bold text-slate-400 hover:text-slate-600">
-                                Batalkan
+                            <a href="{{ url('/') }}" class="block text-center mt-4 text-sm font-bold text-slate-400 hover:text-slate-600">
+                                Batalkan & Kembali ke Beranda
                             </a>
                         </div>
                     </form>
@@ -97,4 +93,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

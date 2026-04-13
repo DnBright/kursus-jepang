@@ -11,17 +11,36 @@ class CourseController extends Controller
 {
     public function index()
     {
-        // Get all courses with active flag for styling
-        $courses = Course::all();
+        // Get only courses the user has purchased
+        $user = Auth::user();
+        
+        $courses = Course::with('modules')
+            ->get()
+            ->filter(function($course) use ($user) {
+                return $user->hasActivePackage($course->title) || $user->hasActivePackage($course->level);
+            });
+
         return view('member.courses.index', compact('courses'));
     }
 
-    public function show(Course $course)
+    public function show($id)
     {
-        // Ideally check if user has access to this course
-        // if (!Auth::user()->hasActivePackage($course->level)) { abort(403); }
+        $course = Course::with(['modules.lessons', 'instructor'])->findOrFail($id);
 
-        $course->load('modules.lessons');
-        return view('member.courses.show', compact('course'));
+        if (!Auth::user()->hasActivePackage($course->title) && !Auth::user()->hasActivePackage($course->level)) {
+            return redirect()->route('packages.index')->with('error', 'Anda harus membeli paket ini terlebih dahulu.');
+        }
+
+        // Calculate Progress
+        $allLessons = $course->modules->flatMap->lessons;
+        $totalLessons = $allLessons->count();
+        $completedLessonsCount = \App\Models\LessonProgress::where('user_id', Auth::id())
+            ->whereIn('lesson_id', $allLessons->pluck('id'))
+            ->where('status', 'completed')
+            ->count();
+        
+        $progress = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100) : 0;
+
+        return view('member.courses.show', compact('course', 'progress'));
     }
 }

@@ -15,46 +15,58 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-900">
+    <body class="font-sans antialiased bg-slate-50 text-slate-900" x-data="{ isMobileMenuOpen: false }">
         <div class="flex h-screen overflow-hidden">
+            <!-- Mobile Sidebar Backdrop -->
+            <div x-show="isMobileMenuOpen" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="isMobileMenuOpen = false"
+                 class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 lg:hidden" style="display: none;"></div>
+
             <!-- Sidebar -->
-            <aside class="hidden lg:flex w-72 bg-slate-900 flex-col fixed inset-y-0 z-50">
+            <aside class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 flex flex-col transform transition-transform duration-300 lg:translate-x-0 lg:static lg:inset-0"
+                   :class="isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'">
                 @include('layouts.sensei-navigation')
             </aside>
 
             <!-- Main Content Wrapper -->
-            <div class="flex-1 flex flex-col lg:pl-72 w-full transition-all duration-300">
+            <div class="flex-1 flex flex-col w-full min-w-0 transition-all duration-300 overflow-hidden">
                 <!-- Top Header -->
-                <header class="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-40 flex items-center justify-between px-6 lg:px-8">
+                <header class="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-40 flex items-center justify-between px-4 lg:px-8 shrink-0">
                     <!-- Mobile Toggle -->
-                    <div class="lg:hidden">
-                        <button class="text-slate-500 hover:text-slate-700">
+                    <div class="lg:hidden flex items-center">
+                        <button @click="isMobileMenuOpen = true" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         </button>
                     </div>
 
                     <!-- Breadcrumbs / Page Title -->
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-bold text-lg text-slate-800">Dashboard</h1>
+                    <div class="flex items-center gap-2 overflow-hidden px-2">
+                        <h1 class="font-bold text-base lg:text-lg text-slate-800 truncate">Portal Sensei</h1>
                     </div>
 
                     <!-- Right Actions -->
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 lg:gap-4">
                         <!-- Notifications -->
                         <button class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                            <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                            <svg class="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            <span class="absolute top-2 right-2.5 w-1.5 h-1.5 lg:w-2 lg:h-2 bg-red-500 rounded-full border-2 border-white"></span>
                         </button>
                         
-                        <div class="h-8 w-px bg-slate-200 mx-1"></div>
+                        <div class="hidden sm:block h-8 w-px bg-slate-200 mx-1"></div>
 
                         <!-- User Menu -->
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 lg:gap-3">
                             <div class="text-right hidden md:block">
-                                <p class="text-sm font-bold text-slate-800 leading-tight">{{ Auth::guard('sensei')->user()->name }}</p>
-                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Sensei</p>
+                                <p class="text-xs lg:text-sm font-bold text-slate-800 leading-tight">{{ Auth::guard('sensei')->user()->name }}</p>
+                                <p class="text-[9px] lg:text-[10px] text-slate-500 font-bold uppercase tracking-wider">Sensei</p>
                             </div>
-                            <div class="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm ring-4 ring-slate-50">
+                            <div class="h-8 w-8 lg:h-10 lg:w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs lg:text-sm ring-2 lg:ring-4 ring-slate-50">
                                 {{ substr(Auth::guard('sensei')->user()->name, 0, 1) }}
                             </div>
                         </div>
@@ -62,7 +74,7 @@
                 </header>
 
                 <!-- Page Content -->
-                <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+                <main class="flex-1 overflow-y-auto p-4 lg:p-8">
                     {{ $slot }}
                 </main>
             </div>

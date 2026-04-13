@@ -49,6 +49,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (Auth::user()->status === 'pending') {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda sedang menunggu persetujuan admin.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
