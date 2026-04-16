@@ -23,13 +23,13 @@
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
-                <a href="/" class="flex items-center gap-3 group">
-                    <div class="relative w-12 h-12 rounded-2xl overflow-hidden bg-white shadow-xl shadow-red-500/10 group-hover:rotate-6 transition-all duration-500">
+                <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                    <div class="relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-white shadow-xl shadow-red-500/10 group-hover:rotate-6 transition-all duration-500">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-cover scale-150">
                     </div>
-                    <div>
-                        <span class="block text-2xl font-black tracking-tighter leading-none">Kursus<span class="text-red-600">Jepang</span></span>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Premium Academy</span>
+                    <div class="flex flex-col justify-center">
+                        <span class="block text-xl sm:text-2xl font-black tracking-tighter leading-none">Kursus<span class="text-red-600">Jepang</span></span>
+                        <span class="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-0.5">Premium Academy</span>
                     </div>
                 </a>
 
@@ -41,7 +41,7 @@
                 </div>
 
                 <!-- CTA -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 sm:gap-4">
                     @auth
                         <div class="relative group">
                             <button class="flex items-center gap-3 p-1.5 focus:outline-none">
@@ -73,8 +73,8 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="hidden sm:block text-sm font-bold text-slate-900 hover:text-red-600 transition-colors mr-2">Masuk</a>
-                        <a href="{{ route('register') }}" class="btn-premium btn-premium-primary text-xs !py-3 !px-6">
+                        <a href="{{ route('login') }}" class="text-xs sm:text-sm font-bold text-slate-600 hover:text-red-600 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all duration-300">Masuk</a>
+                        <a href="{{ route('register') }}" class="btn-premium btn-premium-primary !text-[10px] sm:!text-xs !py-2.5 sm:!py-3 !px-4 sm:!px-6 shadow-lg shadow-red-500/20">
                             Mulai Belajar
                         </a>
                     @endauth
@@ -392,21 +392,7 @@
         </div>
     </section>
 
-    <!-- Features (Bento Grid) -->
-    <section id="keunggulan" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">Kenapa KursusJepang? 🎌</h2>
-                <p class="text-slate-600 text-lg">Kami tidak hanya mengajarkan bahasa, tapi membentuk mindset profesional untuk sukses berkarir di Jepang.</p>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
-                <!-- Item 1: Large Left -->
-                <div class="md:col-span-2 row-span-2 rounded-3xl bg-slate-900 p-8 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1528360983277-13d9b152c6d1?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-700"></div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-                    <div class="relative z-10 h-full flex flex-col justify-end">
-    <!-- Section: Keunggulan (Bento Grid) -->
     <section class="py-32 bg-white relative overflow-hidden" id="keunggulan">
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="text-center max-w-3xl mx-auto mb-20">

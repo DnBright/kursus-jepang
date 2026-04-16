@@ -61,5 +61,4 @@
         </div>
     </div>
 
-    <x-whatsapp-button />
 </footer>
