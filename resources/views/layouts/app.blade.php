@@ -85,16 +85,11 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 p-8 lg:p-12 animate-fade-in-up">
-<<<<<<< HEAD
-                    {{ $slot ?? '' }}
-                    @yield('content')
-=======
                     @isset($slot)
                         {{ $slot }}
                     @else
                         @yield('content')
                     @endisset
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
                 </main>
 
                 <!-- Dashboard Footer -->

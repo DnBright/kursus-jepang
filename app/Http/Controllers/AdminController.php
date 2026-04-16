@@ -15,16 +15,6 @@ class AdminController extends Controller
         $stats = [
             'total_students' => User::where('role', 'member')->count(),
             'total_sensei' => Sensei::count(), 
-<<<<<<< HEAD
-            'active_classes' => 12, // Mock
-            'pending_registrations' => User::where('status', 'pending')->count(),
-            'total_transactions' => 156, // Mock
-            'certificates_issued' => 45, // Mock
-        ];
-
-        $pendingUsers = User::where('status', 'pending')
-            ->orWhere('payment_status', 'pending')
-=======
             'active_classes' => \App\Models\Course::count(),
             'pending_registrations' => \App\Models\Transaction::where('status', 'pending')->count(),
             'total_transactions' => \App\Models\Transaction::count(),
@@ -39,7 +29,6 @@ class AdminController extends Controller
             ->get();
 
         $pendingUsers = User::where('status', 'pending')
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
