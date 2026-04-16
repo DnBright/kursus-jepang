@@ -40,21 +40,13 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'status' => 'pending',
-<<<<<<< HEAD
-            'role' => 'member', 
-=======
-            'role' => 'user', 
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
+            'role' => 'member',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-<<<<<<< HEAD
         return redirect()->route('verification.notice');
-=======
-        return redirect('/')->with('status', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan admin.');
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
     }
 }

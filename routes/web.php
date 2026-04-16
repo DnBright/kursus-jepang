@@ -28,14 +28,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'member'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Member\DashboardController::class, 'index'])->name('dashboard');
-<<<<<<< HEAD
-    
     Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
-=======
-
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
-
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -176,21 +170,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         
-<<<<<<< HEAD
-        
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
         Route::post('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
         
         // Transaction approval routes
         Route::post('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve');
         Route::post('/transactions/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('reject');
-=======
-        Route::post('/users/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('users.approve');
-        Route::post('/users/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('users.reject');
-        
+
         Route::post('/accounts/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveAccount'])->name('accounts.approve');
         Route::post('/accounts/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectAccount'])->name('accounts.reject');
->>>>>>> e6e7c7f557a4b8aca27280b3c6c60b2b0511f814
 
         // Manual Sensei Management
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
