@@ -7,20 +7,20 @@
                 <p class="text-slate-500 text-sm mt-1">Kelola akun siswa dan pengajar secara terpusat.</p>
             </div>
             
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                  <!-- Add Sensei Button (Visible only on Sensei tab) -->
-                 <button x-show="activeTab === 'senseis'" @click="showAddSenseiModal = true" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 focus:outline-none focus:border-red-800 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                 <button x-show="activeTab === 'senseis'" @click="showAddSenseiModal = true" class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 border border-transparent rounded-xl font-bold text-xs text-white uppercase tracking-widest hover:bg-red-700 active:bg-red-800 transition shadow-lg shadow-red-600/20">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah Sensei
                 </button>
 
-                 <div class="relative">
+                 <div class="relative flex-1 sm:flex-none">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </span>
-                    <input type="text" class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-64 shadow-sm" placeholder="Cari nama atau email...">
+                    <input type="text" class="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-64 shadow-sm" placeholder="Cari nama atau email...">
                 </div>
-                 <select class="py-2 pl-3 pr-8 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm cursor-pointer">
+                 <select class="py-2.5 pl-3 pr-8 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm cursor-pointer ml-auto sm:ml-0">
                     <option>Semua Role</option>
                     <option>Siswa</option>
                     <option>Sensei</option>
@@ -29,40 +29,40 @@
         </div>
 
         <!-- Stats Overview (Optional) -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div class="bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Total Aktif</span>
-                <span class="text-xl font-bold text-green-600">{{ $stats['total_active'] }}</span>
+                <span class="text-xl md:text-2xl font-bold text-green-600">{{ $stats['total_active'] }}</span>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Total Siswa</span>
-                <span class="text-xl font-bold text-blue-600">{{ $stats['total_students'] }}</span>
+                <span class="text-xl md:text-2xl font-bold text-blue-600">{{ $stats['total_students'] }}</span>
             </div>
-             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+             <div class="bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm">
                 <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Total Sensei</span>
-                <span class="text-xl font-bold text-purple-600">{{ $stats['total_sensei'] }}</span>
+                <span class="text-xl md:text-2xl font-bold text-purple-600">{{ $stats['total_sensei'] }}</span>
             </div>
-             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Nonaktif/Suspended</span>
-                <span class="text-xl font-bold text-red-600">{{ $stats['total_inactive'] }}</span>
+             <div class="bg-white p-3 md:p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Suspended</span>
+                <span class="text-xl md:text-2xl font-bold text-red-600">{{ $stats['total_inactive'] }}</span>
             </div>
         </div>
 
         <!-- Tab Navigation -->
-        <div class="border-b border-slate-200">
-            <nav class="-mb-px flex space-x-8">
+        <div class="border-b border-slate-200 overflow-x-auto custom-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+            <nav class="-mb-px flex space-x-6 whitespace-nowrap min-w-max">
                 <button @click="activeTab = 'students'"
                     :class="{ 'border-red-500 text-red-600': activeTab === 'students', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': activeTab !== 'students' }"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Manajemen Siswa
+                    class="py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    <span>Manajemen Siswa</span>
                 </button>
 
                 <button @click="activeTab = 'senseis'"
                     :class="{ 'border-red-500 text-red-600': activeTab === 'senseis', 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300': activeTab !== 'senseis' }"
-                    class="whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Manajemen Sensei
+                    class="py-4 px-1 border-b-2 font-bold text-sm transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>Manajemen Sensei</span>
                 </button>
             </nav>
         </div>
