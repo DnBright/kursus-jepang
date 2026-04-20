@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50 scroll-smooth">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +19,7 @@
         <div class="min-h-full flex relative">
             <!-- Sidebar Mobile Backdrop -->
             <div x-show="sidebarOpen" 
+                 x-cloak
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -70,14 +71,14 @@
             </aside>
 
             <!-- Main Content -->
-            <main class="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto bg-slate-50">
+            <main class="flex-1 min-w-0 flex flex-col min-h-screen bg-slate-50 relative">
                  <!-- Top Header Mobile -->
-                <div class="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200 sticky top-0 z-40">
-                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-                         <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-bold">🇯🇵</div>
-                        <span class="font-bold text-slate-900">Admin Panel</span>
+                <div class="md:hidden flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
+                         <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-bold shadow-sm">🇯🇵</div>
+                        <span class="font-bold text-slate-900 tracking-tight">Admin Panel</span>
                     </a>
-                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg focus:outline-none transition-colors">
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl focus:outline-none transition-colors border border-slate-200/50">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
