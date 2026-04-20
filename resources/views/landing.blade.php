@@ -73,8 +73,10 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="text-xs sm:text-sm font-bold text-slate-600 hover:text-red-600 px-3 py-2 rounded-xl hover:bg-slate-50 transition-all duration-300">Masuk</a>
-                        <a href="{{ route('register') }}" class="btn-premium btn-premium-primary !text-[10px] sm:!text-xs !py-2.5 sm:!py-3 !px-4 sm:!px-6 shadow-lg shadow-red-500/20">
+                        <a href="{{ route('login') }}" class="btn-premium whitespace-nowrap !text-[11px] sm:!text-sm font-bold text-slate-600 hover:text-red-600 !py-3 sm:!py-3.5 !px-5 sm:!px-8 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+                            Masuk
+                        </a>
+                        <a href="{{ route('register') }}" class="btn-premium btn-premium-primary whitespace-nowrap !text-[11px] sm:!text-sm !py-3 sm:!py-3.5 !px-5 sm:!px-8 shadow-lg shadow-red-500/20">
                             Mulai Belajar
                         </a>
                     @endauth
