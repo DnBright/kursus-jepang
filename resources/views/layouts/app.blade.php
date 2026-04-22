@@ -19,7 +19,47 @@
             body { font-family: 'Outfit', 'Noto Sans JP', sans-serif; }
         </style>
     </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-red-500 selection:text-white">
+    <body class="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-red-500 selection:text-white" x-data="{ sidebarOpen: false }">
+        <!-- Mobile Sidebar Backdrop -->
+        <div x-show="sidebarOpen" 
+             x-cloak
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="sidebarOpen = false" 
+             class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm lg:hidden"></div>
+
+        <!-- Mobile Sidebar (Drawer) -->
+        <aside x-show="sidebarOpen" 
+               x-cloak
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="-translate-x-full"
+               x-transition:enter-end="translate-x-0"
+               x-transition:leave="transition ease-in duration-300"
+               x-transition:leave-start="translate-x-0"
+               x-transition:leave-end="-translate-x-full"
+               class="fixed inset-y-0 left-0 z-[100] w-72 bg-white shadow-2xl lg:hidden overflow-hidden"
+               @click.away="sidebarOpen = false">
+            <div class="h-full flex flex-col relative bg-white">
+                <!-- Close Button -->
+                <div class="absolute top-4 right-4 z-[110]">
+                    <button @click="sidebarOpen = false" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto pt-12">
+                    @if(request()->is('sensei*'))
+                        @include('layouts.sensei-navigation')
+                    @else
+                        @include('layouts.navigation')
+                    @endif
+                </div>
+            </div>
+        </aside>
             <!-- Sidebar -->
             <aside class="hidden lg:block w-80 bg-white min-h-screen fixed top-0 left-0 z-50 overflow-hidden border-r border-slate-200/60 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.02)]">
                 <div class="h-full flex flex-col">
@@ -38,7 +78,7 @@
                     <div class="flex justify-between items-center px-8 py-5">
                         <div class="flex items-center gap-4 lg:hidden">
                             <!-- Mobile Menu Button -->
-                            <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                            <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all active:scale-95">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                             </button>
                             <span class="font-black text-xl text-slate-900 tracking-tighter">Kursus<span class="text-red-600">Jepang</span></span>
