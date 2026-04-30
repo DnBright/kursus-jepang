@@ -18,7 +18,7 @@ class UserQuizAttempt extends Model
         'time_taken',
         'answers',
         'is_passed',
-        'completed_at',
+        'status', 'completed_at',
     ];
 
     protected $casts = [

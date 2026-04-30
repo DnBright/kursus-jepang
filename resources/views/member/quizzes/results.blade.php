@@ -6,15 +6,19 @@
         <!-- Results Header -->
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
             <!-- Score Banner -->
-            <div class="p-8 text-center {{ $attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600' }}">
-                @if($attempt->is_passed)
+            <div class="p-8 text-center {{ $attempt->status === 'needs_grading' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : ($attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600') }}">
+                @if($attempt->status === 'needs_grading')
+                    <div class="text-6xl mb-2">⏳</div>
+                    <h1 class="text-3xl font-black text-white mb-2">Menunggu Penilaian</h1>
+                    <p class="text-white/90">Jawaban essai Anda sedang ditinjau oleh Sensei</p>
+                @elseif($attempt->is_passed)
                     <div class="text-6xl mb-2">🎉</div>
                     <h1 class="text-3xl font-black text-white mb-2">Selamat! Anda Lulus!</h1>
                     <p class="text-white/90">Quiz {{ $attempt->quiz->title }} berhasil diselesaikan</p>
                 @else
                     <div class="text-6xl mb-2">📝</div>
                     <h1 class="text-3xl font-black text-white mb-2">Quiz Selesai</h1>
-                    <p class="text-white/90">Terus berlatihuntuk hasil lebih baik!</p>
+                    <p class="text-white/90">Terus berlatih untuk hasil lebih baik!</p>
                 @endif
             </div>
 
@@ -22,10 +26,10 @@
             <div class="p-8">
                 <div class="grid md:grid-cols-3 gap-6 mb-8">
                     <div class="text-center">
-                        <div class="text-5xl font-black {{ $attempt->is_passed ? 'text-green-600' : 'text-orange-600' }} mb-2">
+                        <div class="text-5xl font-black {{ $attempt->status === 'needs_grading' ? 'text-blue-600' : ($attempt->is_passed ? 'text-green-600' : 'text-orange-600') }} mb-2">
                             {{ number_format($attempt->percentage, 0) }}%
                         </div>
-                        <div class="text-slate-500 text-sm font-bold">Skor Anda</div>
+                        <div class="text-slate-500 text-sm font-bold">Skor {{ $attempt->status === 'needs_grading' ? 'Sementara' : '' }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-3xl font-black text-slate-700 mb-2">
@@ -45,12 +49,12 @@
                 <div class="mb-8">
                     <div class="flex items-center justify-between text-sm mb-2">
                         <span class="font-bold text-slate-600">Nilai Lulus: {{ $attempt->quiz->passing_score }}%</span>
-                        <span class="font-bold {{ $attempt->is_passed ? 'text-green-600' : 'text-orange-600' }}">
-                            {{ $attempt->is_passed ? 'LULUS' : 'BELUM LULUS' }}
+                        <span class="font-bold {{ $attempt->status === 'needs_grading' ? 'text-blue-600' : ($attempt->is_passed ? 'text-green-600' : 'text-orange-600') }}">
+                            {{ $attempt->status === 'needs_grading' ? 'PENDING' : ($attempt->is_passed ? 'LULUS' : 'BELUM LULUS') }}
                         </span>
                     </div>
                     <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                        <div class="{{ $attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600' }} h-3 rounded-full transition-all duration-1000" 
+                        <div class="{{ $attempt->status === 'needs_grading' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : ($attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600') }} h-3 rounded-full transition-all duration-1000" 
                              style="width: {{ min($attempt->percentage, 100) }}%">
                         </div>
                     </div>
@@ -74,14 +78,15 @@
             <h2 class="text-2xl font-black text-slate-900 mb-6">Review Jawaban</h2>
             
             @php
-                $answers = $attempt->answers;
+                $userAnswers = $attempt->answers;
                 $questions = $attempt->quiz->questions;
             @endphp
 
             @foreach($questions as $index => $question)
                 @php
-                    $userAnswer = $answers[$question->id] ?? null;
+                    $userAnswer = $userAnswers[$question->id] ?? null;
                     $isCorrect = false;
+                    $isEssay = $question->question_type === 'essay';
                     
                     if($question->question_type === 'multiple_choice' || $question->question_type === 'true_false') {
                         $isCorrect = $userAnswer === $question->correct_answer;
@@ -92,7 +97,7 @@
 
                 <div class="mb-6 pb-6 border-b border-slate-100 last:border-0">
                     <div class="flex gap-4">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-lg {{ $isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }} font-black flex items-center justify-center text-sm">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-lg {{ $isEssay ? 'bg-blue-100 text-blue-600' : ($isCorrect ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600') }} font-black flex items-center justify-center text-sm">
                             {{ $index + 1 }}
                         </div>
                         <div class="flex-1">
@@ -101,8 +106,8 @@
                             <!-- User Answer -->
                             <div class="mb-2">
                                 <span class="text-xs font-bold text-slate-500">Jawaban Anda:</span>
-                                <div class="mt-1 p-3 rounded-lg {{ $isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
-                                    <span class="font-medium {{ $isCorrect ? 'text-green-700' : 'text-red-700' }}">
+                                <div class="mt-1 p-3 rounded-lg {{ $isEssay ? 'bg-blue-50 border border-blue-200' : ($isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200') }}">
+                                    <span class="font-medium {{ $isEssay ? 'text-blue-700' : ($isCorrect ? 'text-green-700' : 'text-red-700') }}">
                                         @if($question->question_type === 'multiple_choice' && isset($question->options[$userAnswer]))
                                             {{ $userAnswer }}. {{ $question->options[$userAnswer] }}
                                         @elseif($question->question_type === 'true_false')
@@ -115,12 +120,14 @@
                                         <svg class="w-5 h-5 inline-block ml-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                         </svg>
+                                    @elseif($isEssay)
+                                        <span class="ml-2 text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Menunggu Penilaian</span>
                                     @endif
                                 </div>
                             </div>
 
-                            <!-- Correct Answer (if wrong) -->
-                            @if(!$isCorrect)
+                            <!-- Correct Answer (if wrong and not essay) -->
+                            @if(!$isCorrect && !$isEssay)
                                 <div class="mb-2">
                                     <span class="text-xs font-bold text-slate-500">Jawaban Benar:</span>
                                     <div class="mt-1 p-3 rounded-lg bg-blue-50 border border-blue-200">
