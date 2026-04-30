@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'member' => \App\Http\Middleware\EnsureUserIsMember::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'sensei.approved' => \App\Http\Middleware\EnsureSenseiIsApproved::class,
             'package.active' => \App\Http\Middleware\EnsureHasActivePackage::class,
         ]);
 
