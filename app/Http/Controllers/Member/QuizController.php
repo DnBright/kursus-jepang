@@ -85,8 +85,7 @@ class QuizController extends Controller
         $userAnswers = $validated['answers'];
         $score = 0;
         $maxScore = 0;
-
-        $results = [];
+        $hasEssay = false;
 
         foreach ($quiz->questions as $question) {
             $questionId = $question->id;
@@ -100,20 +99,15 @@ class QuizController extends Controller
             } elseif ($question->question_type === 'true_false') {
                 $isCorrect = $userAnswer === $question->correct_answer;
             } elseif ($question->question_type === 'fill_blank') {
-                // Case-insensitive comparison, trim whitespace
                 $isCorrect = strtolower(trim($userAnswer)) === strtolower(trim($question->correct_answer));
+            } elseif ($question->question_type === 'essay') {
+                $hasEssay = true;
+                $isCorrect = false; // Manual grading required
             }
 
             if ($isCorrect) {
                 $score += $question->points;
             }
-
-            $results[$questionId] = [
-                'user_answer' => $userAnswer,
-                'correct_answer' => $question->correct_answer,
-                'is_correct' => $isCorrect,
-                'explanation' => $question->explanation,
-            ];
         }
 
         $percentage = $maxScore > 0 ? ($score / $maxScore) * 100 : 0;
@@ -129,6 +123,7 @@ class QuizController extends Controller
             'time_taken' => $validated['time_taken'] ?? null,
             'answers' => $userAnswers,
             'is_passed' => $isPassed,
+            'status' => $hasEssay ? 'needs_grading' : 'completed',
             'completed_at' => now(),
         ]);
 
@@ -144,7 +139,7 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('quizzes.results', $attempt->id)
-            ->with('success', $isPassed ? 'Selamat! Anda lulus quiz ini! 🎉' : 'Quiz selesai. Coba lagi untuk hasil lebih baik!');
+            ->with('success', $hasEssay ? 'Quiz berhasil dikumpulkan. Jawaban essai Anda akan diperiksa oleh Sensei.' : ($isPassed ? 'Selamat! Anda lulus quiz ini! 🎉' : 'Quiz selesai. Coba lagi untuk hasil lebih baik!'));
     }
 
     /**
