@@ -17,10 +17,7 @@ class TrackWebsiteVisitors
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->is('/') && $request->method() === 'GET') {
-            VisitorStat::updateOrCreate(
-                ['page_path' => '/'],
-                ['views_count' => \Illuminate\Support\Facades\DB::raw('views_count + 1')]
-            );
+            VisitorStat::firstOrCreate(['page_path' => '/'])->increment('views_count');
         }
 
         return $next($request);
