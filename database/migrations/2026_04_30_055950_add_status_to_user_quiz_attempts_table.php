@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('user_quiz_attempts', function (Blueprint $table) {
-            //
+            $table->enum('status', ['completed', 'needs_grading'])->default('completed')->after('is_passed');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('user_quiz_attempts', function (Blueprint $table) {
-            //
+            $table->dropColumn('status');
         });
     }
 };
