@@ -16,15 +16,15 @@ class EnsureHasActivePackage
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Admin and Sensei bypass
+        if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+            return $next($request);
+        }
+
         $user = Auth::user();
 
         if (!$user) {
             return redirect()->route('login');
-        }
-
-        // Admin and Sensei bypass
-        if ($user->role === 'admin' || $user->role === 'sensei') {
-            return $next($request);
         }
 
         // Check if user has selected a package

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class EnsureUserIsMember
 {
@@ -15,8 +16,15 @@ class EnsureUserIsMember
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role !== 'member') {
-            $hasPending = $request->user()->transactions()->where('status', 'pending')->exists();
+        // Admin and Sensei bypass
+        if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+            return $next($request);
+        }
+
+        $user = Auth::user();
+
+        if ($user && $user->role !== 'member') {
+            $hasPending = $user->transactions()->where('status', 'pending')->exists();
             if ($hasPending) {
                 return redirect()->route('payment.pending');
             }
