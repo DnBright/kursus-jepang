@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         Admin::create([
             'name' => 'Admin LPK',
             'email' => 'admin@kursusjepang.com',
-            'password' => 'password',
+            'password' => Hash::make('password'),
         ]);
 
         // Student User (active)
@@ -36,6 +36,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'baru@example.com',
             'password' => Hash::make('password'),
             'status' => 'pending',
+        ]);
+
+        // Run other seeders
+        $this->call([
+            SenseiSeeder::class,
+            CurriculumSeeder::class,
+            N5QuizSeeder::class,
+            N5AssignmentSeeder::class,
         ]);
     }
 }
