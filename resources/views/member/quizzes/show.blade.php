@@ -77,7 +77,7 @@
                                 @foreach($question->options as $optionKey => $optionValue)
                                     <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-slate-200 hover:border-red-300 hover:bg-red-50/50 cursor-pointer transition-all group">
                                         <input type="radio" name="answers[{{ $question->id }}]" value="{{ $optionKey }}" x-model="answers[{{ $question->id }}]" class="w-5 h-5 text-red-600 focus:ring-red-500">
-                                        <span class="text-slate-700 font-medium group-hover:text-slate-900">{{ $optionValue }}</span>
+                                        <span class="text-slate-700 font-medium group-hover:text-slate-900">{{ $optionKey }}. {{ $optionValue }}</span>
                                     </label>
                                 @endforeach
                             </div>
@@ -96,6 +96,11 @@
 
                         @elseif($question->question_type === 'fill_blank')
                             <input type="text" name="answers[{{ $question->id }}]" x-model="answers[{{ $question->id }}]" class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 font-medium" placeholder="Ketik jawaban Anda...">
+                        
+                        @elseif($question->question_type === 'essay')
+                            <textarea name="answers[{{ $question->id }}]" x-model="answers[{{ $question->id }}]" rows="4" 
+                                class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 font-medium" 
+                                placeholder="Tulis jawaban essai Anda di sini..."></textarea>
                         @endif
                     </div>
                 </div>
