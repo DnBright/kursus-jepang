@@ -139,9 +139,9 @@ class QuizController extends Controller
 
         $request->validate([
             'question_text' => 'required|string',
-            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching',
+            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay',
             'options' => 'nullable|array',
-            'correct_answer' => 'required|string',
+            'correct_answer' => 'nullable|string',
             'points' => 'required|integer|min:1',
         ]);
 

@@ -1,5 +1,5 @@
 <x-sensei-layout>
-    <div class="space-y-8" x-data="{ showAddModal: false }">
+    <div class="space-y-8" x-data="{ showAddModal: false, questionType: 'multiple_choice' }">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
@@ -14,7 +14,7 @@
                 <p class="text-slate-500 text-sm mt-1">Total: {{ $quiz->questions->count() }} Pertanyaan | Passing Score: {{ $quiz->passing_score }}%</p>
             </div>
             
-            <button @click="showAddModal = true" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all flex items-center gap-2 text-sm">
+            <button @click="showAddModal = true; questionType = 'multiple_choice'" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all flex items-center gap-2 text-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Tambah Pertanyaan
             </button>
@@ -43,6 +43,10 @@
                             </div>
                             @endforeach
                         </div>
+                        @elseif($question->question_type === 'essay')
+                        <div class="px-4 py-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500 text-sm italic">
+                            Tipe soal essai (Jawaban teks bebas).
+                        </div>
                         @else
                         <div class="px-4 py-2 rounded-lg border bg-green-50 border-green-200 text-green-700 font-bold text-sm">
                             Jawaban Benar: {{ $question->correct_answer }}
@@ -64,7 +68,7 @@
                 <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-2xl">❓</div>
                 <h3 class="text-lg font-bold text-slate-900">Belum Ada Pertanyaan</h3>
                 <p class="text-slate-500 max-w-xs mx-auto mt-1 mb-6">Mulai tambahkan pertanyaan pilihan ganda atau tipe lainnya ke quiz ini.</p>
-                <button @click="showAddModal = true" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm">Tambah Pertanyaan Pertama</button>
+                <button @click="showAddModal = true; questionType = 'multiple_choice'" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm">Tambah Pertanyaan Pertama</button>
             </div>
             @endforelse
         </div>
@@ -84,32 +88,51 @@
 
                     <form action="{{ route('sensei.quizzes.questions.store', $quiz->id) }}" method="POST" class="p-6 space-y-4">
                         @csrf
-                        <input type="hidden" name="question_type" value="multiple_choice">
                         
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Tipe Pertanyaan</label>
+                            <select name="question_type" x-model="questionType" required
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm">
+                                <option value="multiple_choice">Pilihan Ganda (Multiple Choice)</option>
+                                <option value="essay">Essai (Free Text)</option>
+                            </select>
+                        </div>
+
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-slate-700">Teks Pertanyaan</label>
                             <textarea name="question_text" required rows="3" 
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium"
-                                placeholder="Contoh: Apa arti dari 'Konnichiwa'?"></textarea>
+                                placeholder="Contoh: Jelaskan perbedaan antara Hiragana dan Katakana!"></textarea>
                         </div>
 
-                        <div class="space-y-3">
-                            <label class="text-sm font-bold text-slate-700 block">Pilihan Jawaban (Multiple Choice)</label>
+                        <!-- Multiple Choice Options -->
+                        <div class="space-y-3" x-show="questionType === 'multiple_choice'">
+                            <label class="text-sm font-bold text-slate-700 block">Pilihan Jawaban</label>
                             <div class="grid grid-cols-1 gap-3">
                                 @foreach(['A', 'B', 'C', 'D'] as $letter)
                                 <div class="flex items-center gap-3">
                                     <span class="font-bold text-slate-400">{{ $letter }}</span>
-                                    <input type="text" name="options[]" required 
+                                    <input type="text" name="options[]" :required="questionType === 'multiple_choice'" 
                                         class="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
                                         placeholder="Pilihan {{ $letter }}">
                                     <input type="radio" name="correct_answer_radio" value="{{ $loop->index }}" {{ $loop->first ? 'checked' : '' }}
-                                        class="w-4 h-4 text-red-600 focus:ring-red-500"
-                                        onclick="document.getElementById('correct_answer_input').value = this.parentNode.querySelector('input[type=text]').value">
+                                        class="w-4 h-4 text-red-600 focus:ring-red-500">
                                 </div>
                                 @endforeach
                             </div>
                             <input type="hidden" name="correct_answer" id="correct_answer_input">
                             <p class="text-[10px] text-slate-500 font-medium">* Pilih salah satu sebagai jawaban benar menggunakan tombol radio.</p>
+                        </div>
+
+                        <!-- Essay Hint -->
+                        <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl" x-show="questionType === 'essay'">
+                            <div class="flex gap-3">
+                                <span class="text-xl">📝</span>
+                                <div>
+                                    <h4 class="text-sm font-bold text-blue-900">Tipe Soal Essai</h4>
+                                    <p class="text-xs text-blue-700 mt-0.5">Siswa akan menjawab dalam bentuk teks bebas. Jawaban ini biasanya memerlukan penilaian manual oleh Sensei.</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -127,7 +150,7 @@
 
                         <div class="pt-4 flex justify-end gap-3">
                             <button type="button" @click="showAddModal = false" class="px-6 py-2.5 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">Batal</button>
-                            <button type="submit" onclick="syncCorrectAnswer()" class="px-8 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm shadow-lg shadow-red-600/20">Simpan Pertanyaan</button>
+                            <button type="submit" @click="syncCorrectAnswer()" class="px-8 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm shadow-lg shadow-red-600/20">Simpan Pertanyaan</button>
                         </div>
                     </form>
                 </div>
@@ -137,13 +160,18 @@
 
     <script>
         function syncCorrectAnswer() {
-            const radios = document.getElementsByName('correct_answer_radio');
-            const options = document.getElementsByName('options[]');
-            for(let i=0; i<radios.length; i++) {
-                if(radios[i].checked) {
-                    document.getElementById('correct_answer_input').value = options[i].value;
-                    break;
+            const questionType = document.querySelector('select[name=question_type]').value;
+            if (questionType === 'multiple_choice') {
+                const radios = document.getElementsByName('correct_answer_radio');
+                const options = document.getElementsByName('options[]');
+                for(let i=0; i<radios.length; i++) {
+                    if(radios[i].checked) {
+                        document.getElementById('correct_answer_input').value = options[i].value;
+                        break;
+                    }
                 }
+            } else {
+                document.getElementById('correct_answer_input').value = '';
             }
         }
     </script>
