@@ -52,7 +52,7 @@ class EnsureUserIsActive
 
             // Check if not active (pending or other)
             if ($user->status !== 'active' && $user->status !== 'approved') {
-                return redirect()->route('verification.notice');
+                return redirect()->route('verification.pending');
             }
 
             return $next($request);

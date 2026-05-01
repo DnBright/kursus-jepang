@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Route::get('/verification/notice', function () {
     return view('auth.pending');
-})->name('verification.notice');
+})->name('verification.pending');
 
 // USER ROUTES
 Route::middleware(['auth'])->group(function () {
