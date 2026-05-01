@@ -17,17 +17,22 @@ class EnsureUserIsActive
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            if (Auth::user()->role === 'admin') {
+            $user = Auth::user();
+
+            // Admin bypass status checks
+            if ($user->role === 'admin') {
                 return $next($request);
             }
-            
-           if (Auth::check() && Auth::user()->status !== 'active') {
-            return redirect()->route('verification.notice');
-        }
 
-            if (Auth::user()->status === 'rejected') {
+            // Check if rejected first
+            if ($user->status === 'rejected') {
                 Auth::logout();
                 return redirect()->route('login')->with('status', 'Akun Anda telah ditolak. Silakan hubungi admin.');
+            }
+            
+            // Check if not active
+            if ($user->status !== 'active' && $user->status !== 'approved') {
+                return redirect()->route('verification.notice');
             }
         }
 

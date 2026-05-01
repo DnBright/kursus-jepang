@@ -31,14 +31,17 @@ return Application::configure(basePath: dirname(__DIR__))
             if (\Illuminate\Support\Facades\Auth::guard('sensei')->check()) {
                 return route('sensei.dashboard');
             }
+            if (\Illuminate\Support\Facades\Auth::guard('web')->check()) {
+                return route('dashboard');
+            }
             return '/';
         });
 
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
-            if (request()->is('admin/*')) {
+            if (request()->is('admin/*') || request()->is('admin')) {
                 return route('admin.login');
             }
-            if (request()->is('sensei/*')) {
+            if (request()->is('sensei/*') || request()->is('sensei')) {
                 return route('sensei.login');
             }
             return route('login');
