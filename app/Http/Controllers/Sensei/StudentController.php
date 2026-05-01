@@ -3,83 +3,48 @@
 namespace App\Http\Controllers\Sensei;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
     public function index()
     {
-        // Mock summary stats
+        $sensei = Auth::guard('sensei')->user();
+        
+        // Get courses taught by this sensei
+        $courseTitles = Course::where('instructor_id', $sensei->id)->pluck('title')->toArray();
+
+        // Get students enrolled in those courses
+        $studentQuery = User::whereIn('selected_package', $courseTitles)
+            ->where('payment_status', 'approved');
+
+        $studentsData = $studentQuery->get();
+
+        // Calculate summary stats
         $summary = [
-            'total_active' => 45,
-            'new_students' => 5,
-            'needs_evaluation' => 8,
-            'avg_progress' => 68,
+            'total_active' => $studentQuery->count(),
+            'new_students' => $studentQuery->where('created_at', '>=', now()->subDays(7))->count(),
+            'needs_evaluation' => 0, // Will be calculated if quiz grading is implemented
+            'avg_progress' => 0, // Placeholder
         ];
 
-        // Mock students data
-        $students = [
-            [
-                'id' => 1,
-                'name' => 'Budi Santoso',
-                'class' => 'N5 Intensive A',
-                'level' => 'N5',
-                'progress' => 85,
-                'avg_score' => 92,
-                'status' => 'active',
-                'trend' => 'up',
-                'avatar' => 'BS',
-                'joined_at' => '1 Jan 2024',
-            ],
-            [
-                'id' => 2,
-                'name' => 'Siti Aminah',
-                'class' => 'N4 Regular B',
-                'level' => 'N4',
-                'progress' => 60,
-                'avg_score' => 78,
+        $students = $studentsData->map(function($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'class' => $user->selected_package ?? 'General',
+                'level' => '-', // Can be derived from course level
+                'progress' => 0, // Can be calculated from LessonProgress
+                'avg_score' => 0, // Can be calculated from QuizAttempts
                 'status' => 'active',
                 'trend' => 'stable',
-                'avatar' => 'SA',
-                'joined_at' => '15 Des 2023',
-            ],
-            [
-                'id' => 3,
-                'name' => 'Rizky Pratama',
-                'class' => 'TG Food Service',
-                'level' => 'TG',
-                'progress' => 25,
-                'avg_score' => 65,
-                'status' => 'inactive',
-                'trend' => 'down',
-                'avatar' => 'RP',
-                'joined_at' => '20 Des 2023',
-            ],
-             [
-                'id' => 4,
-                'name' => 'Dewi Lestari',
-                'class' => 'N5 Intensive A',
-                'level' => 'N5',
-                'progress' => 95,
-                'avg_score' => 98,
-                'status' => 'active',
-                'trend' => 'up',
-                'avatar' => 'DL',
-                'joined_at' => '2 Jan 2024',
-            ],
-            [
-                'id' => 5,
-                'name' => 'Ahmad Fauzi',
-                'class' => 'N4 Regular B',
-                'level' => 'N4',
-                'progress' => 40,
-                'avg_score' => 70,
-                'status' => 'warning', // custom status for needs attention
-                'trend' => 'down',
-                'avatar' => 'AF',
-                'joined_at' => '10 Des 2023',
-            ],
-        ];
+                'avatar' => strtoupper(substr($user->name, 0, 2)),
+                'joined_at' => $user->created_at->format('d M Y'),
+            ];
+        });
 
         return view('sensei.students.index', compact('summary', 'students'));
     }

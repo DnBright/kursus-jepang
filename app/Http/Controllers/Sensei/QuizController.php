@@ -7,6 +7,7 @@ use App\Models\Quiz;
 use App\Models\Course;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use App\Models\UserQuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,8 +23,10 @@ class QuizController extends Controller
             'essay_assignments' => $sensei->assignments()->count(),
             'needs_grading' => AssignmentSubmission::whereIn('assignment_id', $sensei->assignments()->pluck('id'))
                 ->where('status', 'pending')
+                ->count() + UserQuizAttempt::whereIn('quiz_id', $sensei->quizzes()->pluck('id'))
+                ->where('status', 'needs_grading')
                 ->count(),
-            'avg_score' => 0, // In a real app, calculate this from attempts/submissions
+            'avg_score' => 0, 
         ];
 
         // Quizzes
@@ -156,5 +159,50 @@ class QuizController extends Controller
         $quiz->questions()->findOrFail($questionId)->delete();
 
         return back()->with('success', 'Pertanyaan berhasil dihapus.');
+    }
+
+    public function gradingAttempts()
+    {
+        $sensei = Auth::guard('sensei')->user();
+        $quizIds = $sensei->quizzes()->pluck('id');
+
+        $attempts = UserQuizAttempt::whereIn('quiz_id', $quizIds)
+            ->where('status', 'needs_grading')
+            ->with(['user', 'quiz'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('sensei.quizzes.grading-list', compact('attempts'));
+    }
+
+    public function gradeAttempt($id)
+    {
+        $attempt = UserQuizAttempt::with(['user', 'quiz.questions'])
+            ->whereHas('quiz', function($q) {
+                $q->where('instructor_id', Auth::guard('sensei')->id());
+            })
+            ->findOrFail($id);
+
+        return view('sensei.quizzes.grade-attempt', compact('attempt'));
+    }
+
+    public function submitAttemptGrade(Request $request, $id)
+    {
+        $attempt = UserQuizAttempt::whereHas('quiz', function($q) {
+            $q->where('instructor_id', Auth::guard('sensei')->id());
+        })->findOrFail($id);
+
+        $request->validate([
+            'score' => 'required|integer|min:0|max:' . $attempt->max_score,
+        ]);
+
+        $attempt->update([
+            'score' => $request->score,
+            'percentage' => ($request->score / $attempt->max_score) * 100,
+            'is_passed' => (($request->score / $attempt->max_score) * 100) >= ($attempt->quiz->passing_score ?? 70),
+            'status' => 'completed',
+        ]);
+
+        return redirect()->route('sensei.quizzes.grading.index')->with('success', 'Nilai quiz berhasil disimpan.');
     }
 }

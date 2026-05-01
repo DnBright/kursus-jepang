@@ -115,6 +115,11 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::post('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
         Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
 
+        // Quiz Grading Routes
+        Route::get('/quizzes-grading', [App\Http\Controllers\Sensei\QuizController::class, 'gradingAttempts'])->name('quizzes.grading.index');
+        Route::get('/quizzes-grading/{attempt}', [App\Http\Controllers\Sensei\QuizController::class, 'gradeAttempt'])->name('quizzes.grading.show');
+        Route::post('/quizzes-grading/{attempt}', [App\Http\Controllers\Sensei\QuizController::class, 'submitAttemptGrade'])->name('quizzes.grading.store');
+
         Route::resource('/assignments', App\Http\Controllers\Sensei\AssignmentController::class)->names([
             'create' => 'assignments.create',
             'store' => 'assignments.store',
@@ -165,7 +170,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/payments/{id}/approve', [App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
         Route::post('/payments/{id}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
         Route::get('/certificates', [App\Http\Controllers\Admin\CertificateController::class, 'index'])->name('certificates.index');
-        Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
+        // Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         // Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
