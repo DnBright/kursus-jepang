@@ -41,7 +41,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::guard('web')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -49,8 +49,20 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        if (Auth::user()->status === 'pending') {
-            Auth::logout();
+        $user = Auth::guard('web')->user();
+
+        // Sensei must login via sensei login page, not regular user login
+        if ($user->role === 'sensei') {
+            Auth::guard('web')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Sensei harus login melalui halaman login khusus sensei.',
+            ]);
+        }
+
+        // Check for pending status (for members)
+        if ($user->status === 'pending') {
+            Auth::guard('web')->logout();
 
             throw ValidationException::withMessages([
                 'email' => 'Akun Anda sedang menunggu persetujuan admin.',

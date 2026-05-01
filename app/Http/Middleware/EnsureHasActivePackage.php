@@ -16,16 +16,19 @@ class EnsureHasActivePackage
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Admin and Sensei bypass
+        // Admin and Sensei bypass - they don't need to have packages
         if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
             return $next($request);
         }
 
-        $user = Auth::user();
-
-        if (!$user) {
+        // This middleware is only for regular users (web guard)
+        // If no web user is logged in, redirect to login
+        if (!Auth::guard('web')->check()) {
+            // If someone is logged in via wrong guard, redirect them appropriately
             return redirect()->route('login');
         }
+
+        $user = Auth::guard('web')->user();
 
         // Check if user has selected a package
         $package = $user->selected_package;

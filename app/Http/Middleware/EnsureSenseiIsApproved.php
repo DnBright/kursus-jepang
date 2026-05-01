@@ -16,17 +16,40 @@ class EnsureSenseiIsApproved
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('sensei')->user();
+        // First check if user is actually logged in via sensei guard
+        if (!Auth::guard('sensei')->check()) {
+            // If admin or member is trying to access sensei routes, redirect them
+            if (Auth::guard('admin')->check()) {
+                return redirect()->route('admin.dashboard')->with('error', 'Anda tidak memiliki akses ke halaman sensei.');
+            }
+            if (Auth::guard('web')->check()) {
+                return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman sensei.');
+            }
+            // Not logged in at all
+            return redirect()->route('sensei.login');
+        }
 
-        if ($user && $user->status === 'approved') {
+        $sensei = Auth::guard('sensei')->user();
+
+        // Check sensei status
+        if ($sensei->status === 'approved') {
             return $next($request);
         }
 
-        if ($user && $user->status === 'pending') {
+        // Pending approval
+        if ($sensei->status === 'pending') {
             return response()->view('auth.pending');
         }
 
+        // Rejected or any other status - logout and redirect
         Auth::guard('sensei')->logout();
-        return redirect()->route('sensei.login')->with('error', 'Akun Anda belum disetujui atau telah dinonaktifkan.');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        $message = $sensei->status === 'rejected'
+            ? 'Akun sensei Anda telah ditolak. Silakan hubungi admin.'
+            : 'Akun Anda belum disetujui atau telah dinonaktifkan.';
+
+        return redirect()->route('sensei.login')->with('error', $message);
     }
 }

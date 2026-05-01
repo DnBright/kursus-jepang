@@ -16,10 +16,22 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Check if admin is logged in
         if (Auth::guard('admin')->check()) {
             return $next($request);
         }
 
-        abort(403, 'Unauthorized action.');
+        // If sensei is trying to access admin routes, redirect to sensei dashboard
+        if (Auth::guard('sensei')->check()) {
+            return redirect()->route('sensei.dashboard')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
+        }
+
+        // If regular member is trying to access admin routes, redirect to member dashboard
+        if (Auth::guard('web')->check()) {
+            return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
+        }
+
+        // Not logged in - redirect to admin login
+        return redirect()->route('admin.login');
     }
 }

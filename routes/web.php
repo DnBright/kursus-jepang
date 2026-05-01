@@ -140,6 +140,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         ]);
         
         Route::post('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
+        Route::get('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout.get');
     });
 });
 
@@ -155,6 +156,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Authenticated Admin Routes
     Route::middleware('auth:admin')->group(function () {
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
+        Route::get('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout.get');
         
         Route::get('/dashboard', [App\Http\Controllers\AdminController::class, 'index'])->name('dashboard');
         Route::get('/validations', [App\Http\Controllers\Admin\ValidationController::class, 'index'])->name('validations.index');

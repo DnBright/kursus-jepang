@@ -49,6 +49,17 @@ class SenseiLoginRequest extends FormRequest
             ]);
         }
 
+        $sensei = Auth::guard('sensei')->user();
+
+        // Rejected sensei cannot login
+        if ($sensei->status === 'rejected') {
+            Auth::guard('sensei')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun sensei Anda telah ditolak. Silakan hubungi admin.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 
