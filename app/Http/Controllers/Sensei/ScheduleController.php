@@ -134,7 +134,7 @@ class ScheduleController extends Controller
             'status' => 'required|in:scheduled,ongoing,completed,cancelled',
         ]);
 
-        $session->update($request->all());
+        $session->update($request->validated());
 
         return redirect()->route('sensei.schedule.index')->with('success', 'Jadwal berhasil diperbarui.');
     }

@@ -77,7 +77,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
     // Guest Sensei Routes (Login Only)
     Route::middleware('guest:sensei')->group(function () {
         Route::get('login', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'create'])->name('login');
-        Route::post('login', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'store']);
+        Route::post('login', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'store'])->middleware('throttle:5,1');
     });
 
     // Authenticated Sensei Routes
@@ -144,7 +144,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Guest Admin Routes
     Route::middleware('guest:admin')->group(function () {
         Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])->name('login');
-        Route::post('login', [AdminAuthenticatedSessionController::class, 'store']);
+        Route::post('login', [AdminAuthenticatedSessionController::class, 'store'])->middleware('throttle:5,1');
     });
 
     // Authenticated Admin Routes
@@ -161,13 +161,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/materials/create', [App\Http\Controllers\Admin\MaterialController::class, 'create'])->name('materials.create');
         Route::post('/materials', [App\Http\Controllers\Admin\MaterialController::class, 'store'])->name('materials.store');
         Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
-        Route::get('/payments/export', [App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
+        // Route::get('/payments/export', [App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
         Route::post('/payments/{id}/approve', [App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
         Route::post('/payments/{id}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
         Route::get('/certificates', [App\Http\Controllers\Admin\CertificateController::class, 'index'])->name('certificates.index');
         Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
+        // Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');

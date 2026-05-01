@@ -145,7 +145,7 @@ class QuizController extends Controller
             'points' => 'required|integer|min:1',
         ]);
 
-        $quiz->questions()->create($request->all());
+        $quiz->questions()->create($request->validated());
 
         return back()->with('success', 'Pertanyaan berhasil ditambahkan.');
     }
