@@ -140,7 +140,13 @@ class QuizController extends Controller
     {
         $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);
 
-        $data = $request->validated();
+        $data = $request->validate([
+            'question_text' => 'required|string',
+            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay',
+            'options' => 'nullable|array',
+            'correct_answer' => 'nullable|string',
+            'points' => 'required|integer|min:1',
+        ]);
         
         // Ensure options are null for essay type
         if ($data['question_type'] === 'essay') {
