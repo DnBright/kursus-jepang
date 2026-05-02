@@ -1,0 +1,78 @@
+<div class="space-y-2">
+    <label class="text-sm font-bold text-slate-700">Tipe Pertanyaan</label>
+    <select name="question_type" x-model="questionType" required
+        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm">
+        <option value="multiple_choice">Pilihan Ganda (Multiple Choice)</option>
+        <option value="essay">Essai (Free Text)</option>
+    </select>
+</div>
+
+<div class="space-y-2">
+    <label class="text-sm font-bold text-slate-700">Teks Pertanyaan</label>
+    <textarea name="question_text" required rows="3" 
+        x-model="{{ $type === 'edit' ? 'editQuestion.question_text' : "''" }}"
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium"
+        placeholder="Contoh: Jelaskan perbedaan antara Hiragana dan Katakana!"></textarea>
+</div>
+
+<!-- Multiple Choice Options -->
+<div class="space-y-3" x-show="questionType === 'multiple_choice'">
+    <label class="text-sm font-bold text-slate-700 block">Pilihan Jawaban</label>
+    <div class="grid grid-cols-1 gap-3">
+        @foreach(['A', 'B', 'C', 'D'] as $index => $letter)
+        <div class="flex items-center gap-3">
+            <span class="font-bold text-slate-400">{{ $letter }}</span>
+            <input type="text" name="options[]" :required="questionType === 'multiple_choice'" 
+                x-model="{{ $type === 'edit' ? "editQuestion.options[$index]" : "''" }}"
+                class="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
+                placeholder="Pilihan {{ $letter }}">
+            <input type="radio" name="correct_answer_radio" value="{{ $index }}" 
+                :checked="{{ $type === 'edit' ? "editQuestion.correct_answer === editQuestion.options[$index]" : ($index === 0 ? 'true' : 'false') }}"
+                class="w-4 h-4 text-red-600 focus:ring-red-500">
+        </div>
+        @endforeach
+    </div>
+    <p class="text-[10px] text-slate-500 font-medium">* Pilih salah satu sebagai jawaban benar menggunakan tombol radio.</p>
+</div>
+
+<!-- Essay Answer Reference -->
+<div class="space-y-3" x-show="questionType === 'essay'">
+    <label class="text-sm font-bold text-slate-700">Referensi Jawaban (Kunci Jawaban)</label>
+    <textarea name="essay_correct_answer" 
+        x-model="{{ $type === 'edit' ? 'editQuestion.correct_answer' : "''" }}"
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm"
+        placeholder="Masukkan contoh jawaban atau poin-poin penting yang harus ada..."></textarea>
+    <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+        <div class="flex gap-3">
+            <span class="text-xl">📝</span>
+            <div>
+                <h4 class="text-sm font-bold text-blue-900">Catatan</h4>
+                <p class="text-xs text-blue-700 mt-0.5">Siswa akan menjawab dalam bentuk teks bebas. Referensi ini akan membantu Anda saat proses penilaian manual.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="correct_answer" x-model="{{ $type === 'edit' ? 'editQuestion.correct_answer' : "''" }}">
+
+<div class="grid grid-cols-2 gap-4">
+    <div class="space-y-2">
+        <label class="text-sm font-bold text-slate-700">Point</label>
+        <input type="number" name="points" min="1" required
+            x-model="{{ $type === 'edit' ? 'editQuestion.points' : '10' }}"
+            class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500">
+    </div>
+    <div class="space-y-2">
+        <label class="text-sm font-bold text-slate-700">Urutan (Optional)</label>
+        <input type="number" name="order" 
+            x-model="{{ $type === 'edit' ? 'editQuestion.order' : '0' }}"
+            class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500">
+    </div>
+</div>
+
+<div class="pt-4 flex justify-end gap-3">
+    <button type="button" @click="{{ $type === 'edit' ? 'showEditModal = false' : 'showAddModal = false' }}" class="px-6 py-2.5 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">Batal</button>
+    <button type="submit" @click="syncCorrectAnswer('{{ $type }}')" class="px-8 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm shadow-lg shadow-red-600/20">
+        {{ $type === 'edit' ? 'Simpan Perubahan' : 'Simpan Pertanyaan' }}
+    </button>
+</div>
