@@ -8,9 +8,6 @@
             </div>
             
             <div class="flex flex-wrap items-center gap-3">
-                 <a href="{{ route('sensei.assignments.create') }}" class="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-xs">
-                    Buat Tugas Mandiri
-                </a>
                 <a href="{{ route('sensei.quizzes.create') }}?default_type=multiple_choice" class="px-4 py-2.5 bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center gap-2 text-xs">
                     + Quiz PG
                 </a>
