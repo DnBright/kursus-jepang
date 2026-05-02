@@ -3,7 +3,7 @@
         showAddModal: false, 
         showEditModal: false,
         questionType: 'multiple_choice',
-        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '' }
+        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 }
     }">
         <!-- Header -->
         <div class="flex items-center justify-between">
