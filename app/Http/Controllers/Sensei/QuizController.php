@@ -69,7 +69,7 @@ class QuizController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'lesson_id' => 'required|exists:lessons,id',
+            'module_id' => 'required|exists:modules,id',
             'type' => 'required|in:daily,weekly,module_test,mock_jlpt',
             'difficulty' => 'required|in:beginner,intermediate,advanced',
             'time_limit' => 'nullable|integer',
@@ -81,7 +81,7 @@ class QuizController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'instructor_id' => Auth::guard('sensei')->id(),
-            'lesson_id' => $request->lesson_id,
+            'module_id' => $request->module_id,
             'type' => $request->type,
             'difficulty' => $request->difficulty,
             'time_limit' => $request->time_limit,

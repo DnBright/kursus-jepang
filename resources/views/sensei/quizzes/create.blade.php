@@ -8,21 +8,9 @@
                 .then(res => res.json())
                 .then(data => {
                     const select = document.getElementById('module_id');
-                    select.innerHTML = '<option value=\'\'>Pilih Modul</option>';
+                    select.innerHTML = '<option value=\'\'>Pilih Modul / Wadah Kuis</option>';
                     data.forEach(m => {
                         select.innerHTML += `<option value='${m.id}'>${m.title}</option>`;
-                    });
-                });
-        },
-        fetchLessons() {
-            if (!this.moduleId) return;
-            fetch(`/sensei/api/modules/${this.moduleId}/lessons`)
-                .then(res => res.json())
-                .then(data => {
-                    const select = document.getElementById('lesson_id');
-                    select.innerHTML = '<option value=\'\'>Pilih Lesson / Wadah Soal</option>';
-                    data.forEach(l => {
-                        select.innerHTML += `<option value='${l.id}'>${l.title}</option>`;
                     });
                 });
         }
@@ -30,7 +18,7 @@
         <div class="mb-8 flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold text-slate-900">Buat Quiz Baru</h2>
-                <p class="text-slate-500 text-sm mt-1">Langkah pertama: Tentukan wadah (Lesson) dan detail quiz.</p>
+                <p class="text-slate-500 text-sm mt-1">Langkah pertama: Tentukan wadah (Modul) dan detail quiz.</p>
             </div>
             <a href="{{ route('sensei.quizzes.index') }}" class="text-sm font-bold text-slate-500 hover:text-slate-700 flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7 7-7"></path></svg>
@@ -52,10 +40,10 @@
                         @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- Wadah Selection (Course -> Module -> Lesson) -->
+                    <!-- Wadah Selection (Course -> Module) -->
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700">Pilih Kursus</label>
-                        <select x-model="courseId" @change="fetchModules()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 transition-all font-medium">
+                        <label class="text-sm font-bold text-slate-700">Pilih Kursus <span class="text-red-500">*</span></label>
+                        <select x-model="courseId" @change="fetchModules()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 transition-all font-medium appearance-none">
                             <option value="">Pilih Kursus</option>
                             @foreach($courses as $course)
                             <option value="{{ $course->id }}">{{ $course->title }}</option>
@@ -64,18 +52,11 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700">Pilih Modul</label>
-                        <select id="module_id" x-model="moduleId" @change="fetchLessons()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 transition-all font-medium">
+                        <label for="module_id" class="text-sm font-bold text-slate-700">Pilih Modul / Wadah Kuis <span class="text-red-500">*</span></label>
+                        <select id="module_id" name="module_id" required x-model="moduleId" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 transition-all font-medium appearance-none">
                             <option value="">Pilih Kursus Terlebih Dahulu</option>
                         </select>
-                    </div>
-
-                    <div class="md:col-span-2 space-y-2">
-                        <label for="lesson_id" class="text-sm font-bold text-slate-700">Pilih Lesson / Wadah Soal <span class="text-red-500">*</span></label>
-                        <select name="lesson_id" id="lesson_id" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 transition-all font-medium">
-                            <option value="">Pilih Modul Terlebih Dahulu</option>
-                        </select>
-                        @error('lesson_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('module_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <!-- Type -->
