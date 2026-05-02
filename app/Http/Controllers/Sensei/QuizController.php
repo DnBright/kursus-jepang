@@ -166,6 +166,28 @@ class QuizController extends Controller
         return back()->with('success', 'Pertanyaan berhasil dihapus.');
     }
 
+    public function updateQuestion(Request $request, $quizId, $questionId)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);
+        $question = $quiz->questions()->findOrFail($questionId);
+
+        $data = $request->validate([
+            'question_text' => 'required|string',
+            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay',
+            'options' => 'nullable|array',
+            'correct_answer' => 'nullable|string',
+            'points' => 'required|integer|min:1',
+        ]);
+
+        if ($data['question_type'] === 'essay') {
+            $data['options'] = null;
+        }
+
+        $question->update($data);
+
+        return back()->with('success', 'Pertanyaan berhasil diperbarui.');
+    }
+
     public function gradingAttempts()
     {
         $sensei = Auth::guard('sensei')->user();
