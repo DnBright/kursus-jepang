@@ -120,20 +120,27 @@
                                 </div>
                                 @endforeach
                             </div>
-                            <input type="hidden" name="correct_answer" id="correct_answer_input">
                             <p class="text-[10px] text-slate-500 font-medium">* Pilih salah satu sebagai jawaban benar menggunakan tombol radio.</p>
                         </div>
 
-                        <!-- Essay Hint -->
-                        <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl" x-show="questionType === 'essay'">
-                            <div class="flex gap-3">
-                                <span class="text-xl">📝</span>
-                                <div>
-                                    <h4 class="text-sm font-bold text-blue-900">Tipe Soal Essai</h4>
-                                    <p class="text-xs text-blue-700 mt-0.5">Siswa akan menjawab dalam bentuk teks bebas. Jawaban ini biasanya memerlukan penilaian manual oleh Sensei.</p>
+                        <!-- Essay Answer Reference -->
+                        <div class="space-y-3" x-show="questionType === 'essay'">
+                            <label class="text-sm font-bold text-slate-700">Referensi Jawaban (Kunci Jawaban)</label>
+                            <textarea name="essay_correct_answer" 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm"
+                                placeholder="Masukkan contoh jawaban atau poin-poin penting yang harus ada..."></textarea>
+                            <div class="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                                <div class="flex gap-3">
+                                    <span class="text-xl">📝</span>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-blue-900">Catatan</h4>
+                                        <p class="text-xs text-blue-700 mt-0.5">Siswa akan menjawab dalam bentuk teks bebas. Referensi ini akan membantu Anda saat proses penilaian manual.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <input type="hidden" name="correct_answer" id="correct_answer_input">
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-2">
@@ -170,6 +177,8 @@
                         break;
                     }
                 }
+            } else if (questionType === 'essay') {
+                document.getElementById('correct_answer_input').value = document.querySelector('textarea[name=essay_correct_answer]').value || 'ESSAY_REFERENCE';
             } else {
                 document.getElementById('correct_answer_input').value = '';
             }
