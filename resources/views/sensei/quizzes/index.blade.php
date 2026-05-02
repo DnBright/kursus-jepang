@@ -160,8 +160,22 @@
                         </div>
                     </div>
                     @empty
-                    <div class="text-center py-12">
-                        <p class="text-slate-500">Belum ada quiz yang dibuat.</p>
+                    <div class="text-center py-20 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                        <div class="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-6 text-3xl">📝</div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Quiz</h3>
+                        <p class="text-slate-500 max-w-xs mx-auto mb-8 text-sm text-balance text-center">Pilih salah satu tipe di bawah untuk mulai membuat kuis pertama Anda.</p>
+                        
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=multiple_choice" class="px-6 py-2.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all text-sm shadow-lg shadow-green-600/20">
+                                + Buat Quiz PG
+                            </a>
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=essay" class="px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all text-sm shadow-lg shadow-slate-900/20">
+                                + Buat Quiz Essai
+                            </a>
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=handwriting" class="px-6 py-2.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition-all text-sm shadow-lg shadow-orange-600/20">
+                                + Buat Quiz Tulis Tangan
+                            </a>
+                        </div>
                     </div>
                     @endforelse
                 </div>
