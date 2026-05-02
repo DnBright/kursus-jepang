@@ -120,7 +120,10 @@
                 <div @click="showAddModal = false" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
                 <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                     <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-slate-900">Tambah Pertanyaan</h3>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">Tambah Pertanyaan</h3>
+                            <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mt-0.5" x-text="questionType.replace('_', ' ')"></p>
+                        </div>
                         <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg></button>
                     </div>
                     <form action="{{ route('sensei.quizzes.questions.store', $quiz->id) }}" method="POST" class="p-6 space-y-4" id="addQuestionForm">
@@ -137,7 +140,10 @@
                 <div @click="showEditModal = false" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
                 <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                     <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-xl font-bold text-slate-900">Edit Pertanyaan</h3>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-900">Edit Pertanyaan</h3>
+                            <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-0.5" x-text="questionType.replace('_', ' ')"></p>
+                        </div>
                         <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg></button>
                     </div>
                     <form :action="`{{ route('sensei.quizzes.questions', $quiz->id) }}/${editQuestion.id}`" method="POST" class="p-6 space-y-4" id="editQuestionForm">
