@@ -1,3 +1,4 @@
+<x-sensei-layout>
     <div class="space-y-8" x-data="{ 
         showAddModal: false, 
         showEditModal: false,
