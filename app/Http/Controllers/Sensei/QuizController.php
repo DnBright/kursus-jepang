@@ -87,7 +87,7 @@ class QuizController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('sensei.quizzes.edit', $quiz->id)->with('success', 'Quiz berhasil dibuat. Sekarang tambahkan pertanyaan.');
+        return redirect()->route('sensei.quizzes.questions', $quiz->id)->with('success', 'Quiz berhasil dibuat. Sekarang tambahkan soal PG atau Essai.');
     }
 
     public function edit($id)
