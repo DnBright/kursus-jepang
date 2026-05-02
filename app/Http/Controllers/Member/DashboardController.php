@@ -21,8 +21,16 @@ class DashboardController extends Controller
         $achievements = UserAchievement::where('user_id', $userId)->orderBy('earned_at', 'desc')->take(3)->get();
         $completedLessons = LessonProgress::where('user_id', $userId)->where('status', 'completed')->count();
         
+        // Get user's active packages
+        $user = Auth::user();
+        $activePackages = $user->transactions()
+            ->where('status', 'approved')
+            ->pluck('package_type')
+            ->toArray();
+
         // Upcoming quizzes
-        $upcomingQuizzes = Quiz::where('is_active', true)
+        $allUpcomingQuizzes = Quiz::with(['lesson.module.course'])
+            ->where('is_active', true)
             ->where(function($q) {
                 $q->whereNull('available_from')->orWhere('available_from', '<=', now());
             })
@@ -30,8 +38,30 @@ class DashboardController extends Controller
                 $q->whereNull('available_until')->orWhere('available_until', '>=', now());
             })
             ->orderBy('created_at', 'desc')
-            ->take(3)
             ->get();
+
+        $upcomingQuizzes = $allUpcomingQuizzes->filter(function($quiz) use ($activePackages) {
+            if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+                return true;
+            }
+
+            if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                $course = $quiz->lesson->module->course;
+                foreach ($activePackages as $ap) {
+                    if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            foreach ($activePackages as $ap) {
+                if (stripos($quiz->title, $ap) !== false) {
+                    return true;
+                }
+            }
+            return false;
+        })->take(3);
 
         // Pending assignments
         $pendingAssignments = Assignment::where('due_date', '>=', now())

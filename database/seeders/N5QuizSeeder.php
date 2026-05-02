@@ -18,10 +18,16 @@ class N5QuizSeeder extends Seeder
             return;
         }
 
+        $hiraganaLesson = \App\Models\Lesson::where('title', 'LIKE', '%Literacy%')->first();
+        $katakanaLesson = \App\Models\Lesson::where('title', 'LIKE', '%Katakana%')->first();
+        $vocabLesson = \App\Models\Lesson::where('title', 'LIKE', '%Salam%')->first();
+        $grammarLesson = \App\Models\Lesson::where('title', 'LIKE', '%Grammar%')->orWhere('title', 'LIKE', '%Perkenalan%')->first();
+
         // Quiz 1: Hiragana Recognition (Daily Quiz)
         $hiraganaQuiz = Quiz::create([
             'title' => 'Daily Quiz: Hiragana あ-さ',
             'description' => 'Latihan mengenali huruf Hiragana dari A sampai SA. Perfect untuk pemula!',
+            'lesson_id' => $hiraganaLesson?->id,
             'type' => 'daily',
             'difficulty' => 'beginner',
             'time_limit' => 10,
@@ -59,6 +65,7 @@ class N5QuizSeeder extends Seeder
         $katakanaQuiz = Quiz::create([
             'title' => 'Daily Quiz: Katakana ア-サ',
             'description' => 'Test pengenalan Katakana untuk kata serapan asing.',
+            'lesson_id' => $katakanaLesson?->id,
             'type' => 'daily',
             'difficulty' => 'beginner',
             'time_limit' => 10,
@@ -91,6 +98,7 @@ class N5QuizSeeder extends Seeder
         $vocabQuiz = Quiz::create([
             'title' => 'Week 1: Basic Greetings & Numbers',
             'description' => 'Menguji pemahaman salam dasar dan angka 1-10 dalam bahasa Jepang.',
+            'lesson_id' => $vocabLesson?->id,
             'type' => 'weekly',
             'difficulty' => 'beginner',
             'time_limit' => 15,
@@ -128,6 +136,7 @@ class N5QuizSeeder extends Seeder
         $grammarQuiz = Quiz::create([
             'title' => 'Module Test: Particles は・を・が',
             'description' => 'Tes pemahaman partikel dasar dalam kalimat bahasa Jepang.',
+            'lesson_id' => $grammarLesson?->id,
             'type' => 'module_test',
             'difficulty' => 'intermediate',
             'time_limit' => 20,
