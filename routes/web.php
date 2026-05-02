@@ -26,7 +26,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'member'])->group(function () {
+Route::middleware(['auth', 'member', 'active'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Member\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
@@ -37,7 +37,7 @@ Route::middleware(['auth', 'member'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'member', 'package.active'])->group(function () {
+Route::middleware(['auth', 'member', 'active', 'package.active'])->group(function () {
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
 
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');

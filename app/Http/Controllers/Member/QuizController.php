@@ -18,9 +18,16 @@ class QuizController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
         $filter = $request->get('type', 'all');
         
-        $quizzesQuery = Quiz::with('lesson')
+        // Get user's active package levels from approved transactions
+        $activePackages = $user->transactions()
+            ->where('status', 'approved')
+            ->pluck('package_type')
+            ->toArray();
+        
+        $quizzesQuery = Quiz::with(['lesson.module.course'])
             ->where('is_active', true)
             ->where(function($q) {
                 $q->whereNull('available_from')
@@ -35,7 +42,38 @@ class QuizController extends Controller
             $quizzesQuery->where('type', $filter);
         }
 
-        $quizzes = $quizzesQuery->orderBy('created_at', 'desc')->get();
+        $allQuizzes = $quizzesQuery->orderBy('created_at', 'desc')->get();
+
+        // Filter quizzes by user's active packages
+        $quizzes = $allQuizzes->filter(function($quiz) use ($activePackages) {
+            // Admin and Sensei bypass filtering
+            if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+                return true;
+            }
+
+            // Case 1: Quiz is linked to a lesson/course
+            if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                $course = $quiz->lesson->module->course;
+                foreach ($activePackages as $ap) {
+                    if (stripos($course->title, $ap) !== false || 
+                        stripos($course->level, $ap) !== false || 
+                        stripos($ap, $course->level) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            // Case 2: Quiz is not linked to a lesson (orphaned)
+            // Fallback: Check if user has ANY active package and match by title
+            foreach ($activePackages as $ap) {
+                if (stripos($quiz->title, $ap) !== false) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
 
         // Get user's attempts for each quiz
         $userAttempts = UserQuizAttempt::where('user_id', Auth::id())
@@ -52,6 +90,38 @@ class QuizController extends Controller
      */
     public function show(Quiz $quiz)
     {
+        $user = Auth::user();
+
+        // Authorization check: Ensure user has access to this quiz's package
+        $hasAccess = false;
+        if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+            $hasAccess = true;
+        } else {
+            $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
+            
+            if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                $course = $quiz->lesson->module->course;
+                foreach ($activePackages as $ap) {
+                    if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                        $hasAccess = true;
+                        break;
+                    }
+                }
+            } else {
+                // Orphaned quiz fallback
+                foreach ($activePackages as $ap) {
+                    if (stripos($quiz->title, $ap) !== false) {
+                        $hasAccess = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!$hasAccess) {
+            return redirect()->route('quizzes.index')->with('error', 'Anda tidak memiliki akses ke kuis ini.');
+        }
+
         // Check if quiz is available
         if (!$quiz->is_active) {
             return redirect()->route('quizzes.index')->with('error', 'Quiz ini tidak tersedia.');
