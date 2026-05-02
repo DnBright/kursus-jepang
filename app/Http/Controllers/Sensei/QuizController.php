@@ -242,6 +242,8 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('sensei.quizzes.grading.index')->with('success', 'Nilai quiz berhasil disimpan.');
+    }
+
     public function getLessons($moduleId)
     {
         $lessons = \App\Models\Lesson::where('module_id', $moduleId)->orderBy('order', 'asc')->get(['id', 'title']);
