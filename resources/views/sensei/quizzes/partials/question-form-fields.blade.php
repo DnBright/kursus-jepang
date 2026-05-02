@@ -4,6 +4,7 @@
         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm">
         <option value="multiple_choice">Pilihan Ganda (Multiple Choice)</option>
         <option value="essay">Essai (Free Text)</option>
+        <option value="handwriting">Tulis Tangan (Handwriting)</option>
     </select>
 </div>
 
@@ -48,6 +49,24 @@
             <div>
                 <h4 class="text-sm font-bold text-blue-900">Catatan</h4>
                 <p class="text-xs text-blue-700 mt-0.5">Siswa akan menjawab dalam bentuk teks bebas. Referensi ini akan membantu Anda saat proses penilaian manual.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Handwriting Section -->
+<div class="space-y-3" x-show="questionType === 'handwriting'">
+    <label class="text-sm font-bold text-slate-700">Target Karakter / Kalimat yang Harus Ditulis</label>
+    <input type="text" name="handwriting_correct_answer" 
+        x-model="{{ $type === 'edit' ? 'editQuestion.correct_answer' : "''" }}"
+        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-lg text-center"
+        placeholder="Contoh: あいうえお atau 漢字">
+    <div class="p-4 bg-orange-50 border border-orange-100 rounded-2xl">
+        <div class="flex gap-3">
+            <span class="text-xl">🖌️</span>
+            <div>
+                <h4 class="text-sm font-bold text-orange-900">Petunjuk Tulis Tangan</h4>
+                <p class="text-xs text-orange-700 mt-0.5">Siswa akan diminta menulis karakter di atas layar atau mengunggah foto tulisan mereka. Masukkan karakter target sebagai referensi penilaian.</p>
             </div>
         </div>
     </div>

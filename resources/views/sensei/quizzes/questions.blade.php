@@ -53,6 +53,11 @@
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Referensi Jawaban:</p>
                             {{ $question->correct_answer ?: '-' }}
                         </div>
+                        @elseif($question->question_type === 'handwriting')
+                        <div class="px-4 py-3 rounded-xl border border-dashed border-orange-200 bg-orange-50 text-orange-700 text-sm text-center">
+                            <p class="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-2">Target Tulisan:</p>
+                            <span class="text-2xl font-bold">{{ $question->correct_answer ?: '-' }}</span>
+                        </div>
                         @else
                         <div class="px-4 py-2 rounded-lg border bg-green-50 border-green-200 text-green-700 font-bold text-sm">
                             Jawaban Benar: {{ $question->correct_answer }}
@@ -139,6 +144,8 @@
                 }
             } else if (questionType === 'essay') {
                 correctInput.value = form.querySelector('textarea[name=essay_correct_answer]').value || 'ESSAY_REFERENCE';
+            } else if (questionType === 'handwriting') {
+                correctInput.value = form.querySelector('input[name=handwriting_correct_answer]').value || 'HANDWRITING_REFERENCE';
             } else {
                 correctInput.value = '';
             }

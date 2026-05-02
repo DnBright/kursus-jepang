@@ -173,13 +173,13 @@ class QuizController extends Controller
 
         $data = $request->validate([
             'question_text' => 'required|string',
-            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay',
+            'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay,handwriting',
             'options' => 'nullable|array',
             'correct_answer' => 'nullable|string',
             'points' => 'required|integer|min:1',
         ]);
 
-        if ($data['question_type'] === 'essay') {
+        if (in_array($data['question_type'], ['essay', 'handwriting'])) {
             $data['options'] = null;
         }
 
