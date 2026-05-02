@@ -177,10 +177,15 @@ class QuizController extends Controller
             'options' => 'nullable|array',
             'correct_answer' => 'nullable|string',
             'points' => 'required|integer|min:1',
+            'order' => 'nullable|integer',
         ]);
 
         if (in_array($data['question_type'], ['essay', 'handwriting'])) {
             $data['options'] = null;
+        }
+
+        if (!isset($data['order']) || $data['order'] == 0) {
+            $data['order'] = ($quiz->questions()->max('order') ?? 0) + 1;
         }
 
         $question->update($data);
