@@ -94,8 +94,22 @@
             <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
                 <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300 text-2xl">❓</div>
                 <h3 class="text-lg font-bold text-slate-900">Belum Ada Pertanyaan</h3>
-                <p class="text-slate-500 max-w-xs mx-auto mt-1 mb-6">Mulai tambahkan pertanyaan pilihan ganda atau tipe lainnya ke quiz ini.</p>
-                <button @click="showAddModal = true; questionType = 'multiple_choice'" class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm">Tambah Pertanyaan Pertama</button>
+                <p class="text-slate-500 max-w-xs mx-auto mt-1 mb-8">Mulai tambahkan pertanyaan ke quiz ini dengan memilih tipe di bawah.</p>
+                
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button @click="showAddModal = true; questionType = 'multiple_choice'" class="px-6 py-2.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all text-sm shadow-lg shadow-green-600/20 flex items-center gap-2">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        + Pilihan Ganda
+                    </button>
+                    <button @click="showAddModal = true; questionType = 'essay'" class="px-6 py-2.5 bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-800 transition-all text-sm shadow-lg shadow-slate-700/20 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        + Essai
+                    </button>
+                    <button @click="showAddModal = true; questionType = 'handwriting'" class="px-6 py-2.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition-all text-sm shadow-lg shadow-orange-600/20 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        + Tulis Tangan
+                    </button>
+                </div>
             </div>
             @endforelse
         </div>
