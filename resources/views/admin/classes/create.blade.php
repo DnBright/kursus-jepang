@@ -39,6 +39,7 @@
                             <option value="N2">N2 (Upper-Intermediate)</option>
                             <option value="N1">N1 (Advanced)</option>
                             <option value="Conversation">Conversation</option>
+                            <option value="Tokutei Ginou">Tokutei Ginou (Career Path)</option>
                         </select>
                     </div>
 

@@ -256,6 +256,7 @@
                                         <option value="N2" :selected="editClass?.level === 'N2'">N2 (Upper-Intermediate)</option>
                                         <option value="N1" :selected="editClass?.level === 'N1'">N1 (Advanced)</option>
                                         <option value="Conversation" :selected="editClass?.level === 'Conversation'">Conversation</option>
+                                        <option value="Tokutei Ginou" :selected="editClass?.level === 'Tokutei Ginou'">Tokutei Ginou (Career Path)</option>
                                     </select>
                                 </div>
                                 <div>
