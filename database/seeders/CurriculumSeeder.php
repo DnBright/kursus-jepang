@@ -82,6 +82,33 @@ class CurriculumSeeder extends Seeder
         ];
 
         $this->seedModules($n4, $n4Modules);
+
+        // 3. Tokutei Ginou Course
+        $tg = Course::firstOrCreate(
+            ['slug' => 'tokutei-ginou'],
+            [
+                'title' => 'Tokutei Ginou: Career Path',
+                'description' => 'Persiapan lengkap untuk bekerja di Jepang melalui skema Tokutei Ginou. Pelatihan skill spesifik bidang dan persiapan interview.',
+                'level' => 'Tokutei Ginou',
+                'price' => 8500000,
+                'thumbnail' => 'images/tg-thumbnail.jpg'
+            ]
+        );
+
+        $tgModules = [
+            'Bulan 1: Skill Assessment Prep' => [
+                ['title' => 'Pengenalan Skema Tokutei Ginou', 'type' => 'video', 'duration' => 20],
+                ['title' => 'Kosakata Bidang Spesifik', 'type' => 'video', 'duration' => 25],
+                ['title' => 'Persiapan Tes Skill (ASAT)', 'type' => 'video', 'duration' => 30],
+            ],
+            'Bulan 2: Job Interview & Culture' => [
+                ['title' => 'Etika Kerja di Jepang', 'type' => 'video', 'duration' => 20],
+                ['title' => 'Simulasi Interview Perusahaan', 'type' => 'video', 'duration' => 45],
+                ['title' => 'Penulisan Resume (Rirekisho)', 'type' => 'video', 'duration' => 30],
+            ]
+        ];
+
+        $this->seedModules($tg, $tgModules);
     }
 
     private function seedModules($course, $modulesData)
