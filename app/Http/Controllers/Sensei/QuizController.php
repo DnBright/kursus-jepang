@@ -69,6 +69,7 @@ class QuizController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'lesson_id' => 'required|exists:lessons,id',
             'type' => 'required|in:daily,weekly,module_test,mock_jlpt',
             'difficulty' => 'required|in:beginner,intermediate,advanced',
             'time_limit' => 'nullable|integer',
@@ -80,6 +81,7 @@ class QuizController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'instructor_id' => Auth::guard('sensei')->id(),
+            'lesson_id' => $request->lesson_id,
             'type' => $request->type,
             'difficulty' => $request->difficulty,
             'time_limit' => $request->time_limit,
@@ -240,5 +242,9 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('sensei.quizzes.grading.index')->with('success', 'Nilai quiz berhasil disimpan.');
+    public function getLessons($moduleId)
+    {
+        $lessons = \App\Models\Lesson::where('module_id', $moduleId)->orderBy('order', 'asc')->get(['id', 'title']);
+        return response()->json($lessons);
     }
 }
