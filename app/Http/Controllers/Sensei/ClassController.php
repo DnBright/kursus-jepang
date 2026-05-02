@@ -30,17 +30,22 @@ class ClassController extends Controller
                 ->orderBy('scheduled_at', 'asc')
                 ->first();
 
+            $levelBadge = 'N5';
+            if (str_contains($course->level, 'N4')) $levelBadge = 'N4';
+            if (str_contains($course->level, 'N3')) $levelBadge = 'N3';
+            if (str_contains($course->level, 'Tokutei')) $levelBadge = 'TG';
+
             return [
                 'id' => $course->id,
                 'name' => $course->title,
-                'level' => $course->level,
-                'status' => 'active', // can be dynamic if we add a status column to courses
+                'level' => $levelBadge,
+                'status' => 'active',
                 'students_count' => $course->studentsCount(),
-                'schedule_day' => '-', // need a separate schedule table if we want recurring days
-                'schedule_time' => $todaySession ? $todaySession->scheduled_at->format('H:i') : '-',
+                'schedule_day' => $todaySession ? 'Hari Ini' : ($nextSession ? $nextSession->scheduled_at->translatedFormat('l') : '-'),
+                'schedule_time' => $todaySession ? $todaySession->scheduled_at->format('H:i') : ($nextSession ? $nextSession->scheduled_at->format('H:i') : '-'),
                 'platform' => 'Zoom',
                 'is_today' => $todaySession ? true : false,
-                'next_session' => $nextSession ? $nextSession->scheduled_at->translatedFormat('D, d M H:i') : '-',
+                'next_session' => $nextSession ? $nextSession->scheduled_at->translatedFormat('d M, H:i') : '-',
             ];
         });
 
