@@ -111,7 +111,7 @@
                         <h3 class="text-xl font-bold text-slate-900">Edit Pertanyaan</h3>
                         <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path></svg></button>
                     </div>
-                    <form :action="`{{ route('sensei.quizzes.questions.index', $quiz->id) }}/${editQuestion.id}`" method="POST" class="p-6 space-y-4" id="editQuestionForm">
+                    <form :action="`{{ route('sensei.quizzes.questions', $quiz->id) }}/${editQuestion.id}`" method="POST" class="p-6 space-y-4" id="editQuestionForm">
                         @csrf
                         @method('PUT')
                         @include('sensei.quizzes.partials.question-form-fields', ['type' => 'edit'])
