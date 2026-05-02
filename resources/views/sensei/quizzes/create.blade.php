@@ -2,7 +2,12 @@
     <div class="max-w-4xl mx-auto">
         <div class="mb-8 flex items-center justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-slate-900">Buat Quiz Baru</h2>
+                <h2 class="text-2xl font-bold text-slate-900">
+                    @if(request('default_type') === 'multiple_choice') Buat Quiz Pilihan Ganda
+                    @elseif(request('default_type') === 'essay') Buat Quiz Essai
+                    @elseif(request('default_type') === 'handwriting') Buat Quiz Tulis Tangan
+                    @else Buat Quiz Baru @endif
+                </h2>
                 <p class="text-slate-500 text-sm mt-1">Langkah pertama: Tentukan wadah (Kursus) dan detail quiz.</p>
             </div>
             <a href="{{ route('sensei.quizzes.index') }}" class="text-sm font-bold text-slate-500 hover:text-slate-700 flex items-center gap-2">
@@ -14,6 +19,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <form action="{{ route('sensei.quizzes.store') }}" method="POST" class="p-8 space-y-6">
                 @csrf
+                <input type="hidden" name="default_type" value="{{ request('default_type') }}">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Title -->

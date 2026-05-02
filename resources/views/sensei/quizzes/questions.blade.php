@@ -3,7 +3,19 @@
         showAddModal: false, 
         showEditModal: false,
         questionType: 'multiple_choice',
-        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 }
+        newQuestion: { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 },
+        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 },
+        init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const defType = urlParams.get('default_type');
+            if (defType && ['multiple_choice', 'essay', 'handwriting'].includes(defType)) {
+                this.questionType = defType;
+                this.showAddModal = true;
+            }
+        },
+        resetNewQuestion() {
+            this.newQuestion = { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 };
+        }
     }">
         <!-- Header -->
         <div class="flex items-center justify-between">
