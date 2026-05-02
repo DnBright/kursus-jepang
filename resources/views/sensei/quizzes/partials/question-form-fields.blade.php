@@ -1,12 +1,4 @@
-<div class="space-y-2">
-    <label class="text-sm font-bold text-slate-700">Tipe Pertanyaan</label>
-    <select name="question_type" x-model="questionType" required
-        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm">
-        <option value="multiple_choice">Pilihan Ganda (Multiple Choice)</option>
-        <option value="essay">Essai (Free Text)</option>
-        <option value="handwriting">Tulis Tangan (Handwriting)</option>
-    </select>
-</div>
+<input type="hidden" name="question_type" x-model="questionType">
 
 <div class="space-y-2">
     <label class="text-sm font-bold text-slate-700">Teks Pertanyaan</label>
