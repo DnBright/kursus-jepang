@@ -141,6 +141,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         ]);
         
         Route::get('/api/courses/{courseId}/modules', [App\Http\Controllers\Sensei\AssignmentController::class, 'getModules'])->name('api.course-modules');
+        Route::get('/api/modules/{moduleId}/lessons', [App\Http\Controllers\Sensei\QuizController::class, 'getLessons'])->name('api.module-lessons');
         
         Route::post('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
         Route::get('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout.get');
