@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             CurriculumSeeder::class,
             N5QuizSeeder::class,
             N5AssignmentSeeder::class,
+            EssayQuizSeeder::class,
         ]);
     }
 }
