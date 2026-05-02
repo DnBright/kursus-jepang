@@ -25,20 +25,24 @@ class EnsureSenseiIsApproved
             if (Auth::guard('web')->check()) {
                 return redirect()->route('dashboard')->with('error', 'Anda tidak memiliki akses ke halaman sensei.');
             }
-            // Not logged in at all
+            // Not logged in at all - must redirect to sensei login
             return redirect()->route('sensei.login');
         }
 
         $sensei = Auth::guard('sensei')->user();
 
-        // Check sensei status
+        // Check sensei status - must be approved to access
         if ($sensei->status === 'approved') {
             return $next($request);
         }
 
-        // Pending approval
+        // Pending approval - show pending page
         if ($sensei->status === 'pending') {
-            return response()->view('auth.pending');
+            // Only show pending page for dashboard, otherwise allow access
+            if ($request->is('sensei/dashboard') || $request->is('sensei')) {
+                return response()->view('auth.pending');
+            }
+            return $next($request);
         }
 
         // Rejected or any other status - logout and redirect

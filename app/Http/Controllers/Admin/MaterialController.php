@@ -80,4 +80,40 @@ class MaterialController extends Controller
 
         return redirect()->route('admin.materials.index')->with('success', 'Materi baru berhasil ditambahkan.');
     }
+
+    public function edit($id)
+    {
+        $material = \App\Models\Lesson::with(['module.course'])->findOrFail($id);
+        $courses = \App\Models\Course::with('modules')->get();
+        $instructors = \App\Models\Sensei::where('is_active', true)->get();
+        return view('admin.materials.edit', compact('material', 'courses', 'instructors'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $material = \App\Models\Lesson::findOrFail($id);
+
+        $validated = $request->validate([
+            'module_id' => 'required|exists:modules,id',
+            'instructor_id' => 'required|exists:senseis,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:video,text,audio,pdf',
+            'content' => 'required|string',
+            'duration' => 'nullable|string',
+            'order' => 'required|integer|min:1',
+            'is_free' => 'boolean',
+        ]);
+
+        $material->update($validated);
+
+        return redirect()->route('admin.materials.index')->with('success', 'Materi berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $material = \App\Models\Lesson::findOrFail($id);
+        $material->delete();
+
+        return redirect()->route('admin.materials.index')->with('success', 'Materi berhasil dihapus.');
+    }
 }

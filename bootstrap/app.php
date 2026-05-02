@@ -38,12 +38,23 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            // Check if this is an admin route
             if (request()->is('admin/*') || request()->is('admin')) {
                 return route('admin.login');
             }
-            if (request()->is('sensei/*') || request()->is('sensei')) {
+            
+            // Check if this is a sensei route - must be explicit
+            if (request()->is('sensei/*') || request()->is('sensei') || request()->is('sensei/login')) {
                 return route('sensei.login');
             }
+            
+            // Check referer for sensei routes (in case request path check fails)
+            $referer = request()->headers->get('referer', '');
+            if (str_contains($referer, '/sensei/')) {
+                return route('sensei.login');
+            }
+            
+            // Default to student login
             return route('login');
         });
     })

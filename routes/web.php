@@ -164,13 +164,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/classes', [App\Http\Controllers\Admin\ClassController::class, 'index'])->name('classes.index');
         Route::get('/classes/create', [App\Http\Controllers\Admin\ClassController::class, 'create'])->name('classes.create');
         Route::post('/classes', [App\Http\Controllers\Admin\ClassController::class, 'store'])->name('classes.store');
+        Route::put('/classes/{id}', [App\Http\Controllers\Admin\ClassController::class, 'update'])->name('classes.update');
         Route::get('/materials', [App\Http\Controllers\Admin\MaterialController::class, 'index'])->name('materials.index');
         Route::get('/materials/create', [App\Http\Controllers\Admin\MaterialController::class, 'create'])->name('materials.create');
         Route::post('/materials', [App\Http\Controllers\Admin\MaterialController::class, 'store'])->name('materials.store');
+        Route::get('/materials/{id}/edit', [App\Http\Controllers\Admin\MaterialController::class, 'edit'])->name('materials.edit');
+        Route::put('/materials/{id}', [App\Http\Controllers\Admin\MaterialController::class, 'update'])->name('materials.update');
+        Route::delete('/materials/{id}', [App\Http\Controllers\Admin\MaterialController::class, 'destroy'])->name('materials.destroy');
         Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
         // Route::get('/payments/export', [App\Http\Controllers\Admin\PaymentController::class, 'export'])->name('payments.export');
         Route::post('/payments/{id}/approve', [App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve');
+        Route::get('/payments/{id}/approve', [App\Http\Controllers\Admin\PaymentController::class, 'approve'])->name('payments.approve.get');
         Route::post('/payments/{id}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
+        Route::get('/payments/{id}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject.get');
         Route::get('/certificates', [App\Http\Controllers\Admin\CertificateController::class, 'index'])->name('certificates.index');
         // Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
@@ -178,14 +184,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
+        Route::get('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve.get');
         Route::post('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
+        Route::get('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject.get');
         
         // Transaction approval routes
         Route::post('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve');
+        Route::get('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve.get');
         Route::post('/transactions/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('reject');
+        Route::get('/transactions/{id}/reject', [App\Http\Controllers\AdminController::class, 'reject'])->name('reject.get');
 
         Route::post('/accounts/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveAccount'])->name('accounts.approve');
+        Route::get('/accounts/{id}/approve', [App\Http\Controllers\AdminController::class, 'approveAccount'])->name('accounts.approve.get');
         Route::post('/accounts/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectAccount'])->name('accounts.reject');
+        Route::get('/accounts/{id}/reject', [App\Http\Controllers\AdminController::class, 'rejectAccount'])->name('accounts.reject.get');
 
         // Manual Sensei Management
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);

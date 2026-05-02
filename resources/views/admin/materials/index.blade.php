@@ -131,9 +131,16 @@
                             </td>
                             <td class="p-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                     <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Edit Materi">
+                                     <a href="{{ route('admin.materials.edit', $material->id) }}" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Edit Materi">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    </button>
+                                    </a>
+                                    <form action="{{ route('admin.materials.destroy', $material->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Hapus Materi">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -225,23 +232,15 @@
              </div>
         </div>
 
-         <!-- 4. General Content Tab (Mock) -->
+         <!-- 4. General Content Tab -->
         <div x-show="activeTab === 'general'" style="display: none;">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Mock Card 1 -->
-                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <div class="h-32 bg-slate-100 rounded-xl mb-4 flex items-center justify-center text-slate-400">Banner Image</div>
-                    <h3 class="font-bold text-slate-900">Promo Diskon Awal Tahun</h3>
-                    <p class="text-xs text-slate-500 mt-1 mb-3">Published • 01 Jan 2026</p>
-                    <button class="w-full py-2 bg-slate-50 text-slate-600 text-sm font-bold rounded-lg hover:bg-slate-100 transition-colors">Edit Konten</button>
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                 </div>
-                 <!-- Mock Card 2 -->
-                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <div class="h-32 bg-slate-100 rounded-xl mb-4 flex items-center justify-center text-slate-400">Banner Image</div>
-                    <h3 class="font-bold text-slate-900">Pengumuman Libur Nasional</h3>
-                    <p class="text-xs text-slate-500 mt-1 mb-3">Draft</p>
-                    <button class="w-full py-2 bg-slate-50 text-slate-600 text-sm font-bold rounded-lg hover:bg-slate-100 transition-colors">Edit Konten</button>
-                </div>
+                <h3 class="font-bold text-slate-900 text-lg mb-2">Konten Umum</h3>
+                <p class="text-slate-500 mb-4">Fitur pengelolaan konten umum akan segera hadir.</p>
+                <button class="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-bold rounded-lg cursor-not-allowed" disabled>Coming Soon</button>
             </div>
         </div>
 
