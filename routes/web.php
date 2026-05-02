@@ -139,6 +139,8 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
             'destroy' => 'schedule.destroy',
         ]);
         
+        Route::get('/api/courses/{courseId}/modules', [App\Http\Controllers\Sensei\AssignmentController::class, 'getModules'])->name('api.course-modules');
+        
         Route::post('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
         Route::get('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout.get');
     });

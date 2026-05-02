@@ -110,4 +110,10 @@ class AssignmentController extends Controller
 
         return back()->with('success', 'Nilai berhasil disimpan.');
     }
+
+    public function getModules($courseId)
+    {
+        $modules = Module::where('course_id', $courseId)->orderBy('order', 'asc')->get(['id', 'title']);
+        return response()->json($modules);
+    }
 }
