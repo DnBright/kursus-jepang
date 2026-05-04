@@ -143,6 +143,26 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/api/courses/{courseId}/modules', [App\Http\Controllers\Sensei\AssignmentController::class, 'getModules'])->name('api.course-modules');
         Route::get('/api/modules/{moduleId}/lessons', [App\Http\Controllers\Sensei\QuizController::class, 'getLessons'])->name('api.module-lessons');
         
+        // Fix Storage Link (Temporary for deployment)
+        Route::get('/fix-storage', function () {
+            try {
+                // Delete existing link if any
+                if (file_exists(public_path('storage'))) {
+                    if (is_link(public_path('storage'))) {
+                        unlink(public_path('storage'));
+                    } else {
+                        // If it's a real directory, we might need to be careful
+                        return "Folder 'storage' di public adalah folder asli, bukan link. Silakan hapus manual.";
+                    }
+                }
+                
+                \Illuminate\Support\Facades\Artisan::call('storage:link');
+                return "Storage Link berhasil dibuat! Silakan cek kembali bukti pembayaran.";
+            } catch (\Exception $e) {
+                return "Error: " . $e->getMessage();
+            }
+        });
+        
         Route::post('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
         Route::get('logout', [App\Http\Controllers\Sensei\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout.get');
     });
