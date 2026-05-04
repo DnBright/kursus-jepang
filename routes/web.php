@@ -143,23 +143,30 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/api/courses/{courseId}/modules', [App\Http\Controllers\Sensei\AssignmentController::class, 'getModules'])->name('api.course-modules');
         Route::get('/api/modules/{moduleId}/lessons', [App\Http\Controllers\Sensei\QuizController::class, 'getLessons'])->name('api.module-lessons');
         
-        // Fix Storage Link (Temporary for deployment)
+        // Fix Storage Link (Informative & Robust)
         Route::get('/fix-storage', function () {
+            $link = public_path('storage');
+            $target = storage_path('app/public');
+            
             try {
-                // Delete existing link if any
-                if (file_exists(public_path('storage'))) {
-                    if (is_link(public_path('storage'))) {
-                        unlink(public_path('storage'));
+                if (file_exists($link)) {
+                    if (is_link($link)) {
+                        unlink($link);
                     } else {
-                        // If it's a real directory, we might need to be careful
-                        return "Folder 'storage' di public adalah folder asli, bukan link. Silakan hapus manual.";
+                        // Rename real folder to backup
+                        $backup = $link . '_backup_' . time();
+                        rename($link, $backup);
+                        echo "Peringatan: Folder 'storage' asli ditemukan dan telah di-rename ke '$backup'.<br>";
                     }
                 }
                 
-                \Illuminate\Support\Facades\Artisan::call('storage:link');
-                return "Storage Link berhasil dibuat! Silakan cek kembali bukti pembayaran.";
+                if (app()->make('files')->link($target, $link)) {
+                    return "Sukses: Link simbolik telah dibuat dari [$link] ke [$target]. Gambar seharusnya sekarang bisa diakses.";
+                }
+                
+                return "Gagal: Gagal membuat link. Pastikan server Anda mengizinkan fungsi symlink().";
             } catch (\Exception $e) {
-                return "Error: " . $e->getMessage();
+                return "Error: " . $e->getMessage() . "<br>Silakan hubungi admin server untuk membuat symlink manual dari [$target] ke [$link].";
             }
         });
         
