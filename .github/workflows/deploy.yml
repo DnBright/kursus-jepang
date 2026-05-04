@@ -11,7 +11,17 @@ jobs:
     steps:
     - name: Get Latest Code
       uses: actions/checkout@v4
-    
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
+        coverage: none
+
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -33,7 +43,7 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
-          **/vendor/**
           **/tests/**
-          **/bootstrap/cache/*.php
           .env
+          phpunit.xml
+          README.md
