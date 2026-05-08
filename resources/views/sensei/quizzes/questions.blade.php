@@ -84,7 +84,8 @@
                 
                 const result = await response.json();
                 if (result.success) {
-                    window.location.reload();
+                    alert('Berhasil! Semua soal telah disimpan.');
+                    window.location.href = '{{ route('sensei.quizzes.index') }}';
                 } else {
                     alert('Error: ' + (result.message || 'Gagal menyimpan.'));
                 }
