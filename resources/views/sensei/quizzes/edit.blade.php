@@ -28,12 +28,7 @@
                     <input type="hidden" name="type" value="{{ $quiz->type }}">
                     <input type="hidden" name="difficulty" value="{{ $quiz->difficulty }}">
 
-                    <!-- Time Limit -->
-                    <div class="space-y-2">
-                        <label for="time_limit" class="text-sm font-bold text-slate-700">Durasi (Menit)</label>
-                        <input type="number" name="time_limit" id="time_limit" value="{{ old('time_limit', $quiz->time_limit) }}" min="1"
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium">
-                    </div>
+                    <input type="hidden" name="time_limit" value="{{ $quiz->time_limit }}">
 
                     <!-- Passing Score -->
                     <div class="space-y-2">
