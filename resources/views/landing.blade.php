@@ -458,8 +458,14 @@
     <!-- Articles Section -->
     <section x-data="{ 
         showModal: false, 
-        activeArticle: {title: '', content: '', image: '', date: ''},
+        isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
+        activeArticle: {title: '', content: '', image: '', date: '', is_member_only: false},
         openArticle(article) {
+            if (article.is_member_only && !this.isLoggedIn) {
+                alert('Artikel ini khusus untuk member. Silakan login atau daftar terlebih dahulu untuk membaca.');
+                window.location.href = '{{ route('login') }}';
+                return;
+            }
             this.activeArticle = article;
             this.showModal = true;
             document.body.style.overflow = 'hidden';
@@ -484,18 +490,25 @@
                     title: {{ json_encode($article->title) }},
                     content: {{ json_encode($article->content) }},
                     image: '{{ $article->image ? Storage::url($article->image) : '' }}',
-                    date: '{{ $article->created_at->format('d M Y') }}'
+                    date: '{{ $article->created_at->format('d M Y') }}',
+                    is_member_only: {{ $article->is_member_only ? 'true' : 'false' }}
                 })" class="group cursor-pointer">
                     <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
                         @if($article->image)
-                        <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $article->is_member_only && !auth()->check() ? 'blur-sm' : '' }}">
                         @else
                         <div class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
                              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002-2z"></path></svg>
                         </div>
                         @endif
-                        <div class="absolute top-6 left-6">
+                        <div class="absolute top-6 left-6 flex gap-2">
                             <span class="px-4 py-2 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black text-slate-900 uppercase tracking-widest shadow-xl shadow-black/5">Article</span>
+                            @if($article->is_member_only)
+                            <span class="px-4 py-2 bg-red-600/90 backdrop-blur-md rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/5 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                Member
+                            </span>
+                            @endif
                         </div>
                     </div>
                     <h3 class="text-2xl font-black text-slate-900 mb-4 group-hover:text-red-600 transition-colors leading-tight">{{ $article->title }}</h3>
