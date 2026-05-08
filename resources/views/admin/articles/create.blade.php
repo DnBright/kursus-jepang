@@ -148,27 +148,31 @@
         </form>
     </div>
 
-    <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <!-- CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
-        tinymce.init({
-            selector: '#editor',
-            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-            height: 600,
-            border_width: 0,
-            skin: 'oxide',
-            content_css: 'default',
-            menubar: false,
-            statusbar: true,
-            promotion: false,
-            branding: false,
-            setup: function (editor) {
-                editor.on('change', function () {
-                    editor.save();
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'strikethrough', 'underline', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'outdent', 'indent', '|',
+                        'undo', redo, '|',
+                        'link', 'uploadImage', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
+                        'undo', 'redo'
+                    ]
+                }
+            })
+            .then(editor => {
+                editor.model.document.on('change:data', () => {
+                    document.querySelector('#editor').value = editor.getData();
                 });
-            }
-        });
+            })
+            .catch(error => {
+                console.error(error);
+            });
 
         function previewImage(input) {
             if (input.files && input.files[0]) {
@@ -183,8 +187,18 @@
     </script>
 
     <style>
-        .tox-tinymce {
+        .ck-editor__editable {
+            min-height: 500px;
             border: none !important;
+            box-shadow: none !important;
+        }
+        .ck-toolbar {
+            border: none !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            background: #f8fafc !important;
+        }
+        .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+            border-color: transparent !important;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
