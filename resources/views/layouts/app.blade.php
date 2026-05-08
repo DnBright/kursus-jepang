@@ -55,6 +55,8 @@
                 <div class="flex-1 overflow-y-auto pt-12">
                     @if(request()->is('sensei*'))
                         @include('layouts.sensei-navigation')
+                    @elseif(request()->is('admin*'))
+                        @include('layouts.admin-navigation')
                     @else
                         @include('layouts.navigation')
                     @endif
@@ -66,6 +68,8 @@
                 <div class="h-full flex flex-col">
                     @if(request()->is('sensei*'))
                         @include('layouts.sensei-navigation')
+                    @elseif(request()->is('admin*'))
+                        @include('layouts.admin-navigation')
                     @else
                         @include('layouts.navigation')
                     @endif

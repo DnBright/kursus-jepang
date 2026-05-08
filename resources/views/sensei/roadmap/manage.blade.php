@@ -75,7 +75,36 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity" x-data="{ openEdit: false }">
+                            <button @click="openEdit = true" class="p-2 text-slate-300 hover:text-blue-600 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </button>
+
+                            <!-- Edit Modal -->
+                            <div x-show="openEdit" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" x-cloak>
+                                <div @click.away="openEdit = false" class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                                    <div class="p-6 border-b border-slate-100">
+                                        <h3 class="text-xl font-bold text-slate-900">Edit Langkah</h3>
+                                    </div>
+                                    <form action="{{ route('sensei.roadmap.update', $step->id) }}" method="POST" class="p-6 space-y-4">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Judul Tampilan</label>
+                                            <input type="text" name="title" value="{{ $step->title }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Urutan (Order)</label>
+                                            <input type="number" name="order" value="{{ $step->order }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
+                                        </div>
+                                        <div class="flex gap-3 pt-4">
+                                            <button type="button" @click="openEdit = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm">Batal</button>
+                                            <button type="submit" class="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm shadow-lg shadow-red-600/20">Simpan Perubahan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
                             <form action="{{ route('sensei.roadmap.destroy', $step->id) }}" method="POST" onsubmit="return confirm('Hapus langkah ini?')">
                                 @csrf
                                 @method('DELETE')
