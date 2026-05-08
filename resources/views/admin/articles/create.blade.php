@@ -110,13 +110,13 @@
                                 $all_categories = array_unique(array_merge(['Berita', 'Budaya', 'Tips'], $categories ?? []));
                             @endphp
                             @foreach($all_categories as $cat)
-                            <div class="flex items-center justify-between group/cat">
-                                <label class="flex items-center gap-3 cursor-pointer group">
+                            <div class="flex items-center justify-between group">
+                                <label class="flex items-center gap-3 cursor-pointer">
                                     <input type="radio" name="category" value="{{ $cat }}" {{ old('category') == $cat ? 'checked' : '' }} class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300 rounded-full">
                                     <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{ $cat }}</span>
                                 </label>
                                 @if(!in_array($cat, ['Berita', 'Budaya', 'Tips']))
-                                <button type="button" onclick="deleteCategory('{{ $cat }}', this)" class="opacity-0 group-hover/cat:opacity-100 p-1 text-slate-300 hover:text-red-500 transition-all">
+                                <button type="button" onclick="deleteCategory('{{ $cat }}', this)" class="p-1 text-slate-300 hover:text-red-500 transition-all" title="Hapus Kategori">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 </button>
                                 @endif
