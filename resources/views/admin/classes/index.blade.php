@@ -300,6 +300,7 @@
                                     <label class="block text-sm font-medium text-slate-700">Nama Program</label>
                                     <input type="text" name="title" :value="editProgram?.name" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm">
                                 </div>
+                                <input type="hidden" name="level" :value="editProgram?.level">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700">Deskripsi</label>
                                     <textarea name="description" rows="3" :value="editProgram?.description" class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"></textarea>
