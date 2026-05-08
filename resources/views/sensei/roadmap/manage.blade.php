@@ -86,9 +86,38 @@
                                     <div class="p-6 border-b border-slate-100">
                                         <h3 class="text-xl font-bold text-slate-900">Edit Langkah</h3>
                                     </div>
-                                    <form action="{{ route('sensei.roadmap.update', $step->id) }}" method="POST" class="p-6 space-y-4">
+                                    <form action="{{ route('sensei.roadmap.update', $step->id) }}" method="POST" class="p-6 space-y-4" x-data="{ type: '{{ $step->content_type }}' }">
                                         @csrf
                                         @method('PATCH')
+                                        
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Jenis Konten</label>
+                                            <select name="content_type" x-model="type" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
+                                                <option value="module">Modul Utama</option>
+                                                <option value="lesson">Materi (Video/Teks)</option>
+                                                <option value="quiz">Quiz / Ujian</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Pilih Konten</label>
+                                            <select name="content_id" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
+                                                <template x-if="type === 'module'">
+                                                    @foreach($modules as $module)
+                                                        <option value="{{ $module->id }}" {{ $step->content_id == $module->id ? 'selected' : '' }}>{{ $module->title }}</option>
+                                                    @endforeach
+                                                </template>
+                                                <template x-if="type === 'quiz'">
+                                                    @foreach($quizzes as $quiz)
+                                                        <option value="{{ $quiz->id }}" {{ $step->content_id == $quiz->id ? 'selected' : '' }}>{{ $quiz->title }}</option>
+                                                    @endforeach
+                                                </template>
+                                                <template x-if="type === 'lesson'">
+                                                    <option value="">Pilih modul dulu...</option>
+                                                </template>
+                                            </select>
+                                        </div>
+
                                         <div>
                                             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Judul Tampilan</label>
                                             <input type="text" name="title" value="{{ $step->title }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500">

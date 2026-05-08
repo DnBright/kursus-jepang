@@ -50,11 +50,13 @@ class RoadmapController extends Controller
         $step = CourseRoadmapStep::findOrFail($stepId);
 
         $request->validate([
+            'content_type' => 'required|in:module,quiz,lesson',
+            'content_id' => 'required|integer',
             'order' => 'required|integer',
             'title' => 'nullable|string'
         ]);
 
-        $step->update($request->only(['order', 'title']));
+        $step->update($request->only(['content_type', 'content_id', 'order', 'title']));
 
         return back()->with('success', 'Langkah roadmap berhasil diperbarui.');
     }
