@@ -125,7 +125,7 @@
                 </header>
 
                 <!-- Page Content -->
-                <main class="flex-1 p-8 lg:p-12 animate-fade-in-up">
+                <main class="flex-1 {{ request()->routeIs('dashboard') ? '' : 'p-8 lg:p-12' }} animate-fade-in-up">
                     @isset($slot)
                         {{ $slot }}
                     @else

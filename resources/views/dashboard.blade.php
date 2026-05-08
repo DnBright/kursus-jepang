@@ -24,7 +24,6 @@
     <nav class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-xl border-b border-white/5 px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center font-black text-slate-950">DNB</div>
                 <h1 class="text-white font-black tracking-tight leading-none uppercase text-xs">Roadmap <span class="text-white/40 ml-1">{{ $currentLevel }}</span></h1>
             </div>
 
