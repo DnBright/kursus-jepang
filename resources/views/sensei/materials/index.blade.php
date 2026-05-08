@@ -224,7 +224,7 @@
                         @csrf
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-slate-700">Pilih Kursus <span class="text-red-500">*</span></label>
-                            @php $courses = \App\Models\Course::all(); @endphp
+                            @php $courses = \App\Models\Course::where('instructor_id', Auth::guard('sensei')->id())->get(); @endphp
                             <select name="course_id" required class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500">
                                 @foreach($courses as $course)
                                 <option value="{{ $course->id }}">{{ $course->title }} ({{ $course->level }})</option>

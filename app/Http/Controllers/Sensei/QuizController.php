@@ -148,7 +148,7 @@ class QuizController extends Controller
 
     public function create()
     {
-        $courses = Course::all();
+        $courses = Course::where('instructor_id', Auth::guard('sensei')->id())->get();
         return view('sensei.quizzes.create', compact('courses'));
     }
 
