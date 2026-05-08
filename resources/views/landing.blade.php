@@ -39,6 +39,7 @@
                     <a href="#program" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Alur</a>
                     <a href="#biaya" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Program</a>
                     <a href="#keunggulan" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Keunggulan</a>
+                    <a href="{{ route('articles.index') }}" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Artikel</a>
                 </div>
 
                 <!-- CTA -->
@@ -451,6 +452,52 @@
                          <p class="text-sm font-bold text-slate-500">Sertifikat resmi yang diakui secara internasional untuk kebutuhan visa dan kerja.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    <!-- Articles Section -->
+    <section class="py-32 bg-slate-50 relative overflow-hidden" id="artikel">
+        <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+                <div class="max-w-2xl">
+                    <span class="text-red-600 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Insights & News</span>
+                    <h2 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Eksplorasi Dunia <span class="text-gradient">Jepang.</span></h2>
+                    <p class="text-slate-500 font-bold mt-6">Tips belajar, informasi budaya, hingga kabar terbaru seputar karir di Negeri Sakura.</p>
+                </div>
+                <a href="{{ route('articles.index') }}" class="group flex items-center gap-3 text-sm font-black text-slate-900 uppercase tracking-widest hover:text-red-600 transition-colors">
+                    Lihat Semua Artikel
+                    <div class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-red-600 group-hover:border-red-600 group-hover:text-white transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </div>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @foreach($articles as $article)
+                <div class="group cursor-pointer">
+                    <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
+                        @if($article->image)
+                        <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        @else
+                        <div class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
+                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002-2z"></path></svg>
+                        </div>
+                        @endif
+                        <div class="absolute top-6 left-6">
+                            <span class="px-4 py-2 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black text-slate-900 uppercase tracking-widest shadow-xl shadow-black/5">Article</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('articles.show', $article->slug) }}" class="block">
+                        <h3 class="text-2xl font-black text-slate-900 mb-4 group-hover:text-red-600 transition-colors leading-tight">{{ $article->title }}</h3>
+                    </a>
+                    <p class="text-slate-500 font-bold text-sm line-clamp-2 mb-6">{{ $article->excerpt }}</p>
+                    <div class="flex items-center gap-4 text-xs font-black text-slate-400 uppercase tracking-widest">
+                        <span>{{ $article->created_at->format('d M Y') }}</span>
+                        <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+                        <span>5 Min Read</span>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
     </section>

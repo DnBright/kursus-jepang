@@ -6,7 +6,8 @@ use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthe
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('landing');
+    $articles = \App\Models\Article::where('is_published', true)->latest()->take(3)->get();
+    return view('landing', compact('articles'));
 });
 
 Route::get('/verification/notice', function () {
@@ -232,7 +233,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Manual Sensei Management
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
+
+        // Article Management
+        Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
     });
 });
+
+// PUBLIC ARTICLE ROUTES
+Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{slug}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 require __DIR__.'/auth.php';
