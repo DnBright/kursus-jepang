@@ -3,150 +3,183 @@
 @section('content')
 @php
     $bgClass = match($currentLevel) {
-        'N4' => 'bg-emerald-600',
-        'Tokutei Ginou' => 'bg-slate-900',
-        default => 'bg-orange-500'
+        'N4' => 'bg-[#059669]',
+        'Tokutei Ginou' => 'bg-[#0f172a]',
+        default => 'bg-[#f97316]'
     };
     $accentColor = match($currentLevel) {
         'N4' => 'emerald',
         'Tokutei Ginou' => 'slate',
         default => 'orange'
     };
+    $gradientOverlay = match($currentLevel) {
+        'N4' => 'from-emerald-600/20 to-emerald-900/40',
+        'Tokutei Ginou' => 'from-slate-800/20 to-black/60',
+        default => 'from-orange-500/20 to-orange-800/40'
+    };
 @endphp
 
-<div class="min-h-screen {{ $bgClass }} transition-colors duration-500">
-    <div class="max-w-5xl mx-auto px-4 py-12">
-        
-        <!-- Welcome Header -->
-        <div class="mb-12">
-            <h1 class="text-4xl font-black text-white tracking-tight">Okaeri, {{ Auth::user()->name }}! 👋</h1>
-            <p class="text-white/70 mt-2 text-lg font-medium">Lanjutkan perjalanan belajarmu hari ini.</p>
+<div class="min-h-screen {{ $bgClass }} transition-colors duration-700 relative overflow-hidden">
+    <!-- Animated background patterns -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-1/2 -right-24 w-64 h-64 bg-black/10 rounded-full blur-3xl animate-bounce" style="animation-duration: 10s"></div>
+        <div class="absolute bottom-0 left-1/4 w-full h-1/2 bg-gradient-to-t {{ $gradientOverlay }} pointer-events-none"></div>
+    </div>
+
+    <div class="relative z-10">
+        <!-- Navigation Header -->
+        <div class="w-full bg-black/10 backdrop-blur-md border-b border-white/5 px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg">
+                    <span class="font-black text-{{ $accentColor === 'slate' ? 'slate-900' : $accentColor . '-600' }}">DNB</span>
+                </div>
+                <div class="hidden sm:block">
+                    <h1 class="text-white font-black tracking-tight leading-none uppercase text-sm">Roadmap <span class="text-white/50">{{ $currentLevel }}</span></h1>
+                    <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Langkah Menuju Sukses</p>
+                </div>
+            </div>
+
+            <!-- Level Tabs -->
+            <div class="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl border border-white/5">
+                @foreach(['N5', 'N4', 'Tokutei Ginou'] as $level)
+                    @php 
+                        $isLocked = !($access[$level] ?? false); 
+                        $isActive = ($currentLevel === $level);
+                    @endphp
+                    @if($isLocked)
+                        <div class="relative group">
+                            <button class="px-5 py-2.5 rounded-xl text-[10px] font-black text-white/20 uppercase tracking-widest cursor-not-allowed flex items-center gap-2">
+                                {{ $level }}
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </button>
+                            <div class="absolute bottom-full right-0 mb-3 w-48 p-3 bg-white rounded-xl shadow-2xl text-[9px] text-slate-900 font-bold text-center opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50">
+                                Beli paket {{ $level }} untuk membuka akses.
+                                <div class="absolute top-full right-6 border-8 border-transparent border-t-white"></div>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('dashboard', ['level' => $level]) }}" 
+                           class="px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all {{ $isActive ? 'bg-white text-slate-900 shadow-xl' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                            {{ $level }}
+                        </a>
+                    @endif
+                @endforeach
+            </div>
         </div>
 
-        <!-- Level Tabs -->
-        <div class="flex flex-wrap items-center justify-start gap-4 mb-16 overflow-x-auto pb-4 no-scrollbar">
-            @foreach(['N5', 'N4', 'Tokutei Ginou'] as $level)
-                @php 
-                    $isLocked = !($access[$level] ?? false); 
-                    $isActive = ($currentLevel === $level);
-                    $tabBg = $isActive ? 'bg-white shadow-2xl scale-105' : 'bg-white/10 hover:bg-white/20 backdrop-blur-md';
-                    $textColor = $isActive ? 'text-slate-900' : 'text-white/80';
-                @endphp
-                
-                @if($isLocked)
-                    <div class="relative group cursor-not-allowed shrink-0">
-                        <div class="px-8 py-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 text-white/40 flex items-center gap-3 grayscale">
-                            <span class="font-black tracking-tighter text-xl uppercase">{{ $level }}</span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        <div class="max-w-6xl mx-auto px-6 py-20">
+            @if(!($access[$currentLevel] ?? false))
+                <!-- Locked State -->
+                <div class="text-center py-32 px-8 rounded-[4rem] bg-white/5 border border-white/10 backdrop-blur-sm max-w-3xl mx-auto shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-12 text-white/5 text-9xl font-black rotate-12 pointer-events-none uppercase">{{ $currentLevel }}</div>
+                    <div class="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl rotate-3">
+                        <svg class="w-12 h-12 text-{{ $accentColor === 'slate' ? 'slate-900' : $accentColor . '-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h3 class="text-5xl font-black text-white mb-6 uppercase tracking-tighter">Akses Terbatas</h3>
+                    <p class="text-white/60 max-w-md mx-auto text-lg mb-12 font-medium leading-relaxed">Roadmap ini hanya tersedia untuk siswa yang telah membeli paket program {{ $currentLevel }}.</p>
+                    <a href="{{ route('landing') }}#pricing" class="px-12 py-6 bg-white text-slate-900 font-black rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all inline-block uppercase tracking-[0.2em] text-xs">Buka Akses Sekarang</a>
+                </div>
+            @else
+                <!-- Roadmap Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-24 border-b border-white/10 pb-12">
+                    <div class="max-w-2xl">
+                        <span class="inline-block px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black text-white uppercase tracking-widest mb-4 border border-white/10">Active Roadmap</span>
+                        <h2 class="text-6xl font-black text-white tracking-tighter uppercase leading-none">Kurikulum {{ $currentLevel }}</h2>
+                        <p class="text-white/60 mt-4 text-xl font-medium leading-relaxed">Ikuti jalur pembelajaran yang telah disusun secara sistematis oleh Sensei untuk mencapai target Anda.</p>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center px-8 py-4 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm shadow-xl">
+                            <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Total XP</p>
+                            <p class="text-3xl font-black text-white">{{ number_format($totalXP) }}</p>
                         </div>
-                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-3 bg-white rounded-xl shadow-2xl text-[10px] text-slate-900 font-bold text-center opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50">
-                            Terkunci! Silahkan beli paket program {{ $level }} untuk membuka akses.
-                            <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-white"></div>
+                        <div class="text-center px-8 py-4 bg-white rounded-3xl shadow-2xl">
+                            <p class="text-[10px] font-black text-{{ $accentColor === 'slate' ? 'slate-400' : $accentColor . '-400' }} uppercase tracking-widest mb-1">Status</p>
+                            <p class="text-3xl font-black text-slate-900">{{ $completedLessons }}<span class="text-sm text-slate-400">/{{ $roadmapSteps->count() }}</span></p>
                         </div>
                     </div>
-                @else
-                    <a href="{{ route('dashboard', ['level' => $level]) }}" 
-                       class="px-10 py-5 rounded-2xl {{ $tabBg }} {{ $textColor }} transition-all duration-300 flex items-center gap-3 border border-white/20 group shrink-0">
-                        <span class="font-black tracking-tighter text-2xl uppercase">{{ $level }}</span>
-                        @if($isActive)
-                            <div class="w-2 h-2 rounded-full bg-{{ $accentColor }}-500 animate-pulse"></div>
-                        @endif
-                    </a>
-                @endif
-            @endforeach
-        </div>
-
-        @if(!($access[$currentLevel] ?? false))
-            <!-- Locked State Content -->
-            <div class="text-center py-20 px-8 rounded-[3rem] bg-white/5 backdrop-blur-xl border-2 border-dashed border-white/20">
-                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/20">
-                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </div>
-                <h3 class="text-4xl font-black text-white mb-4 uppercase">Roadmap {{ $currentLevel }} Terkunci</h3>
-                <p class="text-white/60 max-w-lg mx-auto text-lg mb-10 font-medium">Mulai perjalanan karir Anda di Jepang dengan membuka akses ke kurikulum eksklusif kami.</p>
-                <a href="{{ route('landing') }}#pricing" class="px-10 py-5 bg-white text-slate-900 font-black rounded-2xl shadow-2xl hover:scale-105 transition-all inline-block uppercase tracking-widest text-xs">Beli Paket Sekarang</a>
-            </div>
-        @else
-            <!-- Roadmap Content -->
-            <div class="relative">
-                <!-- Center Line -->
-                <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-3 bg-white/10 rounded-full shadow-inner"></div>
 
-                <div class="space-y-32 relative pt-10 pb-20">
-                    @forelse($roadmapSteps as $index => $step)
-                        @php
-                            $side = $index % 2 === 0 ? 'left' : 'right';
-                            $content = $step->content;
-                        @endphp
+                <!-- Roadmap Visualization -->
+                <div class="relative px-4">
+                    <!-- The Glowing Path Line -->
+                    <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 bg-white/20 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        <div class="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-b from-transparent via-white/40 to-transparent animate-pulse"></div>
+                    </div>
 
-                        <div class="flex items-center justify-center w-full relative">
-                            <!-- Node Circle -->
-                            <div class="absolute left-1/2 -translate-x-1/2 z-10">
-                                <div class="w-16 h-16 rounded-full bg-white shadow-2xl flex items-center justify-center ring-8 ring-white/10 group cursor-pointer hover:scale-125 transition-all duration-500">
-                                    @if($step->content_type === 'quiz')
-                                        <svg class="w-8 h-8 text-{{ $accentColor === 'slate' ? 'slate-800' : $accentColor . '-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                    @elseif($step->content_type === 'lesson')
-                                        <svg class="w-8 h-8 text-{{ $accentColor === 'slate' ? 'slate-800' : $accentColor . '-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                                    @else
-                                        <svg class="w-8 h-8 text-{{ $accentColor === 'slate' ? 'slate-800' : $accentColor . '-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                                    @endif
-                                </div>
-                            </div>
+                    <div class="space-y-40 relative">
+                        @forelse($roadmapSteps as $index => $step)
+                            @php
+                                $side = $index % 2 === 0 ? 'left' : 'right';
+                                $content = $step->content;
+                                $colorIdx = ($index % 3) + 1;
+                            @endphp
 
-                            <!-- Content Card -->
-                            <div class="w-1/2 {{ $side === 'left' ? 'pr-24 text-right' : 'pl-24 ml-auto text-left' }}">
-                                <div class="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-[2.5rem] hover:bg-white/20 transition-all duration-500 group shadow-2xl">
-                                    <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-3 block">Step {{ $index + 1 }}</span>
-                                    <h4 class="text-2xl font-black text-white mb-6 leading-tight group-hover:text-white transition-colors">{{ $step->title ?: ($content->title ?? 'Untitled Step') }}</h4>
-                                    
-                                    <div class="flex items-center {{ $side === 'left' ? 'justify-end' : '' }} gap-3 mb-8">
-                                        <span class="px-4 py-1.5 bg-white/10 rounded-xl text-[10px] font-black text-white uppercase tracking-widest border border-white/10">{{ $step->content_type }}</span>
+                            <div class="flex items-center justify-center w-full relative group">
+                                <!-- Connection Line (Branch) -->
+                                <div class="absolute top-1/2 -translate-y-1/2 h-1 bg-white/10 transition-all duration-700 group-hover:bg-white/40 {{ $side === 'left' ? 'right-1/2 w-24 rounded-l-full' : 'left-1/2 w-24 rounded-r-full' }}"></div>
+
+                                <!-- Center Node -->
+                                <div class="absolute left-1/2 -translate-x-1/2 z-20">
+                                    <div class="w-12 h-12 rounded-full bg-white shadow-[0_0_30px_rgba(255,255,255,0.4)] flex items-center justify-center ring-4 ring-white/10 group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 cursor-pointer overflow-hidden relative">
+                                        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-black/5"></div>
+                                        <span class="text-slate-900 font-black text-sm z-10">{{ $index + 1 }}</span>
                                     </div>
+                                </div>
 
-                                    @if($step->content_type === 'quiz')
-                                        <a href="{{ route('quizzes.show', $step->content_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Mulai Quiz</a>
-                                    @elseif($step->content_type === 'lesson')
-                                        <a href="{{ route('courses.lessons.show', ['course' => $step->course_id, 'lesson' => $step->content_id]) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Buka Materi</a>
-                                    @else
-                                        <a href="{{ route('courses.show', $step->course_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Lihat Modul</a>
-                                    @endif
+                                <!-- Card Content -->
+                                <div class="w-1/2 {{ $side === 'left' ? 'pr-32 text-right' : 'pl-32 ml-auto text-left' }}">
+                                    <div class="relative">
+                                        <!-- Hover Decoration -->
+                                        <div class="absolute -inset-2 bg-white/10 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                        
+                                        <div class="relative bg-white/10 backdrop-blur-2xl border border-white/20 p-10 rounded-[3rem] hover:bg-white/15 hover:-translate-y-2 transition-all duration-500 shadow-2xl group/card">
+                                            <div class="flex items-center {{ $side === 'left' ? 'justify-end' : 'justify-start' }} gap-3 mb-6">
+                                                @php
+                                                    $typeIcon = match($step->content_type) {
+                                                        'quiz' => '📝',
+                                                        'lesson' => '🎥',
+                                                        default => '📖'
+                                                    };
+                                                @endphp
+                                                <div class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-lg border border-white/10 shadow-inner">{{ $typeIcon }}</div>
+                                                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">{{ $step->content_type }}</span>
+                                            </div>
+
+                                            <h4 class="text-3xl font-black text-white mb-6 leading-tight group-hover/card:text-white transition-colors tracking-tighter">{{ $step->title ?: ($content->title ?? 'Untitled Step') }}</h4>
+                                            
+                                            <div class="{{ $side === 'left' ? 'flex justify-end' : '' }}">
+                                                @if($step->content_type === 'quiz')
+                                                    <a href="{{ route('quizzes.show', $step->content_id) }}" class="group/btn relative px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all overflow-hidden flex items-center gap-3 w-fit">
+                                                        <span class="relative z-10">Mulai Tantangan</span>
+                                                        <svg class="w-4 h-4 relative z-10 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    </a>
+                                                @elseif($step->content_type === 'lesson')
+                                                    <a href="{{ route('courses.lessons.show', ['course' => $step->course_id, 'lesson' => $step->content_id]) }}" class="group/btn relative px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all overflow-hidden flex items-center gap-3 w-fit">
+                                                        <span class="relative z-10">Buka Materi</span>
+                                                        <svg class="w-4 h-4 relative z-10 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('courses.show', $step->course_id) }}" class="group/btn relative px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all overflow-hidden flex items-center gap-3 w-fit">
+                                                        <span class="relative z-10">Lihat Modul</span>
+                                                        <svg class="w-4 h-4 relative z-10 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-24 bg-white/5 backdrop-blur-md rounded-[3.5rem] border border-white/10 max-w-2xl mx-auto shadow-2xl">
-                            <div class="text-7xl mb-8">🏜️</div>
-                            <h3 class="text-3xl font-black text-white mb-3">Roadmap Kosong</h3>
-                            <p class="text-white/40 font-medium">Sensei sedang menyusun kurikulum terbaik untuk Anda.</p>
-                        </div>
-                    @endforelse
+                        @empty
+                            <div class="text-center py-32 bg-white/5 backdrop-blur-md rounded-[4rem] border-2 border-dashed border-white/10 max-w-2xl mx-auto shadow-2xl group hover:border-white/20 transition-all duration-700">
+                                <div class="text-8xl mb-8 group-hover:scale-125 transition-transform duration-700 inline-block">🚀</div>
+                                <h3 class="text-4xl font-black text-white mb-3 tracking-tighter">BELUM ADA DATA</h3>
+                                <p class="text-white/40 font-medium text-lg px-8">Sensei sedang menyusun kurikulum eksklusif untuk level ini. Cek kembali nanti!</p>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
-            </div>
-        @endif
-        
-        <!-- Stats Summary Footer -->
-        <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white/10 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/10 flex items-center gap-8 shadow-xl">
-                <div class="text-5xl">⭐</div>
-                <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Total XP</p>
-                    <p class="text-4xl font-black text-white">{{ number_format($totalXP) }}</p>
-                </div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/10 flex items-center gap-8 shadow-xl">
-                <div class="text-5xl">📚</div>
-                <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Selesai</p>
-                    <p class="text-4xl font-black text-white">{{ $completedLessons }} <span class="text-sm font-medium text-white/40 italic">unit</span></p>
-                </div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/10 flex items-center gap-8 shadow-xl">
-                <div class="text-5xl">🏆</div>
-                <div>
-                    <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Pencapaian</p>
-                    <p class="text-4xl font-black text-white">Advanced</p>
-                </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -154,5 +187,13 @@
 <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(-5%) rotate(-2deg); }
+        50% { transform: translateY(5%) rotate(2deg); }
+    }
+    .animate-bounce {
+        animation: bounce 10s infinite ease-in-out;
+    }
 </style>
 @endsection
