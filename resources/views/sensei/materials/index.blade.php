@@ -1,5 +1,17 @@
 <x-sensei-layout>
-    <div class="space-y-8" x-data="{ showModuleModal: false }">
+    <div class="space-y-8" x-data="{ 
+        showModuleModal: false, 
+        showEditModuleModal: false,
+        editingModule: {id: '', title: '', description: ''},
+        openEditModal(module) {
+            this.editingModule = {
+                id: module.id,
+                title: module.title,
+                description: module.description || ''
+            };
+            this.showEditModuleModal = true;
+        }
+    }">
         <!-- Header & Top Actions -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -90,6 +102,11 @@
                             </div>
                             
                             <div class="flex items-center gap-2" @click.stop="">
+                                <!-- Edit Button -->
+                                <button type="button" @click="openEditModal({{ json_encode($module) }})" class="p-2 text-slate-300 hover:text-blue-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </button>
+
                                 <form action="{{ route('sensei.materials.modules.destroy', $module['id']) }}" method="POST" onsubmit="return confirm('Hapus modul ini beserta seluruh materinya?');">
                                     @csrf
                                     @method('DELETE')
@@ -137,7 +154,7 @@
                                                 <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Delete">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
-                                            </form>
+                                             </form>
                                         </div>
                                     </li>
                                     @endforeach
@@ -231,6 +248,44 @@
                         <div class="pt-4 flex justify-end gap-3">
                             <button type="button" @click="showModuleModal = false" class="px-6 py-2.5 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">Batal</button>
                             <button type="submit" class="px-8 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all text-sm">Simpan Modul</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Module Modal -->
+        <div x-show="showEditModuleModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak style="display: none;">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div @click="showEditModuleModal = false" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+                <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-900">Edit Modul</h3>
+                        <button @click="showEditModuleModal = false" class="text-slate-400 hover:text-slate-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <form :action="'{{ url('sensei/materials/modules') }}/' + editingModule.id" method="POST" class="p-6 space-y-4">
+                        @csrf
+                        @method('PUT')
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Judul Modul <span class="text-red-500">*</span></label>
+                            <input type="text" name="title" x-model="editingModule.title" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Deskripsi Singkat</label>
+                            <textarea name="description" rows="3" x-model="editingModule.description"
+                                class="w-full px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
+                                placeholder="Jelaskan isi modul ini..."></textarea>
+                        </div>
+
+                        <div class="pt-4 flex justify-end gap-3">
+                            <button type="button" @click="showEditModuleModal = false" class="px-6 py-2.5 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm">Batal</button>
+                            <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all text-sm">Update Modul</button>
                         </div>
                     </form>
                 </div>

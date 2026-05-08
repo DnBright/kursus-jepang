@@ -142,6 +142,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::delete('/live-class/{live_class}', [App\Http\Controllers\Sensei\LiveClassController::class, 'destroy'])->name('live.destroy');
         Route::get('/materials', [App\Http\Controllers\Sensei\MaterialController::class, 'index'])->name('materials.index');
         Route::post('/materials/modules', [App\Http\Controllers\Sensei\MaterialController::class, 'storeModule'])->name('materials.modules.store');
+        Route::put('/materials/modules/{module}', [App\Http\Controllers\Sensei\MaterialController::class, 'updateModule'])->name('materials.modules.update');
         Route::delete('/materials/modules/{module}', [App\Http\Controllers\Sensei\MaterialController::class, 'destroyModule'])->name('materials.modules.destroy');
         
         Route::get('/materials/lessons/create', [App\Http\Controllers\Sensei\MaterialController::class, 'createLesson'])->name('materials.lessons.create');

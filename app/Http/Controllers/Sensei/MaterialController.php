@@ -72,6 +72,23 @@ class MaterialController extends Controller
         return back()->with('success', 'Modul berhasil dibuat.');
     }
 
+    public function updateModule(Request $request, $id)
+    {
+        $module = Module::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($id);
+        
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $module->update([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
+
+        return back()->with('success', 'Modul berhasil diperbarui.');
+    }
+
     public function destroyModule($id)
     {
         $module = Module::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($id);
