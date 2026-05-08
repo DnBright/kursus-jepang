@@ -10,6 +10,7 @@ use App\Models\AssignmentSubmission;
 use App\Models\UserQuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class QuizController extends Controller
 {
