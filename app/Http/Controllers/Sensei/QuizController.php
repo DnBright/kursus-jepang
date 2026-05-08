@@ -99,12 +99,42 @@ class QuizController extends Controller
     {
         $sensei = Auth::guard('sensei')->user();
         $course = Course::where('instructor_id', $sensei->id)
-            ->with(['modules' => function($q) {
-                $q->orderBy('order');
-            }, 'quizzes'])
+            ->with(['roadmapSteps', 'modules', 'quizzes'])
             ->findOrFail($id);
             
-        return view('sensei.programs.manage', compact('course'));
+        // Available lessons (videos/links) that can be added as steps
+        $availableLessons = Lesson::whereIn('module_id', $course->modules()->pluck('id'))->get();
+        
+        return view('sensei.programs.manage', compact('course', 'availableLessons'));
+    }
+
+    public function storeRoadmapStep(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+        
+        $request->validate([
+            'content_type' => 'required|in:module,quiz,lesson',
+            'content_id' => 'required',
+            'title' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\CourseRoadmapStep::create([
+            'course_id' => $course->id,
+            'content_type' => $request->content_type,
+            'content_id' => $request->content_id,
+            'title' => $request->title,
+            'order' => $course->roadmapSteps()->count() + 1,
+        ]);
+
+        return back()->with('success', 'Langkah berhasil ditambahkan ke roadmap.');
+    }
+
+    public function destroyRoadmapStep($stepId)
+    {
+        $step = \App\Models\CourseRoadmapStep::findOrFail($stepId);
+        $step->delete();
+        
+        return back()->with('success', 'Langkah berhasil dihapus dari roadmap.');
     }
 
     public function create()

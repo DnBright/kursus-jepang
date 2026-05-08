@@ -1,5 +1,5 @@
 <x-sensei-layout>
-    <div class="max-w-5xl mx-auto space-y-8">
+    <div class="max-w-5xl mx-auto space-y-8" x-data="{ showAddModal: false }">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -17,16 +17,13 @@
                     </ol>
                 </nav>
                 <h2 class="text-3xl font-black text-slate-900 tracking-tight">Roadmap <span class="text-red-600">{{ $course->title }}</span></h2>
-                <p class="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-[0.2em]">{{ $course->level }} • {{ $course->modules->count() }} Modul • {{ $course->quizzes->count() }} Quiz</p>
+                <p class="text-slate-500 font-bold mt-1 uppercase text-[10px] tracking-[0.2em]">{{ $course->level }} • {{ $course->roadmapSteps->count() }} Langkah Tersusun</p>
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('sensei.materials.index') }}" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-xs flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Tambah Modul
-                </a>
-                <a href="{{ route('sensei.quizzes.create') }}?course_id={{ $course->id }}" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all text-xs flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Tambah Quiz
-                </a>
+                <button @click="showAddModal = true" class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all text-xs flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Tambah Langkah Baru
+                </button>
             </div>
         </div>
 
@@ -35,89 +32,63 @@
             <!-- Vertical Line -->
             <div class="absolute left-8 top-0 bottom-0 w-1 bg-slate-100 rounded-full"></div>
 
-            <div class="space-y-12">
-                @php
-                    $roadmapItems = collect();
-                    foreach($course->modules as $module) {
-                        $roadmapItems->push([
-                            'type' => 'module',
-                            'id' => $module->id,
-                            'title' => $module->title,
-                            'description' => $module->description,
-                            'order' => $module->order,
-                            'data' => $module
-                        ]);
-                    }
-                    foreach($course->quizzes as $quiz) {
-                        $roadmapItems->push([
-                            'type' => 'quiz',
-                            'id' => $quiz->id,
-                            'title' => $quiz->title,
-                            'description' => $quiz->description,
-                            'order' => 99, // Quiz might need its own ordering or logic
-                            'data' => $quiz
-                        ]);
-                    }
-                    // For now, let's just list modules then quizzes, or sort by created_at if order isn't unified
-                    $roadmapItems = $roadmapItems->sortBy('order');
-                @endphp
-
-                @foreach($roadmapItems as $index => $item)
+            <div class="space-y-12 pb-12">
+                @forelse($course->roadmapSteps as $index => $step)
+                @php $item = $step->content; @endphp
+                @if($item)
                 <div class="relative pl-20 group">
                     <!-- Dot -->
                     <div class="absolute left-[26px] top-4 w-4 h-4 rounded-full border-4 border-white shadow-sm transition-all duration-500
-                        {{ $item['type'] === 'module' ? 'bg-blue-600 scale-125' : 'bg-red-600' }}">
+                        {{ $step->content_type === 'module' ? 'bg-blue-600 scale-125' : ($step->content_type === 'quiz' ? 'bg-red-600' : 'bg-green-500') }}">
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm group-hover:shadow-md group-hover:border-slate-300 transition-all">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm group-hover:shadow-md group-hover:border-slate-300 transition-all relative">
+                         <!-- Delete Action -->
+                         <form action="{{ route('sensei.programs.roadmap.destroy', $step->id) }}" method="POST" class="absolute -right-3 -top-3 opacity-0 group-hover:opacity-100 transition-all">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-8 h-8 bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 rounded-full shadow-sm flex items-center justify-center transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </form>
+
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
                                     <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md
-                                        {{ $item['type'] === 'module' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600' }}">
-                                        {{ $item['type'] === 'module' ? 'Checkpoint Modul' : 'Checkpoint Quiz' }}
+                                        {{ $step->content_type === 'module' ? 'bg-blue-50 text-blue-600' : ($step->content_type === 'quiz' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600') }}">
+                                        Step {{ $index + 1 }}: {{ ucfirst($step->content_type) }}
                                     </span>
-                                    <span class="text-slate-400 font-bold text-[10px]">#{{ $index + 1 }}</span>
                                 </div>
-                                <h4 class="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors">{{ $item['title'] }}</h4>
-                                <p class="text-slate-500 text-sm mt-2 line-clamp-2 font-medium">{{ $item['description'] ?: 'Tidak ada deskripsi.' }}</p>
+                                <h4 class="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors">{{ $step->title ?: $item->title }}</h4>
                                 
-                                @if($item['type'] === 'module')
-                                <div class="mt-4 flex items-center gap-4">
-                                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-600">
-                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                                        {{ $item['data']->lessons->count() }} Materi
+                                @if($step->content_type === 'module')
+                                    <div class="mt-4 flex items-center gap-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                        {{ $item->lessons->count() }} Materi • {{ $item->description ?: 'Roadmap Belajar' }}
                                     </div>
-                                </div>
+                                @elseif($step->content_type === 'quiz')
+                                    <div class="mt-4 flex items-center gap-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                         {{ $item->questions->count() }} Soal • {{ $item->type }}
+                                    </div>
                                 @else
-                                <div class="mt-4 flex items-center gap-4">
-                                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-600">
-                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                                        {{ $item['data']->questions->count() }} Pertanyaan
+                                    <div class="mt-4 flex items-center gap-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                        Tipe: {{ $item->type }} • Video / Link Tutorial
                                     </div>
-                                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-600">
-                                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        {{ $item['data']->time_limit ?: 'Tidak ada' }} Menit
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <div class="flex flex-col gap-2">
-                                @if($item['type'] === 'module')
-                                <a href="{{ route('sensei.materials.index') }}" class="p-2 text-slate-400 hover:text-blue-600 transition-all bg-slate-50 rounded-xl">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                </a>
-                                @else
-                                <a href="{{ route('sensei.quizzes.edit', $item['id']) }}" class="p-2 text-slate-400 hover:text-red-600 transition-all bg-slate-50 rounded-xl">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                </a>
                                 @endif
                             </div>
                         </div>
                     </div>
                 </div>
-                @endforeach
+                @endif
+                @empty
+                <div class="relative pl-20 py-20 text-center">
+                    <div class="p-8 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">Roadmap Kosong</h3>
+                        <p class="text-slate-500 text-sm mb-6 max-w-xs mx-auto">Mulai susun langkah belajar siswa dengan menekan tombol "Tambah Langkah Baru" di atas.</p>
+                        <button @click="showAddModal = true" class="px-6 py-2 bg-slate-900 text-white font-bold rounded-xl text-xs">Mulai Sekarang</button>
+                    </div>
+                </div>
+                @endforelse
 
                 <!-- Ending Node -->
                 <div class="relative pl-20">
@@ -125,6 +96,80 @@
                     <div class="p-6 text-slate-400 font-bold uppercase text-xs tracking-widest">
                         🏁 Akhir Roadmap
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Step Modal -->
+        <div x-show="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak>
+            <div @click.away="showAddModal = false" class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100">
+                
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Tambah <span class="text-red-600">Langkah.</span></h3>
+                        <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <form action="{{ route('sensei.programs.roadmap.store', $course->id) }}" method="POST" class="space-y-6" x-data="{ type: 'module' }">
+                        @csrf
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Tipe Konten</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button type="button" @click="type = 'module'" :class="type === 'module' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
+                                    Modul
+                                </button>
+                                <button type="button" @click="type = 'quiz'" :class="type === 'quiz' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
+                                    Quiz
+                                </button>
+                                <button type="button" @click="type = 'lesson'" :class="type === 'lesson' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
+                                    Video/Link
+                                </button>
+                                <input type="hidden" name="content_type" :value="type">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Item</label>
+                            
+                            <!-- Module Select -->
+                            <select x-show="type === 'module'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
+                                <option value="">Pilih Modul...</option>
+                                @foreach($course->modules as $mod)
+                                    <option value="{{ $mod->id }}">{{ $mod->title }}</option>
+                                @endforeach
+                            </select>
+
+                            <!-- Quiz Select -->
+                            <select x-show="type === 'quiz'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                                <option value="">Pilih Quiz...</option>
+                                @foreach($course->quizzes as $qz)
+                                    <option value="{{ $qz->id }}">{{ $qz->title }}</option>
+                                @endforeach
+                            </select>
+
+                            <!-- Lesson Select -->
+                            <select x-show="type === 'lesson'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                                <option value="">Pilih Video/Link...</option>
+                                @foreach($availableLessons as $ls)
+                                    <option value="{{ $ls->id }}">{{ $ls->title }} ({{ $ls->type }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Judul Custom (Opsional)</label>
+                            <input type="text" name="title" placeholder="Contoh: Belajar Hiragana Dasar" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-red-600 transition-all shadow-xl hover:shadow-red-200">
+                            Simpan ke Roadmap
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
