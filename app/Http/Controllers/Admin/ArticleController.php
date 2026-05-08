@@ -32,7 +32,9 @@ class ArticleController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
+            'is_member_only' => 'boolean',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']);
@@ -48,6 +50,7 @@ class ArticleController extends Controller
         }
 
         $validated['is_published'] = $request->has('is_published');
+        $validated['is_member_only'] = $request->has('is_member_only');
 
         Article::create($validated);
 
@@ -66,7 +69,9 @@ class ArticleController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
+            'is_member_only' => 'boolean',
         ]);
 
         if ($validated['title'] !== $article->title) {
@@ -85,6 +90,7 @@ class ArticleController extends Controller
         }
 
         $validated['is_published'] = $request->has('is_published');
+        $validated['is_member_only'] = $request->has('is_member_only');
 
         $article->update($validated);
 

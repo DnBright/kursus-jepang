@@ -12,6 +12,8 @@ class Article extends Model
         'excerpt',
         'content',
         'image',
+        'category',
         'is_published',
+        'is_member_only',
     ];
 }
