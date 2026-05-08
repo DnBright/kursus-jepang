@@ -269,7 +269,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Article Management
         Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
-        Route::post('media/upload', [App\Http\Controllers\Admin\MediaController::class, 'upload'])->name('admin.media.upload');
+        Route::post('media/upload', [App\Http\Controllers\Admin\MediaController::class, 'upload'])->name('media.upload');
     });
 });
 
