@@ -249,7 +249,7 @@ class QuizController extends Controller
     public function results(UserQuizAttempt $attempt)
     {
         // Ensure user can only see their own results
-        if ($attempt->user_id !== Auth::id()) {
+        if ($attempt->user_id != Auth::id()) {
             abort(403);
         }
 
