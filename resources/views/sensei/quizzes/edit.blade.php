@@ -25,28 +25,8 @@
                         @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- Type -->
-                    <div class="space-y-2">
-                        <label for="type" class="text-sm font-bold text-slate-700">Tipe Quiz <span class="text-red-500">*</span></label>
-                        <select name="type" id="type" required 
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
-                            <option value="daily" {{ old('type', $quiz->type) == 'daily' ? 'selected' : '' }}>Harian</option>
-                            <option value="weekly" {{ old('type', $quiz->type) == 'weekly' ? 'selected' : '' }}>Mingguan</option>
-                            <option value="module_test" {{ old('type', $quiz->type) == 'module_test' ? 'selected' : '' }}>Tes Modul</option>
-                            <option value="mock_jlpt" {{ old('type', $quiz->type) == 'mock_jlpt' ? 'selected' : '' }}>Mock JLPT</option>
-                        </select>
-                    </div>
-
-                    <!-- Difficulty -->
-                    <div class="space-y-2">
-                        <label for="difficulty" class="text-sm font-bold text-slate-700">Level Kesulitan <span class="text-red-500">*</span></label>
-                        <select name="difficulty" id="difficulty" required 
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
-                            <option value="beginner" {{ old('difficulty', $quiz->difficulty) == 'beginner' ? 'selected' : '' }}>Beginner (N5)</option>
-                            <option value="intermediate" {{ old('difficulty', $quiz->difficulty) == 'intermediate' ? 'selected' : '' }}>Intermediate (N4)</option>
-                            <option value="advanced" {{ old('difficulty', $quiz->difficulty) == 'advanced' ? 'selected' : '' }}>Advanced (N3+)</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="type" value="{{ $quiz->type }}">
+                    <input type="hidden" name="difficulty" value="{{ $quiz->difficulty }}">
 
                     <!-- Time Limit -->
                     <div class="space-y-2">
