@@ -28,11 +28,26 @@ class DashboardController extends Controller
             ->pluck('package_type')
             ->toArray();
 
-        // Fetch Roadmaps by Level
+        // Fetch Roadmaps by Level - Prioritizing those with steps
+        $fetchRoadmap = function($levelPattern) {
+            return Course::where(function($q) use ($levelPattern) {
+                    $q->where('level', $levelPattern)
+                      ->orWhere('title', 'like', "%$levelPattern%");
+                })
+                ->whereHas('roadmapSteps') // Only get courses that actually have a roadmap
+                ->with(['roadmapSteps'])
+                ->orderBy('id', 'desc') // Get the latest one if multiple
+                ->first() 
+                ?? // Fallback to any course if no roadmap found
+                Course::where('level', $levelPattern)
+                    ->orWhere('title', 'like', "%$levelPattern%")
+                    ->first();
+        };
+
         $roadmaps = [
-            'N5' => Course::where('level', 'N5')->orWhere('title', 'like', '%N5%')->with(['roadmapSteps'])->first(),
-            'N4' => Course::where('level', 'N4')->orWhere('title', 'like', '%N4%')->with(['roadmapSteps'])->first(),
-            'Tokutei Ginou' => Course::where('level', 'Tokutei Ginou')->orWhere('title', 'like', '%Tokutei%')->with(['roadmapSteps'])->first(),
+            'N5' => $fetchRoadmap('N5'),
+            'N4' => $fetchRoadmap('N4'),
+            'Tokutei Ginou' => $fetchRoadmap('Tokutei'),
         ];
 
         // Access Check
@@ -63,13 +78,55 @@ class DashboardController extends Controller
         $currentRoadmap = $roadmaps[$currentLevel] ?? null;
         $roadmapSteps = $currentRoadmap ? $currentRoadmap->roadmapSteps : collect();
 
+        // Calculate Step Progression
+        $stepsWithStatus = [];
+        $previousCompleted = true; // First step is always unlocked
+
+        foreach ($roadmapSteps as $step) {
+            $isCompleted = false;
+            $contentId = $step->content_id;
+            $contentType = $step->content_type;
+
+            if ($contentType === 'lesson') {
+                $isCompleted = \App\Models\LessonProgress::where('user_id', $userId)
+                    ->where('lesson_id', $contentId)
+                    ->where('status', 'completed')
+                    ->exists();
+            } elseif ($contentType === 'quiz') {
+                $isCompleted = \App\Models\UserQuizAttempt::where('user_id', $userId)
+                    ->where('quiz_id', $contentId)
+                    ->where('is_passed', true)
+                    ->exists();
+            } elseif ($contentType === 'module') {
+                // Check if all lessons in module are completed
+                $moduleLessons = \App\Models\Lesson::where('module_id', $contentId)->pluck('id');
+                if ($moduleLessons->count() > 0) {
+                    $completedCount = \App\Models\LessonProgress::where('user_id', $userId)
+                        ->whereIn('lesson_id', $moduleLessons)
+                        ->where('status', 'completed')
+                        ->count();
+                    $isCompleted = ($completedCount >= $moduleLessons->count());
+                } else {
+                    $isCompleted = true; // Empty module is completed?
+                }
+            }
+
+            $stepsWithStatus[] = (object)[
+                'step' => $step,
+                'is_completed' => $isCompleted,
+                'is_locked' => !$previousCompleted
+            ];
+
+            $previousCompleted = $isCompleted;
+        }
+
         return view('dashboard', compact(
             'totalXP',
             'completedLessons',
             'roadmaps',
             'access',
             'currentLevel',
-            'roadmapSteps'
+            'stepsWithStatus'
         ));
     }
 }
