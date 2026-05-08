@@ -279,6 +279,46 @@ class QuizController extends Controller
         return back()->with('success', 'Pertanyaan berhasil ditambahkan.');
     }
 
+    public function batchUpdateQuestions(Request $request, $quizId)
+    {
+        $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);
+        
+        $request->validate([
+            'questions' => 'required|array',
+            'questions.*.question_text' => 'required|string',
+            'questions.*.points' => 'required|integer|min:1',
+            'questions.*.order' => 'nullable|integer',
+            'questions.*.options' => 'nullable|array',
+            'questions.*.correct_answer' => 'required|string',
+        ]);
+
+        $existingIds = $quiz->questions()->pluck('id')->toArray();
+        $submittedIds = collect($request->questions)->pluck('id')->filter()->toArray();
+
+        // 1. Delete removed questions
+        $idsToDelete = array_diff($existingIds, $submittedIds);
+        if (!empty($idsToDelete)) {
+            $quiz->questions()->whereIn('id', $idsToDelete)->delete();
+        }
+
+        // 2. Update or Create questions
+        foreach ($request->questions as $qData) {
+            $qData['question_type'] = $quiz->question_type ?? 'multiple_choice';
+            
+            if (isset($qData['id']) && in_array($qData['id'], $existingIds)) {
+                // Update
+                $question = $quiz->questions()->find($qData['id']);
+                $question->update($qData);
+            } else {
+                // Create
+                unset($qData['id']);
+                $quiz->questions()->create($qData);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Semua perubahan berhasil disimpan.']);
+    }
+
     public function destroyQuestion($quizId, $questionId)
     {
         $quiz = Quiz::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($quizId);

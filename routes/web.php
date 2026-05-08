@@ -161,6 +161,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'questions'])->name('quizzes.questions');
         Route::post('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
         Route::put('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
+        Route::post('/quizzes/{quiz}/questions/batch', [App\Http\Controllers\Sensei\QuizController::class, 'batchUpdateQuestions'])->name('quizzes.questions.batch');
         Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
         Route::get('/programs/{program}/manage', [App\Http\Controllers\Sensei\QuizController::class, 'manageProgram'])->name('programs.manage');
         Route::post('/programs/{program}/roadmap-steps', [App\Http\Controllers\Sensei\QuizController::class, 'storeRoadmapStep'])->name('programs.roadmap.store');
