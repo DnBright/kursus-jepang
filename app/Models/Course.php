@@ -47,4 +47,9 @@ class Course extends Model
             })->where('status', 'approved');
         })->get();
     }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
 }

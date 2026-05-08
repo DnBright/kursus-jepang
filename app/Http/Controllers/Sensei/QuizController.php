@@ -95,6 +95,18 @@ class QuizController extends Controller
         return view('sensei.quizzes.index', compact('summary', 'programs', 'quizzes', 'results'));
     }
 
+    public function manageProgram($id)
+    {
+        $sensei = Auth::guard('sensei')->user();
+        $course = Course::where('instructor_id', $sensei->id)
+            ->with(['modules' => function($q) {
+                $q->orderBy('order');
+            }, 'quizzes'])
+            ->findOrFail($id);
+            
+        return view('sensei.programs.manage', compact('course'));
+    }
+
     public function create()
     {
         $courses = Course::all();

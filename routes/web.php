@@ -161,6 +161,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::post('/quizzes/{quiz}/questions', [App\Http\Controllers\Sensei\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
         Route::put('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
         Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
+        Route::get('/programs/{program}/manage', [App\Http\Controllers\Sensei\QuizController::class, 'manageProgram'])->name('programs.manage');
 
         // Quiz Grading Routes
         Route::get('/quizzes-grading', [App\Http\Controllers\Sensei\QuizController::class, 'gradingAttempts'])->name('quizzes.grading.index');
