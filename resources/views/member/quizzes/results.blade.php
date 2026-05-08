@@ -27,13 +27,21 @@
                 <div class="grid md:grid-cols-3 gap-6 mb-8">
                     <div class="text-center">
                         <div class="text-5xl font-black {{ $attempt->status === 'needs_grading' ? 'text-blue-600' : ($attempt->is_passed ? 'text-green-600' : 'text-orange-600') }} mb-2">
-                            {{ number_format($attempt->percentage, 0) }}%
+                            @if($attempt->status === 'needs_grading')
+                                --%
+                            @else
+                                {{ number_format($attempt->percentage, 0) }}%
+                            @endif
                         </div>
-                        <div class="text-slate-500 text-sm font-bold">Skor {{ $attempt->status === 'needs_grading' ? 'Sementara' : '' }}</div>
+                        <div class="text-slate-500 text-sm font-bold">Skor {{ $attempt->status === 'needs_grading' ? 'Akhir' : '' }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-3xl font-black text-slate-700 mb-2">
-                            {{ $attempt->score }}/{{ $attempt->max_score }}
+                            @if($attempt->status === 'needs_grading')
+                                -- / {{ $attempt->max_score }}
+                            @else
+                                {{ $attempt->score }}/{{ $attempt->max_score }}
+                            @endif
                         </div>
                         <div class="text-slate-500 text-sm font-bold">Poin</div>
                     </div>
@@ -50,12 +58,12 @@
                     <div class="flex items-center justify-between text-sm mb-2">
                         <span class="font-bold text-slate-600">Nilai Lulus: {{ $attempt->quiz->passing_score }}%</span>
                         <span class="font-bold {{ $attempt->status === 'needs_grading' ? 'text-blue-600' : ($attempt->is_passed ? 'text-green-600' : 'text-orange-600') }}">
-                            {{ $attempt->status === 'needs_grading' ? 'PENDING' : ($attempt->is_passed ? 'LULUS' : 'BELUM LULUS') }}
+                            {{ $attempt->status === 'needs_grading' ? 'MENUNGGU SENSEI' : ($attempt->is_passed ? 'LULUS' : 'BELUM LULUS') }}
                         </span>
                     </div>
                     <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                        <div class="{{ $attempt->status === 'needs_grading' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : ($attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600') }} h-3 rounded-full transition-all duration-1000" 
-                             style="width: {{ min($attempt->percentage, 100) }}%">
+                        <div class="{{ $attempt->status === 'needs_grading' ? 'bg-blue-200' : ($attempt->is_passed ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-orange-500 to-amber-600') }} h-3 rounded-full transition-all duration-1000" 
+                             style="width: {{ $attempt->status === 'needs_grading' ? '0' : min($attempt->percentage, 100) }}%">
                         </div>
                     </div>
                 </div>
