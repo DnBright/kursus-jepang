@@ -482,7 +482,7 @@
                 @foreach($articles as $article)
                 <div @click="openArticle({
                     title: {{ json_encode($article->title) }},
-                    content: {{ json_encode(nl2br(e($article->content))) }},
+                    content: {{ json_encode($article->content) }},
                     image: '{{ $article->image ? Storage::url($article->image) : '' }}',
                     date: '{{ $article->created_at->format('d M Y') }}'
                 })" class="group cursor-pointer">
