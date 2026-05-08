@@ -61,11 +61,25 @@ class QuizController extends Controller
                         return true;
                     }
                 }
-                return false;
             }
             
-            // Case 2: Quiz is not linked to a lesson (orphaned)
-            // Fallback: Check if user has ANY active package and match by title
+            // Case 2: Quiz is part of a roadmap the user has access to
+            $isRoadmapQuiz = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+                ->where('content_id', $quiz->id)
+                ->whereHas('course', function($q) use ($activePackages) {
+                    $q->where(function($sq) use ($activePackages) {
+                        foreach ($activePackages as $ap) {
+                            $sq->orWhere('title', 'like', "%$ap%")
+                              ->orWhere('level', 'like', "%$ap%");
+                        }
+                    });
+                })->exists();
+            
+            if ($isRoadmapQuiz) {
+                return true;
+            }
+            
+            // Case 3: Orphaned quiz fallback
             foreach ($activePackages as $ap) {
                 if (stripos($quiz->title, $ap) !== false) {
                     return true;
@@ -99,6 +113,7 @@ class QuizController extends Controller
         } else {
             $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
             
+            // 1. Check Course link
             if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
                 $course = $quiz->lesson->module->course;
                 foreach ($activePackages as $ap) {
@@ -107,8 +122,24 @@ class QuizController extends Controller
                         break;
                     }
                 }
-            } else {
-                // Orphaned quiz fallback
+            }
+            
+            // 2. Check Roadmap link
+            if (!$hasAccess) {
+                $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+                    ->where('content_id', $quiz->id)
+                    ->whereHas('course', function($q) use ($activePackages) {
+                        $q->where(function($sq) use ($activePackages) {
+                            foreach ($activePackages as $ap) {
+                                $sq->orWhere('title', 'like', "%$ap%")
+                                  ->orWhere('level', 'like', "%$ap%");
+                            }
+                        });
+                    })->exists();
+            }
+
+            // 3. Orphaned quiz fallback
+            if (!$hasAccess) {
                 foreach ($activePackages as $ap) {
                     if (stripos($quiz->title, $ap) !== false) {
                         $hasAccess = true;
@@ -155,7 +186,7 @@ class QuizController extends Controller
         $userAnswers = $validated['answers'];
         $score = 0;
         $maxScore = 0;
-        $hasEssay = false;
+        $hasManualGrading = false;
 
         foreach ($quiz->questions as $question) {
             $questionId = $question->id;
@@ -170,8 +201,8 @@ class QuizController extends Controller
                 $isCorrect = $userAnswer === $question->correct_answer;
             } elseif ($question->question_type === 'fill_blank') {
                 $isCorrect = strtolower(trim($userAnswer)) === strtolower(trim($question->correct_answer));
-            } elseif ($question->question_type === 'essay') {
-                $hasEssay = true;
+            } elseif ($question->question_type === 'essay' || $question->question_type === 'handwriting') {
+                $hasManualGrading = true;
                 $isCorrect = false; // Manual grading required
             }
 
@@ -181,7 +212,7 @@ class QuizController extends Controller
         }
 
         $percentage = $maxScore > 0 ? ($score / $maxScore) * 100 : 0;
-        $isPassed = $percentage >= $quiz->passing_score;
+        $isPassed = $percentage >= ($quiz->passing_score ?? 70);
 
         // Save attempt
         $attempt = UserQuizAttempt::create([
@@ -193,7 +224,7 @@ class QuizController extends Controller
             'time_taken' => $validated['time_taken'] ?? null,
             'answers' => $userAnswers,
             'is_passed' => $isPassed,
-            'status' => $hasEssay ? 'needs_grading' : 'completed',
+            'status' => $hasManualGrading ? 'needs_grading' : 'completed',
             'completed_at' => now(),
         ]);
 
@@ -209,7 +240,7 @@ class QuizController extends Controller
         ]);
 
         return redirect()->route('quizzes.results', $attempt->id)
-            ->with('success', $hasEssay ? 'Quiz berhasil dikumpulkan. Jawaban essai Anda akan diperiksa oleh Sensei.' : ($isPassed ? 'Selamat! Anda lulus quiz ini! 🎉' : 'Quiz selesai. Coba lagi untuk hasil lebih baik!'));
+            ->with('success', $hasManualGrading ? 'Quiz berhasil dikumpulkan. Jawaban Anda akan diperiksa oleh Sensei.' : ($isPassed ? 'Selamat! Anda lulus quiz ini! 🎉' : 'Quiz selesai. Coba lagi untuk hasil lebih baik!'));
     }
 
     /**
