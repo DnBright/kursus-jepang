@@ -8,6 +8,8 @@ use App\Models\Course;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\UserQuizAttempt;
+use App\Models\Lesson;
+use App\Models\CourseRoadmapStep;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
