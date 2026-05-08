@@ -105,23 +105,51 @@
                         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-3 h-48 overflow-y-auto custom-scrollbar p-1">
+                        <div class="space-y-3 h-48 overflow-y-auto custom-scrollbar p-1" id="category-list">
                             @php
                                 $all_categories = array_unique(array_merge(['Berita', 'Budaya', 'Tips'], $categories ?? []));
                             @endphp
                             @foreach($all_categories as $cat)
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="radio" name="category" value="{{ $cat }}" {{ old('category') == $cat ? 'checked' : '' }} class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300 rounded-full">
-                                <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{ $cat }}</span>
-                            </label>
+                            <div class="flex items-center justify-between group/cat">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="radio" name="category" value="{{ $cat }}" {{ old('category') == $cat ? 'checked' : '' }} class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300 rounded-full">
+                                    <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{ $cat }}</span>
+                                </label>
+                                @if(!in_array($cat, ['Berita', 'Budaya', 'Tips']))
+                                <button type="button" onclick="deleteCategory('{{ $cat }}', this)" class="opacity-0 group-hover/cat:opacity-100 p-1 text-slate-300 hover:text-red-500 transition-all">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                                @endif
+                            </div>
                             @endforeach
                         </div>
 
                         <div class="mt-6 pt-6 border-t border-slate-100 space-y-4">
                             <p class="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer">+ Add New Category</p>
-                            <input type="text" placeholder="Contoh: Jurnal Internal" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium">
+                            <input type="text" name="new_category" placeholder="Contoh: Jurnal Internal" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium">
                             <p class="text-slate-400 text-[10px] italic">Isi ini jika kategori belum tersedia.</p>
                         </div>
+
+                        <script>
+                            function deleteCategory(name, el) {
+                                if (confirm('Hapus kategori ini?')) {
+                                    fetch('{{ route('admin.articles.delete-category') }}', {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify({ name: name })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            el.closest('.group\\/cat').remove();
+                                        }
+                                    });
+                                }
+                            }
+                        </script>
                     </div>
                 </div>
 

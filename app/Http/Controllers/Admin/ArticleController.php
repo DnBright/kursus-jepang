@@ -22,7 +22,8 @@ class ArticleController extends Controller
 
     public function create()
     {
-        return view('admin.articles.create');
+        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        return view('admin.articles.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -34,9 +35,15 @@ class ArticleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_url' => 'nullable|url|max:255',
             'category' => 'nullable|string|max:255',
+            'new_category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
             'is_member_only' => 'boolean',
         ]);
+
+        if ($request->filled('new_category')) {
+            $validated['category'] = $request->input('new_category');
+            \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
         
@@ -62,7 +69,7 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        $categories = Article::whereNotNull('category')->distinct()->pluck('category')->toArray();
+        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
         return view('admin.articles.edit', compact('article', 'categories'));
     }
 
@@ -75,9 +82,15 @@ class ArticleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'image_url' => 'nullable|url|max:255',
             'category' => 'nullable|string|max:255',
+            'new_category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
             'is_member_only' => 'boolean',
         ]);
+
+        if ($request->filled('new_category')) {
+            $validated['category'] = $request->input('new_category');
+            \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+        }
 
         if ($validated['title'] !== $article->title) {
             $validated['slug'] = Str::slug($validated['title']);
@@ -112,5 +125,16 @@ class ArticleController extends Controller
         $article->delete();
 
         return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dihapus.');
+    }
+
+    public function deleteCategory(Request $request)
+    {
+        $categoryName = $request->input('name');
+        if ($categoryName) {
+            \App\Models\Category::where('name', $categoryName)->delete();
+            \App\Models\Article::where('category', $categoryName)->update(['category' => null]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false, 'message' => 'Category name missing'], 400);
     }
 }

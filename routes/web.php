@@ -274,6 +274,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
 
         // Article Management
+        Route::delete('articles/categories', [App\Http\Controllers\Admin\ArticleController::class, 'deleteCategory'])->name('articles.delete-category');
         Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
         Route::post('media/upload', [App\Http\Controllers\Admin\MediaController::class, 'upload'])->name('media.upload');
     });
