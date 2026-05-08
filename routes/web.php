@@ -8,14 +8,16 @@ use Illuminate\Support\Facades\Schema;
 
 Route::get('/', function () {
     $articles = [];
+    $categories = [];
     if (Schema::hasTable('articles')) {
-        $articles = \App\Models\Article::where('is_published', true)->latest()->take(9)->get();
+        $articles = \App\Models\Article::where('is_published', true)->latest()->take(12)->get();
+        $categories = \App\Models\Article::where('is_published', true)->whereNotNull('category')->distinct()->pluck('category')->toArray();
     }
     $courses = [];
     if (Schema::hasTable('courses')) {
         $courses = \App\Models\Course::with('instructor')->get();
     }
-    return view('landing', compact('articles', 'courses'));
+    return view('landing', compact('articles', 'courses', 'categories'));
 });
 
 // Temporary route to run migrations on server

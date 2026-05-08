@@ -62,7 +62,8 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        return view('admin.articles.edit', compact('article'));
+        $categories = Article::whereNotNull('category')->distinct()->pluck('category')->toArray();
+        return view('admin.articles.edit', compact('article', 'categories'));
     }
 
     public function update(Request $request, Article $article)

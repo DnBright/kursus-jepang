@@ -108,9 +108,9 @@
                     <div class="p-6">
                         <div class="space-y-3 h-48 overflow-y-auto custom-scrollbar p-1">
                             @php
-                                $categories = ['Berita', 'Budaya', 'Karir', 'Pelatihan', 'testt', 'Tips'];
+                                $all_categories = array_unique(array_merge(['Berita', 'Budaya', 'Tips'], $categories ?? []));
                             @endphp
-                            @foreach($categories as $cat)
+                            @foreach($all_categories as $cat)
                             <label class="flex items-center gap-3 cursor-pointer group">
                                 <input type="radio" name="category" value="{{ $cat }}" {{ old('category', $article->category) == $cat ? 'checked' : '' }} class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300 rounded-full">
                                 <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{ $cat }}</span>

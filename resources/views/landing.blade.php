@@ -382,6 +382,7 @@
     <!-- Articles Section -->
     <section x-data="{ 
         showModal: false, 
+        activeCategory: 'All',
         isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
         activeArticle: {title: '', content: '', image: '', date: '', is_member_only: false},
         openArticle(article) {
@@ -408,15 +409,35 @@
                 </div>
             </div>
 
+            <!-- Category Filter -->
+            <div class="flex flex-wrap items-center gap-3 mb-12">
+                <button @click="activeCategory = 'All'" 
+                    :class="activeCategory === 'All' ? 'bg-red-600 text-white shadow-xl shadow-red-200' : 'bg-white text-slate-500 hover:bg-slate-100'"
+                    class="px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300">
+                    Semua
+                </button>
+                @foreach($categories as $cat)
+                <button @click="activeCategory = '{{ $cat }}'" 
+                    :class="activeCategory === '{{ $cat }}' ? 'bg-red-600 text-white shadow-xl shadow-red-200' : 'bg-white text-slate-500 hover:bg-slate-100'"
+                    class="px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300">
+                    {{ $cat }}
+                </button>
+                @endforeach
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($articles as $article)
-                <div @click="openArticle({
-                    title: {{ json_encode($article->title) }},
-                    content: {{ json_encode($article->content) }},
-                    image: '{{ $article->image ? (str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image)) : '' }}',
-                    date: '{{ $article->created_at->format('d M Y') }}',
-                    is_member_only: {{ $article->is_member_only ? 'true' : 'false' }}
-                })" class="group cursor-pointer">
+                <div x-show="activeCategory === 'All' || activeCategory === '{{ $article->category }}'"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     @click="openArticle({
+                        title: {{ json_encode($article->title) }},
+                        content: {{ json_encode($article->content) }},
+                        image: '{{ $article->image ? (str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image)) : '' }}',
+                        date: '{{ $article->created_at->format('d M Y') }}',
+                        is_member_only: {{ $article->is_member_only ? 'true' : 'false' }}
+                    })" class="group cursor-pointer">
                     <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
                         @if($article->image)
                         <img src="{{ str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $article->is_member_only && !auth()->check() ? 'blur-sm' : '' }}">
