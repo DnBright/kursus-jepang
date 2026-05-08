@@ -29,7 +29,18 @@ class QuizController extends Controller
             'avg_score' => 0, 
         ];
 
-        // Quizzes
+        // 1. Programs (Courses taught by this sensei)
+        $programs = $sensei->courses()->withCount('modules')->get()->map(function($course) {
+            return [
+                'id' => $course->id,
+                'title' => $course->title,
+                'level' => $course->level,
+                'modules_count' => $course->modules_count,
+                'students_count' => $course->enrolledStudents()->count(),
+            ];
+        });
+
+        // 2. Quizzes (Both PG and Assignments/Essay)
         $quizzes = $sensei->quizzes()->withCount('questions')->get()->map(function($quiz) {
             return [
                 'id' => $quiz->id,
@@ -42,21 +53,46 @@ class QuizController extends Controller
             ];
         });
 
-        // Assignments
-        $assignments = $sensei->assignments()->withCount(['submissions as pending_count' => function($query) {
-            $query->where('status', 'pending');
-        }])->get()->map(function($assignment) {
-            return [
-                'id' => $assignment->id,
-                'title' => $assignment->title,
-                'class' => $assignment->module->course->title ?? 'General',
-                'submitted_count' => $assignment->submissions()->count(),
-                'deadline' => $assignment->due_date ? $assignment->due_date->format('d M Y') : '-',
-                'status' => $assignment->pending_count > 0 ? 'needs_grading' : 'completed',
-            ];
-        });
+        // 3. Nilai (Results/Submissions)
+        $results = collect();
+        
+        // Quiz results
+        $quizResults = UserQuizAttempt::whereIn('quiz_id', $sensei->quizzes()->pluck('id'))
+            ->with(['user', 'quiz'])
+            ->latest()
+            ->get()
+            ->map(function($attempt) {
+                return [
+                    'id' => $attempt->id,
+                    'user_name' => $attempt->user->name,
+                    'task_title' => $attempt->quiz->title,
+                    'type' => 'Quiz',
+                    'score' => $attempt->score,
+                    'status' => $attempt->status,
+                    'date' => $attempt->created_at->format('d M Y'),
+                ];
+            });
+            
+        // Assignment results
+        $assignmentResults = AssignmentSubmission::whereIn('assignment_id', $sensei->assignments()->pluck('id'))
+            ->with(['user', 'assignment'])
+            ->latest()
+            ->get()
+            ->map(function($submission) {
+                return [
+                    'id' => $submission->id,
+                    'user_name' => $submission->user->name,
+                    'task_title' => $submission->assignment->title,
+                    'type' => 'Tugas',
+                    'score' => $submission->score ?? '-',
+                    'status' => $submission->status,
+                    'date' => $submission->created_at->format('d M Y'),
+                ];
+            });
+            
+        $results = $quizResults->concat($assignmentResults)->sortByDesc('date');
 
-        return view('sensei.quizzes.index', compact('summary', 'quizzes', 'assignments'));
+        return view('sensei.quizzes.index', compact('summary', 'programs', 'quizzes', 'results'));
     }
 
     public function create()
