@@ -163,10 +163,11 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::put('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
         Route::post('/quizzes/{quiz}/questions/batch', [App\Http\Controllers\Sensei\QuizController::class, 'batchUpdateQuestions'])->name('quizzes.questions.batch');
         Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
-        Route::get('/programs/{program}/manage', [App\Http\Controllers\Sensei\QuizController::class, 'manageProgram'])->name('programs.manage');
-        Route::post('/programs/{program}/roadmap-steps', [App\Http\Controllers\Sensei\QuizController::class, 'storeRoadmapStep'])->name('programs.roadmap.store');
-        Route::put('/programs/roadmap-steps/{step}', [App\Http\Controllers\Sensei\QuizController::class, 'updateRoadmapStep'])->name('programs.roadmap.update');
-        Route::delete('/programs/roadmap-steps/{step}', [App\Http\Controllers\Sensei\QuizController::class, 'destroyRoadmapStep'])->name('programs.roadmap.destroy');
+        Route::get('/roadmap', [App\Http\Controllers\Sensei\RoadmapController::class, 'index'])->name('roadmap.index');
+        Route::get('/roadmap/{program}', [App\Http\Controllers\Sensei\RoadmapController::class, 'manage'])->name('roadmap.manage');
+        Route::post('/roadmap/{program}/steps', [App\Http\Controllers\Sensei\RoadmapController::class, 'storeStep'])->name('roadmap.store');
+        Route::put('/roadmap/steps/{step}', [App\Http\Controllers\Sensei\RoadmapController::class, 'updateStep'])->name('roadmap.update');
+        Route::delete('/roadmap/steps/{step}', [App\Http\Controllers\Sensei\RoadmapController::class, 'destroyStep'])->name('roadmap.destroy');
 
         // Quiz Grading Routes
         Route::get('/penilaian', [App\Http\Controllers\Sensei\QuizController::class, 'gradingIndex'])->name('quizzes.grading.index');
@@ -266,6 +267,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         // Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
         Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+        
+        Route::get('/roadmap', [App\Http\Controllers\Admin\RoadmapController::class, 'index'])->name('roadmap.index');
+        Route::get('/roadmap/{program}', [App\Http\Controllers\Admin\RoadmapController::class, 'manage'])->name('roadmap.manage');
+        Route::post('/roadmap/{program}/steps', [App\Http\Controllers\Admin\RoadmapController::class, 'storeStep'])->name('roadmap.store');
+        Route::put('/roadmap/steps/{step}', [App\Http\Controllers\Admin\RoadmapController::class, 'updateStep'])->name('roadmap.update');
+        Route::delete('/roadmap/steps/{step}', [App\Http\Controllers\Admin\RoadmapController::class, 'destroyStep'])->name('roadmap.destroy');
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
         Route::get('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve.get');
