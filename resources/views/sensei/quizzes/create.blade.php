@@ -45,16 +45,7 @@
 
                     <input type="hidden" name="type" value="module_test">
 
-                    <!-- Difficulty -->
-                    <div class="space-y-2">
-                        <label for="difficulty" class="text-sm font-bold text-slate-700">Level Kesulitan <span class="text-red-500">*</span></label>
-                        <select name="difficulty" id="difficulty" required 
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
-                            <option value="beginner" {{ old('difficulty') == 'beginner' ? 'selected' : '' }}>Beginner (N5)</option>
-                            <option value="intermediate" {{ old('difficulty') == 'intermediate' ? 'selected' : '' }}>Intermediate (N4)</option>
-                            <option value="advanced" {{ old('difficulty') == 'advanced' ? 'selected' : '' }}>Advanced (N3+)</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="difficulty" value="beginner">
 
                     <!-- Time Limit -->
                     <div class="space-y-2">
