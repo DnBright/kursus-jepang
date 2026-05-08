@@ -22,7 +22,10 @@ class ArticleController extends Controller
 
     public function create()
     {
-        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        $categories = [];
+        if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+            $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        }
         return view('admin.articles.create', compact('categories'));
     }
 
@@ -42,7 +45,9 @@ class ArticleController extends Controller
 
         if ($request->filled('new_category')) {
             $validated['category'] = $request->input('new_category');
-            \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+                \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+            }
         }
 
         $validated['slug'] = Str::slug($validated['title']);
@@ -69,7 +74,10 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        $categories = [];
+        if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+            $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        }
         return view('admin.articles.edit', compact('article', 'categories'));
     }
 
@@ -89,7 +97,9 @@ class ArticleController extends Controller
 
         if ($request->filled('new_category')) {
             $validated['category'] = $request->input('new_category');
-            \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+                \App\Models\Category::firstOrCreate(['name' => $validated['category']]);
+            }
         }
 
         if ($validated['title'] !== $article->title) {
