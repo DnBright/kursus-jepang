@@ -95,14 +95,14 @@
                             @endforeach
                         </div>
                         @elseif($question->question_type === 'essay')
-                        <div class="px-4 py-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-700 text-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Referensi Jawaban:</p>
-                            {{ $question->correct_answer ?: '-' }}
+                        <div class="px-4 py-3 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-slate-500 text-xs italic flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            Penilaian Manual oleh Sensei
                         </div>
                         @elseif($question->question_type === 'handwriting')
-                        <div class="px-4 py-3 rounded-xl border border-dashed border-orange-200 bg-orange-50 text-orange-700 text-sm text-center">
-                            <p class="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-2">Target Tulisan:</p>
-                            <span class="text-2xl font-bold">{{ $question->correct_answer ?: '-' }}</span>
+                        <div class="px-4 py-3 rounded-xl border border-dashed border-orange-200 bg-orange-50 text-orange-600 text-xs italic flex items-center gap-2">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            Penilaian Manual oleh Sensei (Tulis Tangan)
                         </div>
                         @else
                         <div class="px-4 py-2 rounded-lg border bg-green-50 border-green-200 text-green-700 font-bold text-sm">
@@ -215,11 +215,9 @@
                     }
                 }
             } else if (questionType === 'essay') {
-                const essayInput = form.querySelector('textarea[name=essay_correct_answer]');
-                if (essayInput) correctInput.value = essayInput.value || 'ESSAY_REFERENCE';
+                correctInput.value = 'MANUAL_GRADING';
             } else if (questionType === 'handwriting') {
-                const handwritingInput = form.querySelector('input[name=handwriting_correct_answer]');
-                if (handwritingInput) correctInput.value = handwritingInput.value || 'HANDWRITING_REFERENCE';
+                correctInput.value = 'MANUAL_GRADING';
             } else {
                 correctInput.value = '';
             }

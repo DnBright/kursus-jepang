@@ -34,23 +34,15 @@
     <p class="text-[10px] text-slate-500 font-medium">* Pilih salah satu sebagai jawaban benar menggunakan tombol radio.</p>
 </div>
 
-<!-- Essay Answer Reference -->
-<div class="space-y-3" x-show="questionType === 'essay'">
-    <label class="text-sm font-bold text-slate-700">Referensi Jawaban (Kunci Jawaban)</label>
-    <textarea name="essay_correct_answer" 
-        x-model="{{ $prefix }}.correct_answer"
-        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-sm"
-        placeholder="Masukkan contoh jawaban atau poin-poin penting yang harus ada..."></textarea>
-</div>
+<!-- Essay Answer Reference (Removed for Manual Grading) -->
+<template x-if="questionType === 'essay'">
+    <input type="hidden" name="essay_correct_answer" value="MANUAL_GRADING">
+</template>
 
-<!-- Handwriting Section -->
-<div class="space-y-3" x-show="questionType === 'handwriting'">
-    <label class="text-sm font-bold text-slate-700">Target Karakter / Kalimat yang Harus Ditulis</label>
-    <input type="text" name="handwriting_correct_answer" 
-        x-model="{{ $prefix }}.correct_answer"
-        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium text-lg text-center"
-        placeholder="Contoh: あいうえお atau 漢字">
-</div>
+<!-- Handwriting Section (Removed for Manual Grading) -->
+<template x-if="questionType === 'handwriting'">
+    <input type="hidden" name="handwriting_correct_answer" value="MANUAL_GRADING">
+</template>
 
 <input type="hidden" name="correct_answer" x-model="{{ $prefix }}.correct_answer">
 
