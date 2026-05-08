@@ -12,7 +12,12 @@ class LessonController extends Controller
 {
     public function show($courseId, $lessonId)
     {
-        $course = Course::with(['modules.lessons'])->findOrFail($courseId);
+        // Load course with modules and lessons sorted by their sequence/ID
+        $course = Course::with(['modules' => function($q) {
+            $q->orderBy('id', 'asc');
+        }, 'modules.lessons' => function($q) {
+            $q->orderBy('id', 'asc');
+        }])->findOrFail($courseId);
         
         if (!Auth::user()->hasActivePackage($course->level)) {
             return redirect()->route('packages.index')->with('error', 'Akses ditolak.');
@@ -21,17 +26,21 @@ class LessonController extends Controller
         $lesson = Lesson::whereHas('module', function($q) use ($courseId) {
                         $q->where('course_id', $courseId);
                     })
+                    ->with('module')
                     ->findOrFail($lessonId);
 
-        // Find Next and Prev Lesson
-        // Flatten all lessons to find position
-        $allLessons = $course->modules->flatMap->lessons;
-        $currentIndex = $allLessons->search(function($item) use ($lessonId) {
-            return $item->id == $lessonId;
+        // Flatten all lessons across all modules to find the global position
+        $allLessons = $course->modules->flatMap(function($module) {
+            return $module->lessons;
         });
 
-        $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
-        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
+        // Use strict check or ensure IDs are of same type
+        $currentIndex = $allLessons->search(function($item) use ($lessonId) {
+            return (int)$item->id === (int)$lessonId;
+        });
+
+        $prevLesson = ($currentIndex !== false && $currentIndex > 0) ? $allLessons[$currentIndex - 1] : null;
+        $nextLesson = ($currentIndex !== false && $currentIndex < $allLessons->count() - 1) ? $allLessons[$currentIndex + 1] : null;
 
         // Breadcrumbs
         $breadcrumbs = [
@@ -48,7 +57,7 @@ class LessonController extends Controller
             'modules' => $course->modules,
             'prev_lesson_url' => $prevLesson ? route('courses.lessons.show', [$course->id, $prevLesson->id]) : null,
             'next_lesson_url' => $nextLesson ? route('courses.lessons.show', [$course->id, $nextLesson->id]) : null,
-            'position' => 'Materi ' . ($currentIndex + 1) . ' dari ' . $allLessons->count(),
+            'position' => 'Materi ' . ($currentIndex !== false ? ($currentIndex + 1) : 0) . ' dari ' . $allLessons->count(),
             'breadcrumbs' => $breadcrumbs,
         ];
 

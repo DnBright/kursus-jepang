@@ -261,9 +261,15 @@
                     <p class="text-sm text-slate-500 mb-6">Hebat! Anda telah menyelesaikan materi ini. Lanjutkan ke materi berikutnya?</p>
 
                     <div class="space-y-3">
-                        <a href="{{ $next_lesson_url ?? '#' }}" class="block w-full px-4 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-colors {{ !$next_lesson_url ? 'opacity-50 pointer-events-none' : '' }}">
-                            Lanjut Materi Berikutnya
-                        </a>
+                        @if($next_lesson_url)
+                            <a href="{{ $next_lesson_url }}" class="block w-full px-4 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-colors">
+                                Lanjut Materi Berikutnya
+                            </a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="block w-full px-4 py-3 bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-slate-800/20 hover:bg-slate-900 transition-colors">
+                                Kembali ke Roadmap
+                            </a>
+                        @endif
                         <button @click="completeModalOpen = false" class="block w-full px-4 py-3 bg-white text-slate-500 font-bold rounded-xl hover:bg-slate-50 transition-colors">
                             Ulangi Video
                         </button>
