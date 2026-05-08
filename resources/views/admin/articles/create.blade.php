@@ -30,10 +30,11 @@
 
                 <!-- Add Media Button -->
                 <div class="flex">
-                    <button type="button" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+                    <button type="button" onclick="document.getElementById('media-input').click()" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002-2z"></path></svg>
                         Add Media
                     </button>
+                    <input type="file" id="media-input" class="hidden" accept="image/*" onchange="uploadMedia(this)">
                 </div>
 
                 <!-- Editor Container -->
@@ -151,8 +152,12 @@
     <!-- CKEditor 5 -->
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
+        let editorInstance;
         ClassicEditor
             .create(document.querySelector('#editor'), {
+                ckfinder: {
+                    uploadUrl: '{{ route("admin.media.upload", ["_token" => csrf_token()]) }}'
+                },
                 toolbar: {
                     items: [
                         'heading', '|',
@@ -166,6 +171,7 @@
                 }
             })
             .then(editor => {
+                editorInstance = editor;
                 editor.model.document.on('change:data', () => {
                     document.querySelector('#editor').value = editor.getData();
                 });
@@ -173,6 +179,29 @@
             .catch(error => {
                 console.error(error);
             });
+
+        function uploadMedia(input) {
+            if (input.files && input.files[0]) {
+                const formData = new FormData();
+                formData.append('image', input.files[0]);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                fetch('{{ route("admin.media.upload") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.url) {
+                        const content = `<img src="${data.url}" alt="Media Image" />`;
+                        const viewFragment = editorInstance.data.processor.toView(content);
+                        const modelFragment = editorInstance.data.toModel(viewFragment);
+                        editorInstance.model.insertContent(modelFragment);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
 
         function previewImage(input) {
             if (input.files && input.files[0]) {

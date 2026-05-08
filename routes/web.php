@@ -268,7 +268,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('senseis', App\Http\Controllers\Admin\SenseiController::class);
 
         // Article Management
-        Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class);
+        Route::resource('articles', App\Http\Controllers\Admin\ArticleController::class)->names('admin.articles');
+        Route::post('media/upload', [App\Http\Controllers\Admin\MediaController::class, 'upload'])->name('admin.media.upload');
     });
 });
 
