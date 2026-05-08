@@ -139,7 +139,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Paste Image URL</label>
-                            <input type="text" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium">
+                            <input type="text" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-red-500/10 focus:border-red-500 transition-all font-medium">
                         </div>
                         @error('image') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>

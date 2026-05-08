@@ -31,7 +31,8 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image_url' => 'nullable|url|max:255',
             'category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
             'is_member_only' => 'boolean',
@@ -47,6 +48,8 @@ class ArticleController extends Controller
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('articles', 'public');
+        } elseif ($request->filled('image_url')) {
+            $validated['image'] = $request->input('image_url');
         }
 
         $validated['is_published'] = $request->input('is_published') === '1';
@@ -68,7 +71,8 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'image_url' => 'nullable|url|max:255',
             'category' => 'nullable|string|max:255',
             'is_published' => 'boolean',
             'is_member_only' => 'boolean',
@@ -83,10 +87,12 @@ class ArticleController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($article->image) {
+            if ($article->image && !str_starts_with($article->image, 'http')) {
                 Storage::disk('public')->delete($article->image);
             }
             $validated['image'] = $request->file('image')->store('articles', 'public');
+        } elseif ($request->filled('image_url')) {
+            $validated['image'] = $request->input('image_url');
         }
 
         $validated['is_published'] = $request->input('is_published') === '1';

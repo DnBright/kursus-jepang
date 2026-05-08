@@ -24,6 +24,13 @@ Route::get('/run-migrate', function() {
         $output = \Illuminate\Support\Facades\Artisan::output();
         
         try {
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            $output .= "\nStorage link created!";
+        } catch (\Exception $e) {
+            $output .= "\nStorage link skipped or failed: " . $e->getMessage();
+        }
+
+        try {
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
             $output .= "\nSeeding successful!";
         } catch (\Exception $e) {
