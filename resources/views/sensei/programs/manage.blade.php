@@ -1,5 +1,19 @@
 <x-sensei-layout>
-    <div class="max-w-5xl mx-auto space-y-8" x-data="{ showAddModal: false }">
+    <div class="max-w-5xl mx-auto space-y-8" x-data="{ 
+        showAddModal: false, 
+        showEditModal: false,
+        editingStep: { id: '', type: 'module', content_id: '', title: '', order: 0 },
+        openEditModal(step) {
+            this.editingStep = {
+                id: step.id,
+                type: step.content_type,
+                content_id: step.content_id,
+                title: step.title || '',
+                order: step.order
+            };
+            this.showEditModal = true;
+        }
+    }">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -43,14 +57,19 @@
                     </div>
 
                     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm group-hover:shadow-md group-hover:border-slate-300 transition-all relative">
-                         <!-- Delete Action -->
-                         <form action="{{ route('sensei.programs.roadmap.destroy', $step->id) }}" method="POST" class="absolute -right-3 -top-3 opacity-0 group-hover:opacity-100 transition-all">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-8 h-8 bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 rounded-full shadow-sm flex items-center justify-center transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                         <!-- Actions -->
+                         <div class="absolute -right-3 -top-3 opacity-0 group-hover:opacity-100 transition-all flex gap-2">
+                            <button type="button" @click="openEditModal({{ json_encode($step) }})" class="w-8 h-8 bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-100 rounded-full shadow-sm flex items-center justify-center transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </button>
-                        </form>
+                            <form action="{{ route('sensei.programs.roadmap.destroy', $step->id) }}" method="POST" onsubmit="return confirm('Hapus langkah ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-8 h-8 bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 rounded-full shadow-sm flex items-center justify-center transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </form>
+                        </div>
 
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex-1">
@@ -101,16 +120,12 @@
         </div>
 
         <!-- Add Step Modal -->
-        <div x-show="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak>
-            <div @click.away="showAddModal = false" class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100">
-                
+        <div x-show="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak style="display: none;">
+            <div @click.away="showAddModal = false" class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-2xl font-black text-slate-900 tracking-tight">Tambah <span class="text-red-600">Langkah.</span></h3>
-                        <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -120,40 +135,28 @@
                         <div>
                             <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Tipe Konten</label>
                             <div class="grid grid-cols-3 gap-3">
-                                <button type="button" @click="type = 'module'" :class="type === 'module' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
-                                    Modul
-                                </button>
-                                <button type="button" @click="type = 'quiz'" :class="type === 'quiz' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
-                                    Quiz
-                                </button>
-                                <button type="button" @click="type = 'lesson'" :class="type === 'lesson' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">
-                                    Video/Link
-                                </button>
+                                <button type="button" @click="type = 'module'" :class="type === 'module' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Modul</button>
+                                <button type="button" @click="type = 'quiz'" :class="type === 'quiz' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Quiz</button>
+                                <button type="button" @click="type = 'lesson'" :class="type === 'lesson' ? 'border-red-600 bg-red-50 text-red-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Video/Link</button>
                                 <input type="hidden" name="content_type" :value="type">
                             </div>
                         </div>
 
                         <div>
                             <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Item</label>
-                            
-                            <!-- Module Select -->
-                            <select x-show="type === 'module'" :name="type === 'module' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
+                            <select x-show="type === 'module'" :name="type === 'module' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
                                 <option value="">Pilih Modul...</option>
                                 @foreach($course->modules as $mod)
                                     <option value="{{ $mod->id }}">{{ $mod->title }}</option>
                                 @endforeach
                             </select>
-
-                            <!-- Quiz Select -->
-                            <select x-show="type === 'quiz'" :name="type === 'quiz' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                            <select x-show="type === 'quiz'" :name="type === 'quiz' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" style="display: none;">
                                 <option value="">Pilih Quiz...</option>
                                 @foreach($course->quizzes as $qz)
                                     <option value="{{ $qz->id }}">{{ $qz->title }}</option>
                                 @endforeach
                             </select>
-
-                            <!-- Lesson Select -->
-                            <select x-show="type === 'lesson'" :name="type === 'lesson' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                            <select x-show="type === 'lesson'" :name="type === 'lesson' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" style="display: none;">
                                 <option value="">Pilih Video/Link...</option>
                                 @foreach($availableLessons as $ls)
                                     <option value="{{ $ls->id }}">{{ $ls->title }} ({{ $ls->type }})</option>
@@ -163,12 +166,69 @@
 
                         <div>
                             <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Judul Custom (Opsional)</label>
-                            <input type="text" name="title" placeholder="Contoh: Belajar Hiragana Dasar" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
+                            <input type="text" name="title" placeholder="Contoh: Belajar Hiragana Dasar" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
                         </div>
 
-                        <button type="submit" class="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-red-600 transition-all shadow-xl hover:shadow-red-200">
-                            Simpan ke Roadmap
+                        <button type="submit" class="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-red-600 transition-all">Simpan ke Roadmap</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Step Modal -->
+        <div x-show="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" x-cloak style="display: none;">
+            <div @click.away="showEditModal = false" class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-black text-slate-900 tracking-tight">Edit <span class="text-blue-600">Langkah.</span></h3>
+                        <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
+                    </div>
+
+                    <form :action="'{{ url('sensei/programs/roadmap-steps') }}/' + editingStep.id" method="POST" class="space-y-6">
+                        @csrf
+                        @method('PUT')
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Tipe Konten</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button type="button" @click="editingStep.type = 'module'" :class="editingStep.type === 'module' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Modul</button>
+                                <button type="button" @click="editingStep.type = 'quiz'" :class="editingStep.type === 'quiz' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Quiz</button>
+                                <button type="button" @click="editingStep.type = 'lesson'" :class="editingStep.type === 'lesson' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-200 text-slate-500'" class="py-3 px-4 rounded-xl border-2 text-xs font-bold transition-all">Video/Link</button>
+                                <input type="hidden" name="content_type" :value="editingStep.type">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Item</label>
+                            <select x-show="editingStep.type === 'module'" :name="editingStep.type === 'module' ? 'content_id' : ''" x-model="editingStep.content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
+                                @foreach($course->modules as $mod)
+                                    <option value="{{ $mod->id }}">{{ $mod->title }}</option>
+                                @endforeach
+                            </select>
+                            <select x-show="editingStep.type === 'quiz'" :name="editingStep.type === 'quiz' ? 'content_id' : ''" x-model="editingStep.content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" style="display: none;">
+                                @foreach($course->quizzes as $qz)
+                                    <option value="{{ $qz->id }}">{{ $qz->title }}</option>
+                                @endforeach
+                            </select>
+                            <select x-show="editingStep.type === 'lesson'" :name="editingStep.type === 'lesson' ? 'content_id' : ''" x-model="editingStep.content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold" style="display: none;">
+                                @foreach($availableLessons as $ls)
+                                    <option value="{{ $ls->id }}">{{ $ls->title }} ({{ $ls->type }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Judul Custom</label>
+                            <input type="text" name="title" x-model="editingStep.title" placeholder="Judul khusus langkah ini" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Urutan (Order)</label>
+                            <input type="number" name="order" x-model="editingStep.order" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold">
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-blue-600 transition-all shadow-xl">Simpan Perubahan</button>
                     </form>
                 </div>
             </div>

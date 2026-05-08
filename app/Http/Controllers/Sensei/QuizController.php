@@ -138,6 +138,27 @@ class QuizController extends Controller
         return back()->with('success', 'Langkah berhasil ditambahkan ke roadmap.');
     }
 
+    public function updateRoadmapStep(Request $request, $stepId)
+    {
+        $step = CourseRoadmapStep::findOrFail($stepId);
+        
+        $request->validate([
+            'content_type' => 'required|in:module,quiz,lesson',
+            'content_id' => 'required',
+            'title' => 'nullable|string|max:255',
+            'order' => 'nullable|integer',
+        ]);
+
+        $step->update([
+            'content_type' => $request->content_type,
+            'content_id' => $request->content_id,
+            'title' => $request->title,
+            'order' => $request->order ?? $step->order,
+        ]);
+
+        return back()->with('success', 'Langkah roadmap berhasil diperbarui.');
+    }
+
     public function destroyRoadmapStep($stepId)
     {
         $step = \App\Models\CourseRoadmapStep::findOrFail($stepId);
