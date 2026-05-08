@@ -149,7 +149,7 @@ class QuizController extends Controller
             'question_text' => 'required|string',
             'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay,handwriting',
             'options' => 'nullable|array',
-            'correct_answer' => 'nullable|string',
+            'correct_answer' => 'required|string',
             'points' => 'required|integer|min:1',
             'order' => 'nullable|integer',
         ]);
@@ -184,7 +184,7 @@ class QuizController extends Controller
             'question_text' => 'required|string',
             'question_type' => 'required|in:multiple_choice,true_false,fill_blank,matching,essay,handwriting',
             'options' => 'nullable|array',
-            'correct_answer' => 'nullable|string',
+            'correct_answer' => 'required|string',
             'points' => 'required|integer|min:1',
             'order' => 'nullable|integer',
         ]);

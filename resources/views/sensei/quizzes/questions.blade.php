@@ -3,8 +3,8 @@
         showAddModal: false, 
         showEditModal: false,
         questionType: 'multiple_choice',
-        newQuestion: { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 },
-        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 },
+        newQuestion: { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', correctIndex: -1, order: 0 },
+        editQuestion: { id: '', question_text: '', question_type: 'multiple_choice', points: 10, options: ['', '', '', ''], correct_answer: '', correctIndex: -1, order: 0 },
         init() {
             const urlParams = new URLSearchParams(window.location.search);
             const defType = urlParams.get('default_type');
@@ -13,8 +13,16 @@
                 this.showAddModal = true;
             }
         },
+        openEdit(question) {
+            this.editQuestion = JSON.parse(JSON.stringify(question));
+            this.questionType = question.question_type;
+            if (question.question_type === 'multiple_choice' && Array.isArray(question.options)) {
+                this.editQuestion.correctIndex = question.options.indexOf(question.correct_answer);
+            }
+            this.showEditModal = true;
+        },
         resetNewQuestion() {
-            this.newQuestion = { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', order: 0 };
+            this.newQuestion = { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', correctIndex: -1, order: 0 };
         }
     }">
         <!-- Header -->
@@ -88,7 +96,7 @@
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <button @click="showEditModal = true; questionType = '{{ $question->question_type }}'; editQuestion = {{ json_encode($question) }}" 
+                        <button @click="openEdit({{ json_encode($question) }})" 
                             class="p-2 text-slate-400 hover:text-blue-600 transition-all rounded-lg hover:bg-blue-50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>

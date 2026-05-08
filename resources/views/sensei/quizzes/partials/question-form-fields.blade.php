@@ -24,12 +24,13 @@
                 class="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
                 placeholder="Pilihan {{ $letter }}">
             <input type="radio" name="correct_answer_radio" value="{{ $index }}" 
-                :checked="{{ $prefix }}.correct_answer === {{ $prefix }}.options[{{ $index }}]"
+                x-model="{{ $prefix }}.correctIndex"
                 @change="{{ $prefix }}.correct_answer = {{ $prefix }}.options[{{ $index }}]"
                 class="w-4 h-4 text-red-600 focus:ring-red-500">
         </div>
         @endforeach
     </div>
+    <div x-effect="if(questionType === 'multiple_choice' && {{ $prefix }}.correctIndex !== -1) { {{ $prefix }}.correct_answer = {{ $prefix }}.options[{{ $prefix }}.correctIndex]; }"></div>
     <p class="text-[10px] text-slate-500 font-medium">* Pilih salah satu sebagai jawaban benar menggunakan tombol radio.</p>
 </div>
 
