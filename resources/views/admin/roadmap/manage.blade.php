@@ -20,11 +20,10 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Jenis Konten</label>
-                            <select name="content_type" id="content_type" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
-                                <option value="module">Modul Utama</option>
-                                <option value="lesson">Materi (Video/Teks)</option>
-                                <option value="quiz">Quiz / Ujian</option>
-                            </select>
+                             <select name="content_type" id="content_type" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
+                                 <option value="module">Modul Utama</option>
+                                 <option value="quiz">Quiz / Ujian</option>
+                             </select>
                         </div>
 
                         <div id="content_selector_container">
@@ -96,7 +95,6 @@
                                             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Jenis Konten</label>
                                             <select name="content_type" x-model="type" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
                                                 <option value="module">Modul Utama</option>
-                                                <option value="lesson">Materi (Video/Teks)</option>
                                                 <option value="quiz">Quiz / Ujian</option>
                                             </select>
                                         </div>
@@ -113,9 +111,6 @@
                                                     @foreach($quizzes as $quiz)
                                                         <option value="{{ $quiz->id }}" {{ $step->content_id == $quiz->id ? 'selected' : '' }}>{{ $quiz->title }}</option>
                                                     @endforeach
-                                                </template>
-                                                <template x-if="type === 'lesson'">
-                                                    <option value="">Pilih modul dulu...</option>
                                                 </template>
                                             </select>
                                         </div>
@@ -171,8 +166,6 @@
             @foreach($quizzes as $quiz)
                 selector.add(new Option('{{ $quiz->title }}', '{{ $quiz->id }}'));
             @endforeach
-        } else if (type === 'lesson') {
-            selector.add(new Option('Pilih modul dulu...', ''));
         }
     });
 
