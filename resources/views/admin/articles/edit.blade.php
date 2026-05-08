@@ -93,11 +93,7 @@
                         </div>
 
                         <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Move to trash?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-xs font-bold text-red-600 hover:underline">Move to Trash</button>
-                            </form>
+                            <button type="button" onclick="if(confirm('Move to trash?')) document.getElementById('delete-form').submit();" class="text-xs font-bold text-red-600 hover:underline">Move to Trash</button>
                             <button type="submit" name="is_published" value="1" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg text-xs hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">Update Post</button>
                         </div>
                     </div>
@@ -153,6 +149,12 @@
             </div>
         </form>
     </div>
+
+    <!-- Hidden Delete Form -->
+    <form id="delete-form" action="{{ route('admin.articles.destroy', $article->id) }}" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <!-- CKEditor 5 -->
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
