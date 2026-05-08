@@ -11,7 +11,11 @@ Route::get('/', function () {
     $categories = [];
     if (Schema::hasTable('articles')) {
         $articles = \App\Models\Article::where('is_published', true)->latest()->take(12)->get();
-        $categories = \App\Models\Article::where('is_published', true)->whereNotNull('category')->distinct()->pluck('category')->toArray();
+        if (Schema::hasTable('categories')) {
+            $categories = \App\Models\Category::orderBy('name')->pluck('name')->toArray();
+        } else {
+            $categories = \App\Models\Article::where('is_published', true)->whereNotNull('category')->distinct()->pluck('category')->toArray();
+        }
     }
     $courses = [];
     if (Schema::hasTable('courses')) {
