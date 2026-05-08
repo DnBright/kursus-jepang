@@ -305,6 +305,11 @@ class QuizController extends Controller
         foreach ($request->questions as $qData) {
             $qData['question_type'] = $quiz->question_type ?? 'multiple_choice';
             
+            if (in_array($qData['question_type'], ['essay', 'handwriting'])) {
+                $qData['correct_answer'] = 'MANUAL_GRADING';
+                $qData['options'] = null;
+            }
+
             if (isset($qData['id']) && in_array($qData['id'], $existingIds)) {
                 // Update
                 $question = $quiz->questions()->find($qData['id']);

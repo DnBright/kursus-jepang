@@ -1,23 +1,28 @@
 <x-sensei-layout>
     <div class="max-w-4xl mx-auto py-8 px-4" x-data="{ 
-        questions: @js($quiz->questions->map(function($q) {
+        questions: @js($quiz->questions->map(function($q) use ($quiz) {
+            $correct_answer = $q->correct_answer;
+            if ($quiz->question_type !== 'multiple_choice' && empty($correct_answer)) {
+                $correct_answer = 'MANUAL_GRADING';
+            }
             return [
                 'id' => $q->id,
                 'question_text' => $q->question_text,
                 'options' => $q->options ?? ['', '', '', ''],
-                'correct_answer' => $q->correct_answer,
+                'correct_answer' => $correct_answer,
                 'points' => $q->points,
                 'order' => $q->order,
-                'correctIndex' => $q->options ? array_search($q->correct_answer, $q->options) : -1
+                'correctIndex' => ($q->options && $quiz->question_type === 'multiple_choice') ? array_search($q->correct_answer, $q->options) : -1
             ];
         })),
         isSaving: false,
         addQuestion() {
+            const isMC = @js($quiz->question_type === 'multiple_choice');
             this.questions.push({
                 id: null,
                 question_text: '',
-                options: ['', '', '', ''],
-                correct_answer: '',
+                options: isMC ? ['', '', '', ''] : null,
+                correct_answer: isMC ? '' : 'MANUAL_GRADING',
                 points: 10,
                 order: this.questions.length + 1,
                 correctIndex: -1
@@ -52,13 +57,14 @@
             this.questions[qIndex].correct_answer = this.questions[qIndex].options[oIndex];
         },
         async saveAll() {
+            const isMC = @js($quiz->question_type === 'multiple_choice');
             // Validation
             for (let i = 0; i < this.questions.length; i++) {
                 if (!this.questions[i].question_text.trim()) {
                     alert(`Soal #${i+1} belum memiliki teks pertanyaan.`);
                     return;
                 }
-                if (this.questions[i].correctIndex === -1 && @js($quiz->question_type === 'multiple_choice')) {
+                if (isMC && (this.questions[i].correctIndex === -1 || !this.questions[i].correct_answer)) {
                     alert(`Soal #${i+1} belum memilih jawaban yang benar.`);
                     return;
                 }
