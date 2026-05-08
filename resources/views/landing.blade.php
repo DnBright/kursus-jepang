@@ -39,7 +39,7 @@
                     <a href="#program" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Alur</a>
                     <a href="#biaya" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Program</a>
                     <a href="#keunggulan" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Keunggulan</a>
-                    <a href="{{ route('articles.index') }}" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Artikel</a>
+                    <a href="#artikel" class="text-sm font-bold text-slate-500 hover:text-red-600 transition-colors uppercase tracking-widest">Artikel</a>
                 </div>
 
                 <!-- CTA -->
@@ -456,7 +456,19 @@
         </div>
     </section>
     <!-- Articles Section -->
-    <section class="py-32 bg-slate-50 relative overflow-hidden" id="artikel">
+    <section x-data="{ 
+        showModal: false, 
+        activeArticle: {title: '', content: '', image: '', date: ''},
+        openArticle(article) {
+            this.activeArticle = article;
+            this.showModal = true;
+            document.body.style.overflow = 'hidden';
+        },
+        closeModal() {
+            this.showModal = false;
+            document.body.style.overflow = 'auto';
+        }
+    }" class="py-32 bg-slate-50 relative overflow-hidden" id="artikel">
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
                 <div class="max-w-2xl">
@@ -464,17 +476,16 @@
                     <h2 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">Eksplorasi Dunia <span class="text-gradient">Jepang.</span></h2>
                     <p class="text-slate-500 font-bold mt-6">Tips belajar, informasi budaya, hingga kabar terbaru seputar karir di Negeri Sakura.</p>
                 </div>
-                <a href="{{ route('articles.index') }}" class="group flex items-center gap-3 text-sm font-black text-slate-900 uppercase tracking-widest hover:text-red-600 transition-colors">
-                    Lihat Semua Artikel
-                    <div class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-red-600 group-hover:border-red-600 group-hover:text-white transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                    </div>
-                </a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($articles as $article)
-                <div class="group cursor-pointer">
+                <div @click="openArticle({
+                    title: {{ json_encode($article->title) }},
+                    content: {{ json_encode(nl2br(e($article->content))) }},
+                    image: '{{ $article->image ? Storage::url($article->image) : '' }}',
+                    date: '{{ $article->created_at->format('d M Y') }}'
+                })" class="group cursor-pointer">
                     <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
                         @if($article->image)
                         <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
@@ -487,17 +498,62 @@
                             <span class="px-4 py-2 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black text-slate-900 uppercase tracking-widest shadow-xl shadow-black/5">Article</span>
                         </div>
                     </div>
-                    <a href="{{ route('articles.show', $article->slug) }}" class="block">
-                        <h3 class="text-2xl font-black text-slate-900 mb-4 group-hover:text-red-600 transition-colors leading-tight">{{ $article->title }}</h3>
-                    </a>
+                    <h3 class="text-2xl font-black text-slate-900 mb-4 group-hover:text-red-600 transition-colors leading-tight">{{ $article->title }}</h3>
                     <p class="text-slate-500 font-bold text-sm line-clamp-2 mb-6">{{ $article->excerpt }}</p>
                     <div class="flex items-center gap-4 text-xs font-black text-slate-400 uppercase tracking-widest">
                         <span>{{ $article->created_at->format('d M Y') }}</span>
-                        <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-                        <span>5 Min Read</span>
                     </div>
                 </div>
                 @endforeach
+            </div>
+        </div>
+
+        <!-- Article Modal -->
+        <div x-show="showModal" 
+             x-cloak
+             class="fixed inset-0 z-[200] overflow-y-auto"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm" @click="closeModal()"></div>
+
+            <!-- Modal Content -->
+            <div class="relative min-h-screen flex items-center justify-center p-4 md:p-8">
+                <div class="relative bg-white w-full max-w-4xl rounded-[3rem] overflow-hidden shadow-2xl"
+                     x-transition:enter="transition ease-out duration-500"
+                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                    
+                    <!-- Close Button -->
+                    <button @click="closeModal()" class="absolute top-8 right-8 z-10 w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 shadow-xl transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+
+                    <div class="flex flex-col">
+                        <div class="h-[300px] md:h-[400px] w-full relative">
+                            <template x-if="activeArticle.image">
+                                <img :src="activeArticle.image" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!activeArticle.image">
+                                <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300 italic font-bold uppercase tracking-widest text-xl">No Image Featured</div>
+                            </template>
+                            <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                        </div>
+
+                        <div class="px-8 md:px-16 pb-16 -mt-32 relative z-10">
+                            <div class="bg-white rounded-[2rem] p-8 md:p-12 shadow-xl border border-slate-100">
+                                <span class="text-red-600 font-black uppercase tracking-widest text-[10px] mb-4 block" x-text="activeArticle.date"></span>
+                                <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight tracking-tight" x-text="activeArticle.title"></h2>
+                                <div class="prose prose-slate max-w-none text-slate-600 font-medium leading-relaxed" x-html="activeArticle.content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

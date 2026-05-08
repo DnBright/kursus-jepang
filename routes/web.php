@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 Route::get('/', function () {
     $articles = [];
     if (Schema::hasTable('articles')) {
-        $articles = \App\Models\Article::where('is_published', true)->latest()->take(3)->get();
+        $articles = \App\Models\Article::where('is_published', true)->latest()->take(9)->get();
     }
     return view('landing', compact('articles'));
 });
