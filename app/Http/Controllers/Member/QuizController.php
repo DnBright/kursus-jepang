@@ -254,8 +254,42 @@ class QuizController extends Controller
         }
 
         $attempt->load('quiz.questions');
+
+        // Find Next Roadmap Step
+        $nextStepUrl = null;
         
-        return view('member.quizzes.results', compact('attempt'));
+        // If passed or waiting for grading (essay), they can theoretically move forward 
+        // (though roadmap logic might still lock it until grading is done, 
+        // providing the link is better UX)
+        $roadmapStep = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+            ->where('content_id', $attempt->quiz_id)
+            ->first();
+
+        if ($roadmapStep) {
+            $nextStep = \App\Models\CourseRoadmapStep::where('course_id', $roadmapStep->course_id)
+                ->where('order', '>', $roadmapStep->order)
+                ->orderBy('order', 'asc')
+                ->first();
+            
+            if ($nextStep) {
+                if ($nextStep->content_type === 'quiz') {
+                    $nextStepUrl = route('quizzes.show', $nextStep->content_id);
+                } elseif ($nextStep->content_type === 'lesson') {
+                    $nextStepUrl = route('courses.lessons.show', [$nextStep->course_id, $nextStep->content_id]);
+                } elseif ($nextStep->content_type === 'module') {
+                    $firstLesson = \App\Models\Lesson::where('module_id', $nextStep->content_id)->orderBy('id', 'asc')->first();
+                    if ($firstLesson) {
+                        $nextStepUrl = route('courses.lessons.show', [$nextStep->course_id, $firstLesson->id]);
+                    }
+                }
+            }
+        }
+
+        if (!$nextStepUrl) {
+            $nextStepUrl = route('dashboard');
+        }
+        
+        return view('member.quizzes.results', compact('attempt', 'nextStepUrl'));
     }
 
     /**

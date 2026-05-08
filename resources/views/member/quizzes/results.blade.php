@@ -170,6 +170,20 @@
         </div>
 
         <!-- Actions -->
+        <div class="space-y-4 mb-8">
+            @if($attempt->is_passed || $attempt->status === 'needs_grading')
+                <a href="{{ $nextStepUrl }}" class="block w-full py-5 bg-red-600 text-white text-center font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-red-600/30 hover:bg-red-700 hover:-translate-y-1 transition-all">
+                    Lanjut ke Langkah Berikutnya
+                </a>
+            @else
+                <div class="p-6 bg-orange-50 border border-orange-100 rounded-2xl text-center">
+                    <p class="text-orange-700 font-bold mb-2">Anda belum mencapai nilai kelulusan.</p>
+                    <p class="text-orange-600 text-xs">Selesaikan quiz dengan nilai minimal {{ $attempt->quiz->passing_score }}% untuk membuka langkah selanjutnya.</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Secondary Actions -->
         <div class="flex gap-4">
             <a href="{{ route('quizzes.index') }}" class="flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-center">
                 Kembali ke Daftar Quiz
