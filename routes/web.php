@@ -21,8 +21,16 @@ Route::get('/run-migrate', function() {
     }
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
-        return "Migration and Seeding successful!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        $output = \Illuminate\Support\Facades\Artisan::output();
+        
+        try {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+            $output .= "\nSeeding successful!";
+        } catch (\Exception $e) {
+            $output .= "\nSeeding skipped or failed: " . $e->getMessage();
+        }
+
+        return "Process completed!<br><pre>" . $output . "</pre>";
     } catch (\Exception $e) {
         return "Migration failed: " . $e->getMessage();
     }
