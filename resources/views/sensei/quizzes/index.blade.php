@@ -113,7 +113,9 @@
                         </div>
                         @endforelse
                     </div>
-                          <!-- Tab: Quiz -->
+                </div>
+
+                <!-- Tab: Quiz -->
                 <div x-show="activeTab === 'quizzes'" class="space-y-6" style="display: none;" x-data="{ filterLevel: 'all', filterType: 'all', search: '' }">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                         <div class="flex flex-wrap items-center gap-3">
@@ -237,7 +239,6 @@
                         @endforelse
                     </div>
                 </div>
-           </div>
 
                 <!-- Tab: Nilai -->
                 <div x-show="activeTab === 'nilai'" class="space-y-6" style="display: none;">
