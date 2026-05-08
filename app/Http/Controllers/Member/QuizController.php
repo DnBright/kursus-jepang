@@ -19,7 +19,8 @@ class QuizController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $filter = $request->get('type', 'all');
+        $selectedType = $request->get('type', 'all');
+        $selectedLevel = $request->get('level', 'all');
         
         // Get user's active package levels from approved transactions
         $activePackages = $user->transactions()
@@ -38,48 +39,60 @@ class QuizController extends Controller
                   ->orWhere('available_until', '>=', now());
             });
 
-        if ($filter !== 'all') {
-            $quizzesQuery->where('type', $filter);
+        if ($selectedType !== 'all') {
+            $quizzesQuery->where('type', $selectedType);
         }
 
         $allQuizzes = $quizzesQuery->orderBy('created_at', 'desc')->get();
 
-        // Filter quizzes by user's active packages
-        $quizzes = $allQuizzes->filter(function($quiz) use ($activePackages) {
+        // Filter quizzes by user's active packages AND selected level
+        $quizzes = $allQuizzes->filter(function($quiz) use ($activePackages, $selectedLevel) {
             // Admin and Sensei bypass filtering
             if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+                // If filter is active, still apply it
+                if ($selectedLevel !== 'all') {
+                    $qLevel = null;
+                    if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                        $qLevel = $quiz->lesson->module->course->level;
+                    } else {
+                        $rs = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')->where('content_id', $quiz->id)->first();
+                        $qLevel = $rs?->course?->level;
+                    }
+                    if (!$qLevel || stripos($qLevel, $selectedLevel) === false) return false;
+                }
                 return true;
             }
 
-            // Case 1: Quiz is linked to a lesson/course
+            // Get the quiz level
+            $quizLevel = null;
             if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
-                $course = $quiz->lesson->module->course;
+                $quizLevel = $quiz->lesson->module->course->level;
+            } else {
+                $roadmap = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+                    ->where('content_id', $quiz->id)
+                    ->first();
+                if ($roadmap && $roadmap->course) {
+                    $quizLevel = $roadmap->course->level;
+                }
+            }
+
+            // Apply Level Filter if selected
+            if ($selectedLevel !== 'all') {
+                if (!$quizLevel || stripos($quizLevel, $selectedLevel) === false) {
+                    return false;
+                }
+            }
+
+            // Access Check
+            if ($quizLevel) {
                 foreach ($activePackages as $ap) {
-                    if (stripos($course->title, $ap) !== false || 
-                        stripos($course->level, $ap) !== false || 
-                        stripos($ap, $course->level) !== false) {
+                    if (stripos($quizLevel, $ap) !== false || stripos($ap, $quizLevel) !== false) {
                         return true;
                     }
                 }
             }
             
-            // Case 2: Quiz is part of a roadmap the user has access to
-            $isRoadmapQuiz = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
-                ->where('content_id', $quiz->id)
-                ->whereHas('course', function($q) use ($activePackages) {
-                    $q->where(function($sq) use ($activePackages) {
-                        foreach ($activePackages as $ap) {
-                            $sq->orWhere('title', 'like', "%$ap%")
-                              ->orWhere('level', 'like', "%$ap%");
-                        }
-                    });
-                })->exists();
-            
-            if ($isRoadmapQuiz) {
-                return true;
-            }
-            
-            // Case 3: Orphaned quiz fallback
+            // Fallback for orphaned quizzes with level in title
             foreach ($activePackages as $ap) {
                 if (stripos($quiz->title, $ap) !== false) {
                     return true;
@@ -96,7 +109,7 @@ class QuizController extends Controller
             ->get()
             ->keyBy('quiz_id');
 
-        return view('member.quizzes.index', compact('quizzes', 'userAttempts', 'filter'));
+        return view('member.quizzes.index', compact('quizzes', 'userAttempts', 'selectedType', 'selectedLevel'));
     }
 
     /**

@@ -11,23 +11,34 @@
             <p class="text-slate-600 text-lg">Uji kemampuan bahasa Jepang Anda dengan berbagai quiz interaktif</p>
         </div>
 
-        <!-- Filter Tabs -->
-        <div class="flex gap-3 mb-8 overflow-x-auto pb-2">
-            <a href="{{ route('quizzes.index') }}" class="px-6 py-3 rounded-xl font-bold text-sm transition-all {{ $filter == 'all' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white text-slate-600 hover:bg-slate-50' }}">
-                Semua Quiz
-            </a>
-            <a href="{{ route('quizzes.index', ['type' => 'daily']) }}" class="px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap {{ $filter == 'daily' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white text-slate-600 hover:bg-slate-50' }}">
-                Quiz Harian
-            </a>
-            <a href="{{ route('quizzes.index', ['type' => 'weekly']) }}" class="px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap {{ $filter == 'weekly' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white text-slate-600 hover:bg-slate-50' }}">
-                Quiz Mingguan
-            </a>
-            <a href="{{ route('quizzes.index', ['type' => 'module_test']) }}" class="px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap {{ $filter == 'module_test' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white text-slate-600 hover:bg-slate-50' }}">
-                Tes Modul
-            </a>
-            <a href="{{ route('quizzes.index', ['type' => 'mock_jlpt']) }}" class="px-6 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap {{ $filter == 'mock_jlpt' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30' : 'bg-white text-slate-600 hover:bg-slate-50' }}">
-                Mock JLPT
-            </a>
+        <!-- Filters -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
+            <form action="{{ route('quizzes.index') }}" method="GET" class="flex flex-col md:flex-row gap-4 items-end">
+                <div class="flex-1 w-full">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pilih Program</label>
+                    <select name="level" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 rounded-xl text-sm font-bold text-slate-700 focus:ring-red-500 focus:border-red-500 transition-all">
+                        <option value="all" {{ $selectedLevel == 'all' ? 'selected' : '' }}>Semua Program</option>
+                        <option value="N5" {{ $selectedLevel == 'N5' ? 'selected' : '' }}>JLPT N5</option>
+                        <option value="N4" {{ $selectedLevel == 'N4' ? 'selected' : '' }}>JLPT N4</option>
+                        <option value="Tokutei" {{ $selectedLevel == 'Tokutei' ? 'selected' : '' }}>Tokutei Ginou</option>
+                    </select>
+                </div>
+
+                <div class="flex-1 w-full">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Jenis Quiz</label>
+                    <select name="type" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 rounded-xl text-sm font-bold text-slate-700 focus:ring-red-500 focus:border-red-500 transition-all">
+                        <option value="all" {{ $selectedType == 'all' ? 'selected' : '' }}>Semua Jenis</option>
+                        <option value="daily" {{ $selectedType == 'daily' ? 'selected' : '' }}>Quiz Harian</option>
+                        <option value="weekly" {{ $selectedType == 'weekly' ? 'selected' : '' }}>Quiz Mingguan</option>
+                        <option value="module_test" {{ $selectedType == 'module_test' ? 'selected' : '' }}>Tes Modul</option>
+                        <option value="mock_jlpt" {{ $selectedType == 'mock_jlpt' ? 'selected' : '' }}>Mock JLPT</option>
+                    </select>
+                </div>
+
+                <a href="{{ route('quizzes.index') }}" class="px-6 py-3 bg-slate-100 text-slate-500 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm w-full md:w-auto text-center">
+                    Reset
+                </a>
+            </form>
         </div>
 
         @if(session('success'))
