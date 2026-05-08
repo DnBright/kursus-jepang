@@ -15,28 +15,52 @@ class MaterialController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $selectedLevel = $request->get('level', 'all');
         
-        // 1. Get all courses the user has purchased
-        $levels = $user->transactions()
+        // 1. Get all package types the user has purchased
+        $purchasedLevels = $user->transactions()
             ->where('status', 'approved')
-            ->pluck('package_type');
+            ->pluck('package_type')
+            ->toArray();
             
-        $myCourses = Course::whereIn('level', $levels)->get();
+        // 2. Filter courses based on purchased levels AND optional level filter
+        $myCoursesQuery = Course::where(function($q) use ($purchasedLevels) {
+            foreach ($purchasedLevels as $pl) {
+                $q->orWhere('level', 'like', "%$pl%")
+                  ->orWhere('title', 'like', "%$pl%");
+            }
+        });
+
+        if ($selectedLevel !== 'all') {
+            $myCoursesQuery->where('level', 'like', "%$selectedLevel%");
+        }
+
+        $myCourses = $myCoursesQuery->get();
 
         if ($myCourses->isEmpty()) {
             return view('member.materials.index', [
                 'myCourses' => collect(),
                 'selectedCourse' => null,
                 'modules' => collect(),
-                'progress' => 0
+                'progress' => 0,
+                'selectedLevel' => $selectedLevel,
+                'purchasedLevels' => $purchasedLevels
             ]);
         }
 
-        // 2. Determine which course is currently selected
-        $selectedCourseId = $request->get('course_id', $myCourses->first()->id);
-        $selectedCourse = $myCourses->firstWhere('id', $selectedCourseId) ?? $myCourses->first();
+        // 3. Determine which course is currently selected
+        $selectedCourseId = $request->get('course_id');
+        if ($selectedCourseId) {
+            $selectedCourse = $myCourses->firstWhere('id', $selectedCourseId);
+            // If they try to access a course ID they don't own, fallback to first owned course
+            if (!$selectedCourse) {
+                $selectedCourse = $myCourses->first();
+            }
+        } else {
+            $selectedCourse = $myCourses->first();
+        }
 
-        // 3. Load modules and lessons for the selected course
+        // 4. Load modules and lessons for the selected course
         $modules = Module::where('course_id', $selectedCourse->id)
             ->with(['lessons' => function($q) {
                 $q->orderBy('order');
@@ -44,7 +68,7 @@ class MaterialController extends Controller
             ->orderBy('order')
             ->get();
 
-        // 4. Get completion status for all lessons in this course for this user
+        // 5. Get completion status for all lessons in this course for this user
         $lessonIds = $modules->pluck('lessons')->flatten()->pluck('id');
         $completedLessonIds = LessonProgress::where('user_id', $user->id)
             ->whereIn('lesson_id', $lessonIds)
@@ -52,7 +76,7 @@ class MaterialController extends Controller
             ->pluck('lesson_id')
             ->toArray();
 
-        // 5. Calculate course progress
+        // 6. Calculate course progress
         $totalLessons = $lessonIds->count();
         $progress = $totalLessons > 0 ? round((count($completedLessonIds) / $totalLessons) * 100) : 0;
 
@@ -61,7 +85,9 @@ class MaterialController extends Controller
             'selectedCourse', 
             'modules', 
             'completedLessonIds', 
-            'progress'
+            'progress',
+            'selectedLevel',
+            'purchasedLevels'
         ));
     }
 }

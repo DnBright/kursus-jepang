@@ -7,18 +7,31 @@
                 <p class="text-slate-500 text-sm mt-1">Akses semua modul, video, dan bahan bacaan kursus Anda.</p>
             </div>
             
-            @if($myCourses->count() > 0)
-            <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
-                <span class="pl-3 text-xs font-bold text-slate-500 uppercase tracking-wide">Kursus:</span>
-                <select onchange="window.location.href='/materials?course_id=' + this.value" class="text-sm font-bold text-slate-800 border-none focus:ring-0 cursor-pointer py-1 pl-2 pr-8 bg-transparent">
-                    @foreach($myCourses as $course)
-                    <option value="{{ $course->id }}" {{ $selectedCourse->id == $course->id ? 'selected' : '' }}>
-                        {{ $course->level }}: {{ $course->title }}
-                    </option>
-                    @endforeach
-                </select>
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <!-- Program Filter -->
+                <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm w-full sm:w-auto">
+                    <span class="pl-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Program:</span>
+                    <select onchange="window.location.href='/materials?level=' + this.value" class="text-xs font-bold text-slate-800 border-none focus:ring-0 cursor-pointer py-1 pl-2 pr-8 bg-transparent">
+                        <option value="all" {{ $selectedLevel == 'all' ? 'selected' : '' }}>Semua Program</option>
+                        <option value="N5" {{ $selectedLevel == 'N5' ? 'selected' : '' }}>JLPT N5</option>
+                        <option value="N4" {{ $selectedLevel == 'N4' ? 'selected' : '' }}>JLPT N4</option>
+                        <option value="Tokutei" {{ $selectedLevel == 'Tokutei' ? 'selected' : '' }}>Tokutei Ginou</option>
+                    </select>
+                </div>
+
+                @if($myCourses->count() > 0)
+                <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm w-full sm:w-auto">
+                    <span class="pl-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kursus:</span>
+                    <select onchange="window.location.href='/materials?level={{ $selectedLevel }}&course_id=' + this.value" class="text-xs font-bold text-slate-800 border-none focus:ring-0 cursor-pointer py-1 pl-2 pr-8 bg-transparent">
+                        @foreach($myCourses as $course)
+                        <option value="{{ $course->id }}" {{ $selectedCourse && $selectedCourse->id == $course->id ? 'selected' : '' }}>
+                            {{ $course->title }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
             </div>
-            @endif
         </div>
 
         @if($selectedCourse)
