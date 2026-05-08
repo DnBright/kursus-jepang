@@ -98,8 +98,14 @@ class QuizController extends Controller
     public function manageProgram($id)
     {
         $sensei = Auth::guard('sensei')->user();
+        
+        $with = ['modules', 'quizzes'];
+        if (Schema::hasTable('course_roadmap_steps')) {
+            $with[] = 'roadmapSteps';
+        }
+        
         $course = Course::where('instructor_id', $sensei->id)
-            ->with(['roadmapSteps', 'modules', 'quizzes'])
+            ->with($with)
             ->findOrFail($id);
             
         // Available lessons (videos/links) that can be added as steps

@@ -55,6 +55,9 @@ class Course extends Model
 
     public function roadmapSteps()
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('course_roadmap_steps')) {
+            return $this->hasMany(CourseRoadmapStep::class)->whereRaw('1 = 0');
+        }
         return $this->hasMany(CourseRoadmapStep::class)->orderBy('order');
     }
 }
