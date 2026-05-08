@@ -1,7 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="p-8">
+<x-admin-layout>
     <div class="mb-8">
         <h2 class="text-3xl font-black text-slate-900">Roadmap Management</h2>
         <p class="text-slate-500">Pilih program untuk mengelola jalur pembelajaran siswa.</p>
@@ -25,5 +22,4 @@
             </div>
         @endforeach
     </div>
-</div>
-@endsection
+</x-admin-layout>

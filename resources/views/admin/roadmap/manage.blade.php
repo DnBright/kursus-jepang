@@ -1,7 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="p-8">
+<x-admin-layout>
     <div class="flex items-center gap-4 mb-8">
         <a href="{{ route('admin.roadmap.index') }}" class="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-slate-400 hover:text-red-600 transition-all">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
@@ -174,4 +171,4 @@
         }
     });
 </script>
-@endsection
+</x-admin-layout>
