@@ -44,11 +44,11 @@ class QuizController extends Controller
         });
 
         // 2. Quizzes (Both PG and Assignments/Essay)
-        $quizzes = $sensei->quizzes()->withCount('questions')->get()->map(function($quiz) {
+        $quizzes = $sensei->quizzes()->with(['course'])->withCount('questions')->get()->map(function($quiz) {
             return [
                 'id' => $quiz->id,
                 'title' => $quiz->title,
-                'level' => $quiz->difficulty === 'beginner' ? 'N5' : ($quiz->difficulty === 'intermediate' ? 'N4' : 'N3'),
+                'level' => $quiz->course ? $quiz->course->level : ($quiz->difficulty === 'beginner' ? 'N5' : ($quiz->difficulty === 'intermediate' ? 'N4' : 'N3')),
                 'question_count' => $quiz->questions_count,
                 'type' => ucfirst($quiz->type),
                 'question_type' => $quiz->question_type ?? 'multiple_choice',
