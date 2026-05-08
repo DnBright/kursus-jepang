@@ -4,10 +4,27 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController as AdminAuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 Route::get('/', function () {
-    $articles = \App\Models\Article::where('is_published', true)->latest()->take(3)->get();
+    $articles = [];
+    if (Schema::hasTable('articles')) {
+        $articles = \App\Models\Article::where('is_published', true)->latest()->take(3)->get();
+    }
     return view('landing', compact('articles'));
+});
+
+// Temporary route to run migrations on server
+Route::get('/run-migrate', function() {
+    if (!auth()->guard('admin')->check()) {
+        return "Unauthorized. Please login as admin first.";
+    }
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migration successful!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Migration failed: " . $e->getMessage();
+    }
 });
 
 Route::get('/verification/notice', function () {
