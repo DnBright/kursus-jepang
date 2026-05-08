@@ -84,7 +84,7 @@ Route::middleware(['auth', 'member', 'active'])->group(function () {
 
 
 Route::middleware(['auth', 'member', 'active', 'package.active'])->group(function () {
-    Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
+
 
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{course}/lessons/{lesson}', [App\Http\Controllers\Member\LessonController::class, 'show'])->name('courses.lessons.show');

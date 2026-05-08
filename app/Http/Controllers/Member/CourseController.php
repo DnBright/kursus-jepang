@@ -9,19 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-    public function index()
-    {
-        // Get only courses the user has purchased
-        $user = Auth::user();
-        
-        $courses = Course::with('modules')
-            ->get()
-            ->filter(function($course) use ($user) {
-                return $user->hasActivePackage($course->title) || $user->hasActivePackage($course->level);
-            });
-
-        return view('member.courses.index', compact('courses'));
-    }
 
     public function show($id)
     {
