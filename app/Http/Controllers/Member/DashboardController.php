@@ -80,7 +80,7 @@ class DashboardController extends Controller
 
         // Calculate Step Progression
         $stepsWithStatus = [];
-        $previousCompleted = true; // First step is always unlocked
+        $canUnlockNext = true; // First step is always unlocked
 
         foreach ($roadmapSteps as $step) {
             $isCompleted = false;
@@ -98,7 +98,6 @@ class DashboardController extends Controller
                     ->where('is_passed', true)
                     ->exists();
             } elseif ($contentType === 'module') {
-                // Check if all lessons in module are completed
                 $moduleLessons = \App\Models\Lesson::where('module_id', $contentId)->pluck('id');
                 if ($moduleLessons->count() > 0) {
                     $completedCount = \App\Models\LessonProgress::where('user_id', $userId)
@@ -107,17 +106,19 @@ class DashboardController extends Controller
                         ->count();
                     $isCompleted = ($completedCount >= $moduleLessons->count());
                 } else {
-                    $isCompleted = true; // Empty module is completed?
+                    $isCompleted = true; 
                 }
             }
 
             $stepsWithStatus[] = (object)[
                 'step' => $step,
                 'is_completed' => $isCompleted,
-                'is_locked' => !$previousCompleted
+                'is_locked' => !$canUnlockNext
             ];
 
-            $previousCompleted = $isCompleted;
+            // A step can only unlock the NEXT step if THIS step is completed 
+            // AND all steps before it were also completed.
+            $canUnlockNext = $canUnlockNext && $isCompleted;
         }
 
         return view('dashboard', compact(

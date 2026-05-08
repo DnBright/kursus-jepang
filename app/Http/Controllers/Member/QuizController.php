@@ -150,7 +150,49 @@ class QuizController extends Controller
         }
 
         if (!$hasAccess) {
-            return redirect()->route('quizzes.index')->with('error', 'Anda tidak memiliki akses ke kuis ini.');
+            return redirect()->route('quizzes.index')->with('error', 'Akses ditolak. Anda tidak memiliki paket untuk kuis ini.');
+        }
+
+        // Roadmap sequence check
+        $roadmapStep = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+            ->where('content_id', $quiz->id)
+            ->first();
+
+        if ($roadmapStep) {
+            $courseId = $roadmapStep->course_id;
+            $previousSteps = \App\Models\CourseRoadmapStep::where('course_id', $courseId)
+                ->where('order', '<', $roadmapStep->order)
+                ->get();
+            
+            foreach ($previousSteps as $pStep) {
+                $pCompleted = false;
+                if ($pStep->content_type === 'lesson') {
+                    $pCompleted = \App\Models\LessonProgress::where('user_id', Auth::id())
+                        ->where('lesson_id', $pStep->content_id)
+                        ->where('status', 'completed')
+                        ->exists();
+                } elseif ($pStep->content_type === 'quiz') {
+                    $pCompleted = \App\Models\UserQuizAttempt::where('user_id', Auth::id())
+                        ->where('quiz_id', $pStep->content_id)
+                        ->where('is_passed', true)
+                        ->exists();
+                } elseif ($pStep->content_type === 'module') {
+                    $mLessons = \App\Models\Lesson::where('module_id', $pStep->content_id)->pluck('id');
+                    if ($mLessons->count() > 0) {
+                        $cCount = \App\Models\LessonProgress::where('user_id', Auth::id())
+                            ->whereIn('lesson_id', $mLessons)
+                            ->where('status', 'completed')
+                            ->count();
+                        $pCompleted = ($cCount >= $mLessons->count());
+                    } else {
+                        $pCompleted = true;
+                    }
+                }
+                
+                if (!$pCompleted) {
+                    return redirect()->route('dashboard')->with('error', 'Selesaikan langkah sebelumnya di roadmap terlebih dahulu.');
+                }
+            }
         }
 
         // Check if quiz is available
