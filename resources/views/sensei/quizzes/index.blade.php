@@ -113,17 +113,43 @@
                         </div>
                         @endforelse
                     </div>
-                </div>
+                          <!-- Tab: Quiz -->
+                <div x-show="activeTab === 'quizzes'" class="space-y-6" style="display: none;" x-data="{ filterLevel: 'all', filterType: 'all', search: '' }">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- Search -->
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </span>
+                                <input type="text" x-model="search" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 w-48 shadow-sm" placeholder="Cari kuis...">
+                            </div>
 
-                <!-- Tab: Quizzes -->
-                <div x-show="activeTab === 'quizzes'" class="space-y-6" style="display: none;">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                        <div class="relative flex-1">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            </span>
-                            <input type="text" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 w-full shadow-sm" placeholder="Cari kuis...">
+                            <!-- Filter Program / Level -->
+                            <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1">
+                                <button @click="filterLevel = 'all'"
+                                    :class="filterLevel === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                    class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">
+                                    Semua Program
+                                </button>
+                                @foreach($programs as $prog)
+                                <button @click="filterLevel = '{{ $prog['level'] }}'"
+                                    :class="filterLevel === '{{ $prog['level'] }}' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                    class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">
+                                    {{ $prog['level'] }}
+                                </button>
+                                @endforeach
+                            </div>
+
+                            <!-- Filter Tipe Soal -->
+                            <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1">
+                                <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Semua</button>
+                                <button @click="filterType = 'multiple_choice'" :class="filterType === 'multiple_choice' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">PG</button>
+                                <button @click="filterType = 'essay'" :class="filterType === 'essay' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Essay</button>
+                                <button @click="filterType = 'handwriting'" :class="filterType === 'handwriting' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Tulis Tangan</button>
+                            </div>
                         </div>
+
                         <div class="flex flex-wrap items-center gap-3">
                             <a href="{{ route('sensei.quizzes.create') }}?default_type=multiple_choice" class="px-4 py-2 bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center gap-2 text-xs">
                                 + Quiz PG
@@ -139,16 +165,36 @@
 
                     <div class="space-y-4">
                         @forelse($quizzes as $quiz)
-                        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all gap-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all gap-4"
+                            x-show="
+                                (filterLevel === 'all' || filterLevel === '{{ $quiz['level'] }}') &&
+                                (filterType === 'all' || filterType === '{{ $quiz['question_type'] ?? 'multiple_choice' }}') &&
+                                (search === '' || '{{ strtolower($quiz['title']) }}'.includes(search.toLowerCase()))
+                            ">
                             <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0
+                                    {{ ($quiz['question_type'] ?? 'multiple_choice') === 'essay' ? 'bg-slate-100 text-slate-600' : (($quiz['question_type'] ?? '') === 'handwriting' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600') }}">
+                                    @if(($quiz['question_type'] ?? 'multiple_choice') === 'essay')
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    @elseif(($quiz['question_type'] ?? '') === 'handwriting')
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    @else
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    @endif
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
                                         <h3 class="font-bold text-slate-900 text-lg">{{ $quiz['title'] }}</h3>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700">
                                             {{ $quiz['level'] }}
+                                        </span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
+                                            {{ ($quiz['question_type'] ?? 'multiple_choice') === 'essay' ? 'bg-slate-100 text-slate-600' : (($quiz['question_type'] ?? '') === 'handwriting' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600') }}">
+                                            {{ match($quiz['question_type'] ?? 'multiple_choice') {
+                                                'essay' => 'Essay',
+                                                'handwriting' => 'Tulis Tangan',
+                                                default => 'Pilihan Ganda'
+                                            } }}
                                         </span>
                                         @if($quiz['status'] === 'active')
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-600 border border-green-100">
@@ -164,8 +210,6 @@
                                         <span>{{ $quiz['question_count'] }} Soal</span>
                                         <span>•</span>
                                         <span>{{ $quiz['type'] }}</span>
-                                        <span>•</span>
-                                        <span>Deadline: {{ $quiz['deadline'] }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -193,6 +237,7 @@
                         @endforelse
                     </div>
                 </div>
+           </div>
 
                 <!-- Tab: Nilai -->
                 <div x-show="activeTab === 'nilai'" class="space-y-6" style="display: none;">
