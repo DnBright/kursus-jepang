@@ -43,17 +43,7 @@
                         @error('course_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- Type -->
-                    <div class="space-y-2">
-                        <label for="type" class="text-sm font-bold text-slate-700">Tipe Quiz <span class="text-red-500">*</span></label>
-                        <select name="type" id="type" required 
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-medium appearance-none">
-                            <option value="daily" {{ old('type') == 'daily' ? 'selected' : '' }}>Harian</option>
-                            <option value="weekly" {{ old('type') == 'weekly' ? 'selected' : '' }}>Mingguan</option>
-                            <option value="module_test" {{ old('type') == 'module_test' ? 'selected' : '' }}>Tes Modul</option>
-                            <option value="mock_jlpt" {{ old('type') == 'mock_jlpt' ? 'selected' : '' }}>Mock JLPT</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="type" value="module_test">
 
                     <!-- Difficulty -->
                     <div class="space-y-2">
