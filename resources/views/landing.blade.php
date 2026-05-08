@@ -413,13 +413,13 @@
                 <div @click="openArticle({
                     title: {{ json_encode($article->title) }},
                     content: {{ json_encode($article->content) }},
-                    image: '{{ $article->image ? Storage::url($article->image) : '' }}',
+                    image: '{{ $article->image ? (str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image)) : '' }}',
                     date: '{{ $article->created_at->format('d M Y') }}',
                     is_member_only: {{ $article->is_member_only ? 'true' : 'false' }}
                 })" class="group cursor-pointer">
                     <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
                         @if($article->image)
-                        <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $article->is_member_only && !auth()->check() ? 'blur-sm' : '' }}">
+                        <img src="{{ str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $article->is_member_only && !auth()->check() ? 'blur-sm' : '' }}">
                         @else
                         <div class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
                              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002-2z"></path></svg>
