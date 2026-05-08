@@ -116,125 +116,190 @@
                 </div>
 
                 <!-- Tab: Quiz -->
-                <div x-show="activeTab === 'quizzes'" class="space-y-6" style="display: none;" x-data="{ filterLevel: 'all', filterType: 'all', search: '' }">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div x-show="activeTab === 'quizzes'" class="space-y-6" style="display: none;" 
+                    x-data="{ 
+                        filterLevel: 'all', 
+                        filterType: 'all', 
+                        search: '',
+                        openLevel: false,
+                        openType: false
+                    }">
+
+                    <!-- Toolbar Row -->
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
                         <div class="flex flex-wrap items-center gap-3">
                             <!-- Search -->
-                            <div class="relative">
+                            <div class="relative group">
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    <svg class="h-4 w-4 text-slate-400 group-focus-within:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 </span>
-                                <input type="text" x-model="search" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 w-48 shadow-sm" placeholder="Cari kuis...">
+                                <input type="text" x-model="search" 
+                                    class="pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-red-500/10 focus:border-red-500 w-full sm:w-64 shadow-sm transition-all outline-none" 
+                                    placeholder="Cari kuis atau materi...">
                             </div>
 
-                            <!-- Filter Program / Level -->
-                            <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1">
-                                <button @click="filterLevel = 'all'"
-                                    :class="filterLevel === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">
-                                    Semua Program
+                            <!-- Filter Program (Dropdown) -->
+                            <div class="relative">
+                                <button @click="openLevel = !openLevel" @click.away="openLevel = false"
+                                    class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:border-red-200 hover:bg-red-50/30 transition-all shadow-sm">
+                                    <span class="text-slate-400">Program:</span>
+                                    <span x-text="filterLevel === 'all' ? 'Semua' : filterLevel"></span>
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform" :class="openLevel ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
-                                @foreach($programs as $prog)
-                                <button @click="filterLevel = '{{ $prog['level'] }}'"
-                                    :class="filterLevel === '{{ $prog['level'] }}' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">
-                                    {{ $prog['level'] }}
-                                </button>
-                                @endforeach
+                                <div x-show="openLevel" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
+                                    class="absolute left-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-20 py-1 overflow-hidden">
+                                    <button @click="filterLevel = 'all'; openLevel = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterLevel === 'all' ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-600 font-medium'">
+                                        Semua Program
+                                    </button>
+                                    @foreach($programs as $prog)
+                                    <button @click="filterLevel = '{{ $prog['level'] }}'; openLevel = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterLevel === '{{ $prog['level'] }}' ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-600 font-medium'">
+                                        {{ $prog['level'] }}
+                                    </button>
+                                    @endforeach
+                                </div>
                             </div>
 
-                            <!-- Filter Tipe Soal -->
-                            <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1">
-                                <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Semua</button>
-                                <button @click="filterType = 'multiple_choice'" :class="filterType === 'multiple_choice' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">PG</button>
-                                <button @click="filterType = 'essay'" :class="filterType === 'essay' ? 'bg-white text-slate-700 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Essay</button>
-                                <button @click="filterType = 'handwriting'" :class="filterType === 'handwriting' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500'" class="px-3 py-1.5 text-xs font-black rounded-lg transition-all">Tulis Tangan</button>
+                            <!-- Filter Tipe Soal (Dropdown) -->
+                            <div class="relative">
+                                <button @click="openType = !openType" @click.away="openType = false"
+                                    class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:border-red-200 hover:bg-red-50/30 transition-all shadow-sm">
+                                    <span class="text-slate-400">Tipe:</span>
+                                    <span x-text="filterType === 'all' ? 'Semua' : (filterType === 'multiple_choice' ? 'PG' : (filterType === 'essay' ? 'Essay' : 'Tulis Tangan'))"></span>
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform" :class="openType ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                <div x-show="openType" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
+                                    class="absolute left-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-20 py-1 overflow-hidden">
+                                    <button @click="filterType = 'all'; openType = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterType === 'all' ? 'text-red-600 font-bold bg-red-50/50' : 'text-slate-600 font-medium'">
+                                        Semua Tipe
+                                    </button>
+                                    <button @click="filterType = 'multiple_choice'; openType = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterType === 'multiple_choice' ? 'text-green-600 font-bold bg-green-50/50' : 'text-slate-600 font-medium'">
+                                        Pilihan Ganda (PG)
+                                    </button>
+                                    <button @click="filterType = 'essay'; openType = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterType === 'essay' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600 font-medium'">
+                                        Essay
+                                    </button>
+                                    <button @click="filterType = 'handwriting'; openType = false" 
+                                        class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                                        :class="filterType === 'handwriting' ? 'text-orange-600 font-bold bg-orange-50/50' : 'text-slate-600 font-medium'">
+                                        Tulis Tangan
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-3">
-                            <a href="{{ route('sensei.quizzes.create') }}?default_type=multiple_choice" class="px-4 py-2 bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center gap-2 text-xs">
-                                + Quiz PG
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=multiple_choice" class="flex-1 sm:flex-none px-4 py-2.5 bg-green-600 text-white text-xs font-black rounded-xl shadow-lg shadow-green-600/20 hover:bg-green-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Quiz PG
                             </a>
-                            <a href="{{ route('sensei.quizzes.create') }}?default_type=essay" class="px-4 py-2 bg-slate-900 text-white font-bold rounded-xl shadow-lg shadow-slate-900/20 hover:bg-slate-800 transition-all flex items-center gap-2 text-xs">
-                                + Quiz Essai
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=essay" class="flex-1 sm:flex-none px-4 py-2.5 bg-slate-900 text-white text-xs font-black rounded-xl shadow-lg shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Quiz Essay
                             </a>
-                            <a href="{{ route('sensei.quizzes.create') }}?default_type=handwriting" class="px-4 py-2 bg-orange-600 text-white font-bold rounded-xl shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition-all flex items-center gap-2 text-xs">
-                                + Quiz Tulis Tangan
+                            <a href="{{ route('sensei.quizzes.create') }}?default_type=handwriting" class="flex-1 sm:flex-none px-4 py-2.5 bg-orange-600 text-white text-xs font-black rounded-xl shadow-lg shadow-orange-600/20 hover:bg-orange-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Tulis Tangan
                             </a>
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <!-- Quiz Cards List -->
+                    <div class="grid grid-cols-1 gap-4">
                         @forelse($quizzes as $quiz)
-                        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all gap-4"
+                        @php
+                            $qtype = $quiz['question_type'] ?? 'multiple_choice';
+                            $typeLabel = match($qtype) { 'essay' => 'Essay', 'handwriting' => 'Tulis Tangan', default => 'Pilihan Ganda' };
+                            $typeClasses = match($qtype) { 
+                                'essay' => 'bg-slate-100 text-slate-700 border-slate-200', 
+                                'handwriting' => 'bg-orange-50 text-orange-700 border-orange-100', 
+                                default => 'bg-green-50 text-green-700 border-green-100' 
+                            };
+                            $iconClasses = match($qtype) { 
+                                'essay' => 'bg-slate-100 text-slate-500', 
+                                'handwriting' => 'bg-orange-100 text-orange-600', 
+                                default => 'bg-green-100 text-green-600' 
+                            };
+                        @endphp
+                        <div class="flex flex-col md:flex-row md:items-center justify-between p-5 bg-white rounded-2xl border border-slate-200 hover:border-red-200 hover:shadow-xl hover:shadow-red-500/5 transition-all gap-5 group"
                             x-show="
                                 (filterLevel === 'all' || filterLevel === '{{ $quiz['level'] }}') &&
-                                (filterType === 'all' || filterType === '{{ $quiz['question_type'] ?? 'multiple_choice' }}') &&
+                                (filterType === 'all' || filterType === '{{ $qtype }}') &&
                                 (search === '' || '{{ strtolower($quiz['title']) }}'.includes(search.toLowerCase()))
-                            ">
-                            <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0
-                                    {{ ($quiz['question_type'] ?? 'multiple_choice') === 'essay' ? 'bg-slate-100 text-slate-600' : (($quiz['question_type'] ?? '') === 'handwriting' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600') }}">
-                                    @if(($quiz['question_type'] ?? 'multiple_choice') === 'essay')
+                            " x-transition>
+                            
+                            <div class="flex items-center gap-4 min-w-0">
+                                <!-- Icon -->
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 {{ $iconClasses }} group-hover:scale-110 transition-transform">
+                                    @if($qtype === 'essay')
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    @elseif(($quiz['question_type'] ?? '') === 'handwriting')
+                                    @elseif($qtype === 'handwriting')
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                     @else
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     @endif
                                 </div>
-                                <div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <h3 class="font-bold text-slate-900 text-lg">{{ $quiz['title'] }}</h3>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700">
+
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                        <h3 class="font-bold text-slate-900 text-lg group-hover:text-red-600 transition-colors truncate">{{ $quiz['title'] }}</h3>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-100">
                                             {{ $quiz['level'] }}
                                         </span>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
-                                            {{ ($quiz['question_type'] ?? 'multiple_choice') === 'essay' ? 'bg-slate-100 text-slate-600' : (($quiz['question_type'] ?? '') === 'handwriting' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600') }}">
-                                            {{ match($quiz['question_type'] ?? 'multiple_choice') {
-                                                'essay' => 'Essay',
-                                                'handwriting' => 'Tulis Tangan',
-                                                default => 'Pilihan Ganda'
-                                            } }}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border {{ $typeClasses }}">
+                                            {{ $typeLabel }}
                                         </span>
                                         @if($quiz['status'] === 'active')
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-600 border border-green-100">
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-600 border border-green-100">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Aktif
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-200">
                                                 Draft
                                             </span>
                                         @endif
                                     </div>
-                                    <div class="flex items-center gap-4 text-sm text-slate-500">
-                                        <span>{{ $quiz['question_count'] }} Soal</span>
-                                        <span>•</span>
-                                        <span>{{ $quiz['type'] }}</span>
+                                    <div class="flex items-center gap-4 text-xs font-bold text-slate-400">
+                                        <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> {{ $quiz['question_count'] }} Pertanyaan</span>
+                                        <span class="flex items-center gap-1.5 uppercase tracking-wider"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M11 7h.01M11 11h.01M11 15h.01M15 7h.01M15 11h.01M15 15h.01M19 7h.01M19 11h.01M19 15h.01M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"></path></svg> {{ $quiz['type'] }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="flex items-center gap-2 self-end md:self-auto">
-                                <a href="{{ route('sensei.quizzes.questions', $quiz['id']) }}" class="px-4 py-2 text-sm font-bold text-slate-600 border border-slate-200 rounded-lg hover:bg-white hover:text-red-600 hover:border-red-200 transition-all">
+                                <a href="{{ route('sensei.quizzes.questions', $quiz['id']) }}" class="px-4 py-2.5 text-xs font-black uppercase tracking-wider text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-red-600 hover:border-red-200 transition-all">
                                     Kelola Soal
                                 </a>
-                                 <a href="{{ route('sensei.quizzes.edit', $quiz['id']) }}" class="px-4 py-2 text-sm font-bold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-all">
+                                <a href="{{ route('sensei.quizzes.edit', $quiz['id']) }}" class="px-4 py-2.5 text-xs font-black uppercase tracking-wider text-white bg-slate-900 rounded-xl hover:bg-slate-800 shadow-lg shadow-slate-900/10 transition-all">
                                     Edit
                                 </a>
                                 <form action="{{ route('sensei.quizzes.destroy', $quiz['id']) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus quiz ini?')" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-slate-400 hover:text-red-600 transition-all rounded-lg hover:bg-red-50">
+                                    <button type="submit" class="p-2.5 text-slate-300 hover:text-red-600 transition-all rounded-xl hover:bg-red-50">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>
                             </div>
                         </div>
                         @empty
-                        <div class="text-center py-12">
-                            <p class="text-slate-500">Belum ada kuis yang dibuat.</p>
+                        <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                            <div class="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center text-4xl mx-auto mb-4 border border-slate-100">📝</div>
+                            <h3 class="text-lg font-bold text-slate-900">Belum ada kuis</h3>
+                            <p class="text-slate-500 max-w-xs mx-auto mt-1">Mulai buat kuis baru untuk menguji kemampuan siswa Anda.</p>
+                            <button @click="window.location.href='{{ route('sensei.quizzes.create') }}'" class="mt-6 px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-600/20">
+                                Buat Quiz Pertama
+                            </button>
                         </div>
                         @endforelse
                     </div>
