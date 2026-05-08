@@ -43,12 +43,24 @@
                 <!-- 2. Main Content (Video & Tabs) - 70% -->
                 <div class="w-full lg:w-[70%] space-y-8">
                     
+                    @php
+                        $videoUrl = $lesson->content;
+                        if (str_contains($videoUrl, 'youtube.com/watch?v=')) {
+                            $videoUrl = str_replace('watch?v=', 'embed/', $videoUrl);
+                            if (str_contains($videoUrl, '&')) {
+                                $videoUrl = explode('&', $videoUrl)[0];
+                            }
+                        } elseif (str_contains($videoUrl, 'youtu.be/')) {
+                            $videoUrl = str_replace('youtu.be/', 'www.youtube.com/embed/', $videoUrl);
+                        }
+                    @endphp
+
                     <!-- Video Player -->
                     @if($lesson->type == 'video')
                     <div class="bg-black rounded-2xl overflow-hidden shadow-xl aspect-video relative group">
                         <!-- Assuming content is URL for now -->
-                         @if(str_contains($lesson->content, 'youtube') || str_contains($lesson->content, 'vimeo'))
-                        <iframe class="w-full h-full" src="{{ $lesson->content }}" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                         @if(str_contains($videoUrl, 'youtube') || str_contains($videoUrl, 'vimeo'))
+                        <iframe class="w-full h-full" src="{{ $videoUrl }}" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         @else
                         <div class="flex items-center justify-center w-full h-full text-white">
                             Video placeholder (Content: {{ $lesson->content }})
