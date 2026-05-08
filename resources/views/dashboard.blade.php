@@ -106,9 +106,9 @@
                                     @if($step->content_type === 'quiz')
                                         <a href="{{ route('quizzes.show', $step->content_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Mulai Quiz</a>
                                     @elseif($step->content_type === 'lesson')
-                                        <a href="{{ route('lessons.show', $step->content_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Buka Materi</a>
+                                        <a href="{{ route('courses.lessons.show', ['course' => $step->course_id, 'lesson' => $step->content_id]) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Buka Materi</a>
                                     @else
-                                        <a href="{{ route('modules.show', $step->content_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Lihat Modul</a>
+                                        <a href="{{ route('courses.show', $step->course_id) }}" class="inline-flex items-center gap-2 px-8 py-4 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Lihat Modul</a>
                                     @endif
                                 </div>
                             </div>
