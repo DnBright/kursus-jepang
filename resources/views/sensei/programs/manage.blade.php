@@ -137,7 +137,7 @@
                             <label class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Pilih Item</label>
                             
                             <!-- Module Select -->
-                            <select x-show="type === 'module'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
+                            <select x-show="type === 'module'" :name="type === 'module' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold">
                                 <option value="">Pilih Modul...</option>
                                 @foreach($course->modules as $mod)
                                     <option value="{{ $mod->id }}">{{ $mod->title }}</option>
@@ -145,7 +145,7 @@
                             </select>
 
                             <!-- Quiz Select -->
-                            <select x-show="type === 'quiz'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                            <select x-show="type === 'quiz'" :name="type === 'quiz' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
                                 <option value="">Pilih Quiz...</option>
                                 @foreach($course->quizzes as $qz)
                                     <option value="{{ $qz->id }}">{{ $qz->title }}</option>
@@ -153,7 +153,7 @@
                             </select>
 
                             <!-- Lesson Select -->
-                            <select x-show="type === 'lesson'" name="content_id" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
+                            <select x-show="type === 'lesson'" :name="type === 'lesson' ? 'content_id' : ''" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all font-bold" style="display: none;">
                                 <option value="">Pilih Video/Link...</option>
                                 @foreach($availableLessons as $ls)
                                     <option value="{{ $ls->id }}">{{ $ls->title }} ({{ $ls->type }})</option>
