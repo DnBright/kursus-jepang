@@ -51,6 +51,7 @@ class QuizController extends Controller
                 'level' => $quiz->difficulty === 'beginner' ? 'N5' : ($quiz->difficulty === 'intermediate' ? 'N4' : 'N3'),
                 'question_count' => $quiz->questions_count,
                 'type' => ucfirst($quiz->type),
+                'question_type' => $quiz->question_type ?? 'multiple_choice',
                 'deadline' => $quiz->available_until ? $quiz->available_until->format('d M Y') : '-',
                 'status' => $quiz->is_active ? 'active' : 'draft',
             ];

@@ -221,12 +221,12 @@
                             $qtype = $quiz['question_type'] ?? 'multiple_choice';
                             $typeLabel = match($qtype) { 'essay' => 'Essay', 'handwriting' => 'Tulis Tangan', default => 'Pilihan Ganda' };
                             $typeClasses = match($qtype) { 
-                                'essay' => 'bg-slate-100 text-slate-700 border-slate-200', 
-                                'handwriting' => 'bg-orange-50 text-orange-700 border-orange-100', 
-                                default => 'bg-green-50 text-green-700 border-green-100' 
+                                'essay' => 'bg-slate-900 text-white border-slate-900', 
+                                'handwriting' => 'bg-orange-500 text-white border-orange-500', 
+                                default => 'bg-green-600 text-white border-green-600' 
                             };
                             $iconClasses = match($qtype) { 
-                                'essay' => 'bg-slate-100 text-slate-500', 
+                                'essay' => 'bg-slate-100 text-slate-900', 
                                 'handwriting' => 'bg-orange-100 text-orange-600', 
                                 default => 'bg-green-100 text-green-600' 
                             };

@@ -133,8 +133,17 @@
                     <div class="px-6 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="text-xs font-black text-slate-400" x-text="'PERTANYAAN #' + (qIndex + 1)"></span>
-                            <span class="px-2 py-0.5 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded border border-red-100">
-                                {{ str_replace('_', ' ', $quiz->question_type ?? 'multiple_choice') }}
+                            @php
+                                $qtype = $quiz->question_type ?? 'multiple_choice';
+                                $typeLabel = match($qtype) { 'essay' => 'Essay', 'handwriting' => 'Tulis Tangan', default => 'Pilihan Ganda' };
+                                $badgeClasses = match($qtype) { 
+                                    'essay' => 'bg-slate-900 text-white border-slate-900', 
+                                    'handwriting' => 'bg-orange-500 text-white border-orange-500', 
+                                    default => 'bg-green-600 text-white border-green-600' 
+                                };
+                            @endphp
+                            <span class="px-2 py-0.5 {{ $badgeClasses }} text-[10px] font-black uppercase tracking-widest rounded border shadow-sm">
+                                {{ $typeLabel }}
                             </span>
                         </div>
                         <div class="flex items-center gap-2">
