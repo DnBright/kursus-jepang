@@ -40,10 +40,7 @@
                             <input type="text" name="title" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" placeholder="Contoh: Pengenalan Hiragana">
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Urutan (Order)</label>
-                            <input type="number" name="order" value="{{ ($roadmapSteps->max('order') ?? 0) + 1 }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
-                        </div>
+                        <input type="hidden" name="order" value="{{ ($roadmapSteps->max('order') ?? 0) + 1 }}">
 
                         <button type="submit" class="w-full py-4 bg-red-600 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all">
                             Simpan Langkah
@@ -118,10 +115,6 @@
                                         <div>
                                             <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Judul Tampilan</label>
                                             <input type="text" name="title" value="{{ $step->title }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Urutan (Order)</label>
-                                            <input type="number" name="order" value="{{ $step->order }}" class="w-full bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-red-500 focus:border-red-500" required>
                                         </div>
                                         <div class="flex gap-3 pt-4">
                                             <button type="button" @click="openEdit = false" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm">Batal</button>
