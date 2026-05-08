@@ -360,16 +360,25 @@ class QuizController extends Controller
         return back()->with('success', 'Pertanyaan berhasil diperbarui.');
     }
 
-    public function gradingAttempts()
+    public function gradingIndex(Request $request)
     {
         $sensei = Auth::guard('sensei')->user();
         $quizIds = $sensei->quizzes()->pluck('id');
 
-        $attempts = UserQuizAttempt::whereIn('quiz_id', $quizIds)
-            ->where('status', 'needs_grading')
+        $query = UserQuizAttempt::whereIn('quiz_id', $quizIds)
             ->with(['user', 'quiz'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+
+        if ($request->status && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        } else {
+            // Default to showing needs_grading first if no status filter
+            if (!$request->has('status')) {
+                $query->where('status', 'needs_grading');
+            }
+        }
+
+        $attempts = $query->get();
 
         return view('sensei.quizzes.grading-list', compact('attempts'));
     }
@@ -382,7 +391,7 @@ class QuizController extends Controller
             })
             ->findOrFail($id);
 
-        return view('sensei.quizzes.grade-attempt', compact('attempt'));
+        return view('sensei.quizzes.grading-detail', compact('attempt'));
     }
 
     public function submitAttemptGrade(Request $request, $id)
@@ -392,17 +401,20 @@ class QuizController extends Controller
         })->findOrFail($id);
 
         $request->validate([
-            'score' => 'required|integer|min:0|max:' . $attempt->max_score,
+            'grades' => 'required|array',
         ]);
+
+        $totalScore = array_sum($request->grades);
 
         $attempt->update([
-            'score' => $request->score,
-            'percentage' => ($request->score / $attempt->max_score) * 100,
-            'is_passed' => (($request->score / $attempt->max_score) * 100) >= ($attempt->quiz->passing_score ?? 70),
+            'score' => $totalScore,
+            'percentage' => ($totalScore / $attempt->max_score) * 100,
+            'is_passed' => (($totalScore / $attempt->max_score) * 100) >= ($attempt->quiz->passing_score ?? 70),
             'status' => 'completed',
+            'completed_at' => now(),
         ]);
 
-        return redirect()->route('sensei.quizzes.grading.index')->with('success', 'Nilai quiz berhasil disimpan.');
+        return redirect()->route('sensei.quizzes.grading.index')->with('success', 'Penilaian berhasil disimpan.');
     }
 
     public function getLessons($moduleId)
