@@ -19,18 +19,6 @@
                     </select>
                 </div>
 
-                @if($myCourses->count() > 0)
-                <div class="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm w-full sm:w-auto">
-                    <span class="pl-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kursus:</span>
-                    <select onchange="window.location.href='/materials?level={{ $selectedLevel }}&course_id=' + this.value" class="text-xs font-bold text-slate-800 border-none focus:ring-0 cursor-pointer py-1 pl-2 pr-8 bg-transparent">
-                        @foreach($myCourses as $course)
-                        <option value="{{ $course->id }}" {{ $selectedCourse && $selectedCourse->id == $course->id ? 'selected' : '' }}>
-                            {{ $course->title }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
             </div>
         </div>
 
@@ -54,7 +42,7 @@
                     <div class="inline-block px-3 py-1 rounded-full bg-red-500/50 border border-white/20 text-xs font-bold uppercase tracking-wider mb-2">
                         @if($progress == 100) Selesai @elseif($progress > 0) Sedang Dipelajari @else Belum Dimulai @endif
                     </div>
-                    <h3 class="text-2xl font-bold mb-2">{{ $selectedCourse->title }} Mastery</h3>
+                    <h3 class="text-2xl font-bold mb-2">Program {{ $selectedLevel == 'all' ? 'Lengkap' : $selectedLevel }} Mastery</h3>
                     <p class="text-red-100 text-sm max-w-2xl">
                         {{ $progress == 100 ? 'Luar biasa! Anda telah menyelesaikan kursus ini.' : 'Lanjutkan modul Anda untuk mencapai target belajar. Semangat!' }}
                     </p>

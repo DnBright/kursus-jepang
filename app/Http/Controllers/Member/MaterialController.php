@@ -60,15 +60,17 @@ class MaterialController extends Controller
             $selectedCourse = $myCourses->first();
         }
 
-        // 4. Load modules and lessons for the selected course
-        $modules = Module::where('course_id', $selectedCourse->id)
+        // 4. Load modules and lessons for all filtered courses
+        $courseIds = $myCourses->pluck('id');
+        $modules = Module::whereIn('course_id', $courseIds)
             ->with(['lessons' => function($q) {
                 $q->orderBy('order');
             }])
+            ->orderBy('course_id')
             ->orderBy('order')
             ->get();
 
-        // 5. Get completion status for all lessons in this course for this user
+        // 5. Get completion status for all lessons in these courses for this user
         $lessonIds = $modules->pluck('lessons')->flatten()->pluck('id');
         $completedLessonIds = LessonProgress::where('user_id', $user->id)
             ->whereIn('lesson_id', $lessonIds)
@@ -76,7 +78,7 @@ class MaterialController extends Controller
             ->pluck('lesson_id')
             ->toArray();
 
-        // 6. Calculate course progress
+        // 6. Calculate program progress
         $totalLessons = $lessonIds->count();
         $progress = $totalLessons > 0 ? round((count($completedLessonIds) / $totalLessons) * 100) : 0;
 
