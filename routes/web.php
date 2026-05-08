@@ -21,7 +21,8 @@ Route::get('/run-migrate', function() {
     }
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return "Migration successful!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+        return "Migration and Seeding successful!<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
     } catch (\Exception $e) {
         return "Migration failed: " . $e->getMessage();
     }
