@@ -171,6 +171,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/quizzes-grading', [App\Http\Controllers\Sensei\QuizController::class, 'gradingAttempts'])->name('quizzes.grading.index');
         Route::get('/quizzes-grading/{attempt}', [App\Http\Controllers\Sensei\QuizController::class, 'gradeAttempt'])->name('quizzes.grading.show');
         Route::post('/quizzes-grading/{attempt}', [App\Http\Controllers\Sensei\QuizController::class, 'submitAttemptGrade'])->name('quizzes.grading.store');
+        Route::put('/quizzes-grading/{attempt}', [App\Http\Controllers\Sensei\QuizController::class, 'submitAttemptGrade'])->name('quizzes.grading.submit');
 
         Route::resource('/assignments', App\Http\Controllers\Sensei\AssignmentController::class)->names([
             'create' => 'assignments.create',

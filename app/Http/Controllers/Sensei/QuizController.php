@@ -185,12 +185,17 @@ class QuizController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        $questionType = in_array($request->default_type, ['multiple_choice', 'essay', 'handwriting'])
+            ? $request->default_type
+            : 'multiple_choice';
+
         $quiz = Quiz::create([
             'title' => $request->title,
             'description' => $request->description,
             'instructor_id' => Auth::guard('sensei')->id(),
             'course_id' => $request->course_id,
             'type' => $request->type,
+            'question_type' => $questionType,
             'difficulty' => $request->difficulty,
             'time_limit' => $request->time_limit,
             'passing_score' => $request->passing_score,
@@ -199,7 +204,6 @@ class QuizController extends Controller
 
         return redirect()->route('sensei.quizzes.questions', [
             'quiz' => $quiz->id,
-            'default_type' => $request->default_type
         ])->with('success', 'Quiz berhasil dibuat. Sekarang tambahkan soal.');
     }
 

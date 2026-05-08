@@ -215,11 +215,12 @@
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200">
                                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Siswa</th>
-                                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Tugas / Quiz</th>
-                                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Tipe</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Quiz</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Tipe Soal</th>
                                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Nilai</th>
                                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Status</th>
                                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Tanggal</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-500">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -228,33 +229,52 @@
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-slate-900">{{ $result['user_name'] }}</div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-slate-600">{{ $result['task_title'] }}</td>
+                                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">{{ $result['task_title'] }}</td>
                                     <td class="px-6 py-4">
-                                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase {{ $result['type'] === 'Quiz' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600' }}">
+                                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase
+                                            {{ $result['type'] === 'Quiz' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600' }}">
                                             {{ $result['type'] }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-lg font-black {{ is_numeric($result['score']) && $result['score'] >= 70 ? 'text-green-600' : 'text-red-600' }}">
+                                        <div class="text-lg font-black {{ is_numeric($result['score']) && $result['score'] >= 70 ? 'text-green-600' : ($result['score'] === '-' ? 'text-orange-400' : 'text-red-600') }}">
                                             {{ $result['score'] }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($result['status'] === 'graded' || $result['status'] === 'completed')
-                                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-green-600">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> Selesai
+                                        @if(in_array($result['status'], ['graded', 'completed']))
+                                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                Selesai
+                                            </span>
+                                        @elseif($result['status'] === 'needs_grading')
+                                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full animate-pulse">
+                                                ⏳ Perlu Dinilai
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-orange-500 animate-pulse">
-                                                ⏳ Menunggu
+                                            <span class="inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                                                Menunggu
                                             </span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-xs text-slate-500">{{ $result['date'] }}</td>
+                                    <td class="px-6 py-4">
+                                        @if($result['status'] === 'needs_grading' && $result['type'] === 'Quiz')
+                                            <a href="{{ route('sensei.quizzes.grading.show', $result['id']) }}"
+                                               class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-all shadow-sm shadow-red-600/20 whitespace-nowrap">
+                                                Nilai Sekarang
+                                            </a>
+                                        @else
+                                            <span class="text-slate-300 text-xs">—</span>
+                                        @endif
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">Belum ada hasil penilaian.</td>
+                                    <td colspan="7" class="px-6 py-12 text-center text-slate-500">
+                                        <div class="text-4xl mb-3">📊</div>
+                                        Belum ada hasil penilaian siswa.
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
