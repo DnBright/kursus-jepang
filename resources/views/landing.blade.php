@@ -238,99 +238,67 @@
                 <span class="text-red-600 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Pricing Model</span>
                 <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">Investasi <span class="text-gradient">Terbaik</span> Anda</h2>
                 <p class="text-lg font-medium text-slate-500">Pilih paket belajar yang dirancang untuk kesuksesan jangka panjang Anda.</p>
-            </div>
+            </div>            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch pt-10">
+                @foreach($courses as $index => $course)
+                @php
+                    $isFeatured = $index === 1; // Highlight the second item if there are at least 2
+                    $hasFeatures = !empty($course->description);
+                    $features = $hasFeatures ? explode("\n", $course->description) : ['Video Materi Lengkap', 'E-Book Modul Eksklusif', 'Akses LMS Selamanya', 'Sertifikat Digital'];
+                    
+                    // Format price
+                    $price = (float)$course->price;
+                    $formattedPrice = 'Rp ' . number_format($price, 0, ',', '.');
+                    if ($price >= 1000000) {
+                        $p = $price / 1000000;
+                        $formattedPrice = 'Rp ' . ($p == (int)$p ? (int)$p : number_format($p, 1, '.', '')) . 'jt';
+                    } elseif ($price >= 1000) {
+                        $p = $price / 1000;
+                        $formattedPrice = 'Rp ' . ($p == (int)$p ? (int)$p : number_format($p, 1, '.', '')) . 'k';
+                    }
+                @endphp
 
-            <div class="grid md:grid-cols-3 gap-8 items-stretch pt-10">
-                <!-- Basic N5 -->
-                <div class="card-premium group hover:!border-slate-900/10 flex flex-col animate-fade-in-up">
-                    <div class="mb-10">
-                        <span class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest mb-4">Foundation</span>
-                        <h3 class="text-3xl font-black text-slate-900 mb-2">Basic N5</h3>
-                        <p class="text-sm font-medium text-slate-500">Mulai langkah pertama Anda dari nol hingga percaya diri.</p>
-                    </div>
-
-                    <div class="mb-10">
-                        <span class="block text-sm text-slate-400 line-through font-bold">Rp 599.000</span>
-                        <div class="flex items-baseline gap-2">
-                            <span class="text-5xl font-black text-slate-900 tracking-tighter">Rp 399k</span>
-                            <span class="text-sm font-bold text-slate-500 uppercase">/Lifetime</span>
-                        </div>
-                    </div>
-
-                    <ul class="space-y-5 mb-12 flex-1">
-                        @foreach(['Video N5 Lengkap', 'E-Book Modul Eksklusif', 'Akses LMS Selamanya', 'Sertifikat Digital'] as $feat)
-                        <li class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                            <div class="w-6 h-6 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 flex-shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">✓</div>
-                            {{ $feat }}
-                        </li>
-                        @endforeach
-                    </ul>
-
-                    @if(Auth::check() && Auth::user()->hasActivePackage('Basic N5'))
-                        <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
-                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all transform group-hover:-translate-y-1">
-                                <span class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                    AKSES KELAS
-                                </span>
-                            </button>
-                            <div class="absolute -top-4 -right-2">
-                                <span class="bg-white text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full shadow-md border border-emerald-100 flex items-center gap-1 transform rotate-6">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                    OWNED
-                                </span>
-                            </div>
-                        </div>
-                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Basic N5'))
-                         <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
-                    @else
-                        <a href="{{ route('checkout.show', 'Basic N5') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Pilih Basic</a>
-                    @endif
-                </div>
-
-                <!-- Intensive N4 (High priority) -->
-                <div class="card-premium !bg-slate-900 !text-white flex flex-col relative scale-105 shadow-[0_40px_100px_rgba(220,38,38,0.2)] animate-fade-in-up" style="animation-delay: 0.1s;">
+                <div class="{{ $isFeatured ? 'card-premium !bg-slate-900 !text-white scale-105 shadow-[0_40px_100px_rgba(220,38,38,0.2)]' : 'card-premium' }} group flex flex-col animate-fade-in-up" style="animation-delay: {{ $index * 0.1 }}s;">
+                    @if($isFeatured)
                     <div class="absolute -top-5 left-1/2 -translate-x-1/2">
                         <span class="bg-red-600 text-white text-[10px] font-black px-6 py-2 rounded-full uppercase tracking-[0.2em] shadow-2xl flex items-center gap-2">
                              <span class="animate-pulse">●</span> MOST POPULAR
                         </span>
                     </div>
+                    @endif
 
                     <div class="mb-10">
-                        <span class="inline-block px-4 py-1.5 rounded-full bg-white/10 text-white text-[10px] font-black uppercase tracking-widest mb-4">Intensive</span>
-                        <h3 class="text-3xl font-black text-white mb-2">Intensive N4</h3>
-                        <p class="text-sm font-medium text-slate-400">Program percepatan 3 bulan Lulus JLPT N4.</p>
+                        <span class="inline-block px-4 py-1.5 rounded-full {{ $isFeatured ? 'bg-white/10 text-white' : 'bg-slate-100 text-slate-600' }} text-[10px] font-black uppercase tracking-widest mb-4">{{ $course->level }}</span>
+                        <h3 class="text-3xl font-black {{ $isFeatured ? 'text-white' : 'text-slate-900' }} mb-2">{{ $course->title }}</h3>
+                        <p class="text-sm font-medium {{ $isFeatured ? 'text-slate-400' : 'text-slate-500' }}">Program belajar {{ $course->level }} dengan bimbingan profesional.</p>
                     </div>
 
                     <div class="mb-10">
-                        <span class="block text-sm text-slate-500 line-through font-bold">Rp 3.000.000</span>
+                        @if($price > 0)
+                        <span class="block text-sm {{ $isFeatured ? 'text-slate-500' : 'text-slate-400' }} line-through font-bold">Rp {{ number_format($price * 1.5, 0, ',', '.') }}</span>
+                        @endif
                         <div class="flex items-baseline gap-2">
-                            <span class="text-5xl font-black text-white tracking-tighter">Rp 2.25jt</span>
+                            <span class="text-5xl font-black {{ $isFeatured ? 'text-white' : 'text-slate-900' }} tracking-tighter">{{ $formattedPrice }}</span>
                         </div>
-                        <div class="inline-block px-3 py-1 bg-white/5 border border-white/10 rounded-lg mt-4">
-                            <span class="text-[9px] font-black text-red-500 uppercase tracking-widest">Available with Installment</span>
-                        </div>
+                        <p class="text-[10px] font-bold {{ $isFeatured ? 'text-slate-500' : 'text-slate-400' }} mt-2 uppercase">*Akses Selamanya</p>
                     </div>
 
                     <ul class="space-y-5 mb-12 flex-1">
-                        <li class="flex items-center gap-3 text-sm font-black text-white">
-                            <div class="w-6 h-6 bg-red-600 rounded-lg flex items-center justify-center flex-shrink-0">✓</div>
-                            Live Class Zoom 2x / Week
+                        @foreach(array_slice($features, 0, 5) as $feat)
+                        @if(trim($feat))
+                        <li class="flex items-center gap-3 text-sm font-bold {{ $isFeatured ? 'text-slate-300' : 'text-slate-700' }}">
+                            <div class="w-6 h-6 {{ $isFeatured ? 'bg-white/10' : 'bg-slate-100' }} rounded-lg flex items-center justify-center {{ $isFeatured ? 'text-white' : 'text-slate-600' }} flex-shrink-0 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300">✓</div>
+                            {{ trim($feat) }}
                         </li>
-                        @foreach(['Koreksi Tugas Private', 'Tryout JLPT Real Time', 'Grup Diskusi Premium', 'Job Matching Priority'] as $feat)
-                        <li class="flex items-center gap-3 text-sm font-bold text-slate-300">
-                            <div class="w-6 h-6 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">✓</div>
-                            {{ $feat }}
-                        </li>
+                        @endif
                         @endforeach
                     </ul>
 
-                    @if(Auth::check() && Auth::user()->hasActivePackage('Intensive N4'))
+                    @if(Auth::check() && Auth::user()->hasActivePackage($course->title))
                         <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
-                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 hover:bg-emerald-400 transition-all transform group-hover:-translate-y-1">
+                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest {{ $isFeatured ? 'bg-emerald-500 shadow-emerald-500/30 hover:bg-emerald-400' : 'bg-emerald-600 shadow-emerald-200 hover:bg-emerald-700' }} text-white shadow-lg transition-all transform group-hover:-translate-y-1">
                                 <span class="flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                    AKSES INTENSIF
+                                    AKSES KELAS
                                 </span>
                             </button>
                             <div class="absolute -top-4 -right-2">
@@ -340,58 +308,14 @@
                                 </span>
                             </div>
                         </div>
-                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Intensive N4'))
-                         <button disabled class="btn-premium bg-slate-800 text-slate-500 border-slate-700 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
+                    @elseif(Auth::check() && Auth::user()->hasPendingPackage($course->title))
+                         <button disabled class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-slate-200 text-slate-500 border border-slate-300 cursor-not-allowed">Menunggu Konfirmasi</button>
                     @else
-                        <a href="{{ route('checkout.show', 'Intensive N4') }}" class="btn-premium btn-premium-primary w-full uppercase text-xs tracking-widest !py-5 text-center block">Gabung Intensif</a>
+                        <a href="{{ route('checkout.show', $course->title) }}" class="btn-premium {{ $isFeatured ? 'btn-premium-primary' : 'btn-premium-secondary' }} w-full uppercase text-xs tracking-widest !py-5 text-center block">Pilih Program</a>
                     @endif
                 </div>
-
-                <!-- Tokutei Ginou -->
-                <div class="card-premium group flex flex-col animate-fade-in-up" style="animation-delay: 0.2s;">
-                    <div class="mb-10">
-                        <span class="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest mb-4">Career</span>
-                        <h3 class="text-3xl font-black text-slate-900 mb-2">Tokutei Ginou</h3>
-                        <p class="text-sm font-medium text-slate-500">Jaminan Penyaluran Kerja (SSW) di Jepang.</p>
-                    </div>
-
-                    <div class="mb-10">
-                        <span class="block text-sm text-slate-400 line-through font-bold">Rp 12.000.000</span>
-                        <div class="flex items-baseline gap-2">
-                            <span class="text-5xl font-black text-slate-900 tracking-tighter">Rp 8.5jt</span>
-                        </div>
-                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase">*All-in Job Matching</p>
-                    </div>
-
-                    <ul class="space-y-5 mb-12 flex-1">
-                        @foreach(['Pelatihan Skill Bidang', 'Interview Mockup Session', 'Counseling Preparation', 'Direct Working Visa'] as $feat)
-                        <li class="flex items-center gap-3 text-sm font-bold text-slate-700">
-                            <div class="w-6 h-6 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 flex-shrink-0 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300">✓</div>
-                            {{ $feat }}
-                        </li>
-                        @endforeach
-                    </ul>
-
-                    @if(Auth::check() && Auth::user()->hasActivePackage('Tokutei Ginou'))
-                        <div class="relative group w-full cursor-pointer" onclick="window.location='{{ route('dashboard') }}'">
-                            <button class="w-full py-5 rounded-xl font-black text-xs uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all transform group-hover:-translate-y-1">
-                                <span class="flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                    AKSES KARIR
-                                </span>
-                            </button>
-                            <div class="absolute -top-4 -right-2">
-                                <span class="bg-white text-emerald-600 text-[10px] font-black px-3 py-1 rounded-full shadow-md border border-emerald-100 flex items-center gap-1 transform rotate-6">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                    OWNED
-                                </span>
-                            </div>
-                        </div>
-                    @elseif(Auth::check() && Auth::user()->hasPendingPackage('Tokutei Ginou'))
-                         <button disabled class="btn-premium bg-slate-200 text-slate-500 border-slate-300 w-full uppercase text-xs tracking-widest !py-5 cursor-not-allowed">Menunggu Konfirmasi</button>
-                    @else
-                        <a href="{{ route('checkout.show', 'Tokutei Ginou') }}" class="btn-premium btn-premium-secondary w-full uppercase text-xs tracking-widest !py-5 text-center block">Pilih Karir</a>
-                    @endif
+                @endforeach
+            </div>
             </div>
         </div>
     </section>

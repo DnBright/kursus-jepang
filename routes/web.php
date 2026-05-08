@@ -11,7 +11,11 @@ Route::get('/', function () {
     if (Schema::hasTable('articles')) {
         $articles = \App\Models\Article::where('is_published', true)->latest()->take(9)->get();
     }
-    return view('landing', compact('articles'));
+    $courses = [];
+    if (Schema::hasTable('courses')) {
+        $courses = \App\Models\Course::with('instructor')->get();
+    }
+    return view('landing', compact('articles', 'courses'));
 });
 
 // Temporary route to run migrations on server
