@@ -76,4 +76,24 @@ class RoadmapController extends Controller
 
         return back()->with('success', 'Langkah roadmap berhasil dihapus.');
     }
+
+    public function reorder(Request $request)
+    {
+        $request->validate([
+            'steps' => 'required|array',
+            'steps.*.id' => 'required|integer',
+            'steps.*.order' => 'required|integer',
+        ]);
+
+        foreach ($request->steps as $item) {
+            // Verify ownership via whereHas
+            CourseRoadmapStep::where('id', $item['id'])
+                ->whereHas('course', function($q) {
+                    $q->where('instructor_id', Auth::guard('sensei')->id());
+                })
+                ->update(['order' => $item['order']]);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

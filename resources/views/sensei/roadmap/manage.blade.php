@@ -56,12 +56,17 @@
 
         <!-- Main: Roadmap List -->
         <div class="lg:col-span-2">
-            <div class="space-y-4">
+            <div id="roadmap-sortable" class="space-y-4">
                 @forelse($roadmapSteps as $step)
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-center justify-between group">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex items-center justify-between group cursor-move roadmap-item" data-id="{{ $step->id }}">
                         <div class="flex items-center gap-6">
-                            <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center font-black text-slate-400 text-xl border border-slate-100">
-                                {{ $step->order }}
+                            <div class="flex items-center gap-4">
+                                <div class="text-slate-300 group-hover:text-red-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8h16M4 16h16"></path></svg>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center font-black text-slate-400 text-lg border border-slate-100 step-number">
+                                    {{ $step->order }}
+                                </div>
                             </div>
                             <div>
                                 <div class="flex items-center gap-3 mb-1">
@@ -150,7 +155,9 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
+    // Content Type Selector Logic
     document.getElementById('content_type').addEventListener('change', function() {
         const type = this.value;
         const selector = document.getElementById('content_id');
@@ -165,10 +172,49 @@
                 selector.add(new Option('{{ $quiz->title }}', '{{ $quiz->id }}'));
             @endforeach
         } else if (type === 'lesson') {
-            // This might require an extra AJAX call to get lessons for modules
-            // For now, let's just show a prompt or pre-load some if possible
             selector.add(new Option('Pilih modul dulu...', ''));
         }
     });
+
+    // Drag & Drop Sorting Logic
+    const el = document.getElementById('roadmap-sortable');
+    if (el) {
+        Sortable.create(el, {
+            animation: 150,
+            ghostClass: 'bg-red-50',
+            onEnd: function() {
+                const steps = [];
+                const items = el.querySelectorAll('.roadmap-item');
+                
+                items.forEach((item, index) => {
+                    const newOrder = index + 1;
+                    steps.push({
+                        id: item.getAttribute('data-id'),
+                        order: newOrder
+                    });
+                    // Update visible order number
+                    item.querySelector('.step-number').innerText = newOrder;
+                });
+
+                // Send to server
+                fetch('{{ route("sensei.roadmap.reorder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ steps: steps })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) alert('Gagal menyimpan urutan baru.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat menyimpan urutan.');
+                });
+            }
+        });
+    }
 </script>
 </x-sensei-layout>

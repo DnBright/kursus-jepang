@@ -167,6 +167,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
         Route::get('/roadmap/{program}', [App\Http\Controllers\Sensei\RoadmapController::class, 'manage'])->name('roadmap.manage');
         Route::post('/roadmap/{program}/steps', [App\Http\Controllers\Sensei\RoadmapController::class, 'storeStep'])->name('roadmap.store');
         Route::put('/roadmap/steps/{step}', [App\Http\Controllers\Sensei\RoadmapController::class, 'updateStep'])->name('roadmap.update');
+        Route::post('/roadmap/reorder', [App\Http\Controllers\Sensei\RoadmapController::class, 'reorder'])->name('roadmap.reorder');
         Route::delete('/roadmap/steps/{step}', [App\Http\Controllers\Sensei\RoadmapController::class, 'destroyStep'])->name('roadmap.destroy');
 
         // Quiz Grading Routes
@@ -272,6 +273,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/roadmap/{program}', [App\Http\Controllers\Admin\RoadmapController::class, 'manage'])->name('roadmap.manage');
         Route::post('/roadmap/{program}/steps', [App\Http\Controllers\Admin\RoadmapController::class, 'storeStep'])->name('roadmap.store');
         Route::put('/roadmap/steps/{step}', [App\Http\Controllers\Admin\RoadmapController::class, 'updateStep'])->name('roadmap.update');
+        Route::post('/roadmap/reorder', [App\Http\Controllers\Admin\RoadmapController::class, 'reorder'])->name('roadmap.reorder');
         Route::delete('/roadmap/steps/{step}', [App\Http\Controllers\Admin\RoadmapController::class, 'destroyStep'])->name('roadmap.destroy');
         
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
