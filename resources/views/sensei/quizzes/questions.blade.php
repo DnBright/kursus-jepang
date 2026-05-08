@@ -25,6 +25,22 @@
             this.newQuestion = { question_text: '', points: 10, options: ['', '', '', ''], correct_answer: '', correctIndex: -1, order: 0 };
         }
     }">
+        @if(session('success'))
+        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-200" role="alert">
+            <span class="font-bold">Berhasil!</span> {{ session('success') }}
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">
+            <span class="font-bold">Error!</span> Silakan periksa kembali inputan Anda:
+            <ul class="mt-1.5 list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div>
@@ -96,7 +112,7 @@
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <button @click="openEdit({{ json_encode($question) }})" 
+                        <button @click="openEdit(@js($question))" 
                             class="p-2 text-slate-400 hover:text-blue-600 transition-all rounded-lg hover:bg-blue-50">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         </button>
@@ -180,8 +196,14 @@
         function syncCorrectAnswer(type) {
             const formId = type === 'add' ? 'addQuestionForm' : 'editQuestionForm';
             const form = document.getElementById(formId);
-            const questionType = form.querySelector('select[name=question_type]').value;
+            if (!form) return;
+            
+            const questionTypeInput = form.querySelector('input[name=question_type]');
+            if (!questionTypeInput) return;
+            
+            const questionType = questionTypeInput.value;
             const correctInput = form.querySelector('input[name=correct_answer]');
+            if (!correctInput) return;
             
             if (questionType === 'multiple_choice') {
                 const radios = form.querySelectorAll('input[name=correct_answer_radio]');
@@ -193,9 +215,11 @@
                     }
                 }
             } else if (questionType === 'essay') {
-                correctInput.value = form.querySelector('textarea[name=essay_correct_answer]').value || 'ESSAY_REFERENCE';
+                const essayInput = form.querySelector('textarea[name=essay_correct_answer]');
+                if (essayInput) correctInput.value = essayInput.value || 'ESSAY_REFERENCE';
             } else if (questionType === 'handwriting') {
-                correctInput.value = form.querySelector('input[name=handwriting_correct_answer]').value || 'HANDWRITING_REFERENCE';
+                const handwritingInput = form.querySelector('input[name=handwriting_correct_answer]');
+                if (handwritingInput) correctInput.value = handwritingInput.value || 'HANDWRITING_REFERENCE';
             } else {
                 correctInput.value = '';
             }
