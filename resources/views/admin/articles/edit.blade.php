@@ -66,7 +66,7 @@
                     </div>
                     <div class="p-6 space-y-4">
                         <div class="flex items-center justify-between">
-                            <button type="button" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-blue-600 hover:bg-slate-100 transition-colors">Save Draft</button>
+                            <button type="submit" name="is_published" value="0" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-blue-600 hover:bg-slate-100 transition-colors">Save Draft</button>
                             <button type="button" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors">Preview</button>
                         </div>
                         
@@ -164,7 +164,7 @@
                         'bold', 'italic', 'strikethrough', 'underline', '|',
                         'bulletedList', 'numberedList', '|',
                         'outdent', 'indent', '|',
-                        'undo', redo, '|',
+                        'undo', 'redo', '|',
                         'link', 'uploadImage', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
                         'undo', 'redo'
                     ]

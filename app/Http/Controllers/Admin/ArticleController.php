@@ -49,7 +49,7 @@ class ArticleController extends Controller
             $validated['image'] = $request->file('image')->store('articles', 'public');
         }
 
-        $validated['is_published'] = $request->has('is_published');
+        $validated['is_published'] = $request->input('is_published') === '1';
         $validated['is_member_only'] = $request->has('is_member_only');
 
         Article::create($validated);
@@ -89,7 +89,7 @@ class ArticleController extends Controller
             $validated['image'] = $request->file('image')->store('articles', 'public');
         }
 
-        $validated['is_published'] = $request->has('is_published');
+        $validated['is_published'] = $request->input('is_published') === '1';
         $validated['is_member_only'] = $request->has('is_member_only');
 
         $article->update($validated);
