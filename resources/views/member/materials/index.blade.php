@@ -151,7 +151,7 @@
             <div class="text-6xl mb-4">📚</div>
             <h3 class="text-xl font-bold text-slate-900 mb-2">Belum Ada Kursus Terpilih</h3>
             <p class="text-slate-500 max-w-sm mx-auto mb-6">Silakan pilih kursus Anda untuk melihat materi pembelajaran.</p>
-            <a href="{{ route('my-courses') }}" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all">Buka Kursus Saya</a>
+            <a href="{{ route('packages.index') }}" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all">Beli Paket Kursus</a>
         </div>
         @endif
     </div>
