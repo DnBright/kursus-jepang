@@ -381,24 +381,8 @@
     </section>
     <!-- Articles Section -->
     <section x-data="{ 
-        showModal: false, 
         activeCategory: 'All',
-        isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
-        activeArticle: {title: '', content: '', image: '', date: '', is_member_only: false},
-        openArticle(article) {
-            if (article.is_member_only && !this.isLoggedIn) {
-                alert('Artikel ini khusus untuk member. Silakan login atau daftar terlebih dahulu untuk membaca.');
-                window.location.href = '{{ route('login') }}';
-                return;
-            }
-            this.activeArticle = article;
-            this.showModal = true;
-            document.body.style.overflow = 'hidden';
-        },
-        closeModal() {
-            this.showModal = false;
-            document.body.style.overflow = 'auto';
-        }
+        isLoggedIn: {{ auth()->check() ? 'true' : 'false' }}
     }" class="py-32 bg-slate-50 relative overflow-hidden" id="artikel">
         <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
@@ -427,17 +411,19 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($articles as $article)
-                <div x-show="activeCategory === 'All' || activeCategory === '{{ $article->category }}'"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     @click="openArticle({
-                        title: {{ json_encode($article->title) }},
-                        content: {{ json_encode($article->content) }},
-                        image: '{{ $article->image ? (str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image)) : '' }}',
-                        date: '{{ $article->created_at->format('d M Y') }}',
-                        is_member_only: {{ $article->is_member_only ? 'true' : 'false' }}
-                    })" class="group cursor-pointer">
+                <a href="{{ route('articles.show', $article->slug) }}"
+                   x-show="activeCategory === 'All' || activeCategory === '{{ $article->category }}'"
+                   x-transition:enter="transition ease-out duration-300"
+                   x-transition:enter-start="opacity-0 scale-95"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   @click.prevent="
+                        if ({{ $article->is_member_only ? 'true' : 'false' }} && !isLoggedIn) {
+                            alert('Artikel ini khusus untuk member. Silakan login atau daftar terlebih dahulu untuk membaca.');
+                            window.location.href = '{{ route('login') }}';
+                        } else {
+                            window.location.href = '{{ route('articles.show', $article->slug) }}';
+                        }
+                   " class="group cursor-pointer block">
                     <div class="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200/50">
                         @if($article->image)
                         <img src="{{ str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 {{ $article->is_member_only && !auth()->check() ? 'blur-sm' : '' }}">
@@ -461,57 +447,8 @@
                     <div class="flex items-center gap-4 text-xs font-black text-slate-400 uppercase tracking-widest">
                         <span>{{ $article->created_at->format('d M Y') }}</span>
                     </div>
-                </div>
+                </a>
                 @endforeach
-            </div>
-        </div>
-
-        <!-- Article Modal -->
-        <div x-show="showModal" 
-             x-cloak
-             class="fixed inset-0 z-[200] overflow-y-auto"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0">
-            
-            <!-- Backdrop -->
-            <div class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm" @click="closeModal()"></div>
-
-            <!-- Modal Content -->
-            <div class="relative min-h-screen flex items-center justify-center p-4 md:p-8">
-                <div class="relative bg-white w-full max-w-4xl rounded-[3rem] overflow-hidden shadow-2xl"
-                     x-transition:enter="transition ease-out duration-500"
-                     x-transition:enter-start="opacity-0 translate-y-8 scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 scale-100">
-                    
-                    <!-- Close Button -->
-                    <button @click="closeModal()" class="absolute top-8 right-8 z-10 w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 shadow-xl transition-all">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-
-                    <div class="flex flex-col">
-                        <div class="h-[300px] md:h-[400px] w-full relative">
-                            <template x-if="activeArticle.image">
-                                <img :src="activeArticle.image" class="w-full h-full object-cover">
-                            </template>
-                            <template x-if="!activeArticle.image">
-                                <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300 italic font-bold uppercase tracking-widest text-xl">No Image Featured</div>
-                            </template>
-                            <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-                        </div>
-
-                        <div class="px-8 md:px-16 pb-16 -mt-32 relative z-10">
-                            <div class="bg-white rounded-[2rem] p-8 md:p-12 shadow-xl border border-slate-100">
-                                <span class="text-red-600 font-black uppercase tracking-widest text-[10px] mb-4 block" x-text="activeArticle.date"></span>
-                                <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-8 leading-tight tracking-tight" x-text="activeArticle.title"></h2>
-                                <div class="prose prose-slate max-w-none text-slate-600 font-medium leading-relaxed" x-html="activeArticle.content"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>

@@ -65,8 +65,8 @@
             </div>
             @endif
 
-            <div class="article-content max-w-none">
-                {!! nl2br(e($article->content)) !!}
+            <div class="article-content prose prose-slate max-w-none text-slate-600 font-medium leading-relaxed">
+                {!! $article->content !!}
             </div>
 
             <!-- Share Section -->

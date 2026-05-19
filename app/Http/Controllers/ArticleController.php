@@ -17,6 +17,11 @@ class ArticleController extends Controller
     public function show($slug)
     {
         $article = Article::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        
+        if ($article->is_member_only && !auth()->check()) {
+            return redirect()->route('login')->with('status', 'Artikel ini khusus untuk member. Silakan login atau daftar terlebih dahulu untuk membaca.');
+        }
+
         $recentArticles = Article::where('is_published', true)
             ->where('id', '!=', $article->id)
             ->latest()
