@@ -61,7 +61,7 @@
 
             @if($article->image)
             <div class="aspect-[21/9] rounded-[3rem] overflow-hidden mb-16 shadow-2xl shadow-slate-200/50">
-                <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover">
+                <img src="{{ str_starts_with($article->image, 'http') ? $article->image : Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover">
             </div>
             @endif
 
@@ -94,7 +94,7 @@
                 <div class="group">
                     <div class="relative aspect-video rounded-3xl overflow-hidden mb-6 shadow-xl shadow-slate-200/50">
                          @if($recent->image)
-                         <img src="{{ Storage::url($recent->image) }}" alt="{{ $recent->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                         <img src="{{ str_starts_with($recent->image, 'http') ? $recent->image : Storage::url($recent->image) }}" alt="{{ $recent->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                          @endif
                     </div>
                     <a href="{{ route('articles.show', $recent->slug) }}" class="block">

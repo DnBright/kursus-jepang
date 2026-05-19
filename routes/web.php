@@ -55,11 +55,12 @@ Route::get('/run-migrate', function() {
     }
 });
 
-// Temporary route to seed Saidin Admin
+// Temporary route to seed Saidin Admin and Articles
 Route::get('/run-seed-saidin', function() {
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'AdminSaidinSeeder', '--force' => true]);
-        return "Akun Admin Saidin berhasil ditambahkan di server!";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+        return "Akun Admin Saidin dan Gambar Artikel berhasil diperbarui di server!";
     } catch (\Exception $e) {
         return "Gagal: " . $e->getMessage();
     }
