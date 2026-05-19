@@ -65,6 +65,15 @@ Route::get('/run-seed-saidin', function() {
     }
 });
 
+Route::get('/check-admins', function() {
+    try {
+        $admins = \App\Models\Admin::all(['id', 'name', 'email']);
+        return response()->json($admins);
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/verification/notice', function () {
     return view('auth.pending');
 })->name('verification.pending');
