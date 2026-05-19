@@ -31,5 +31,8 @@ class AdminSaidinSeeder extends Seeder
                 'status' => 'active'
             ]
         );
+
+        // 3. Call ArticleSeeder directly to bypass route cache!
+        $this->call(ArticleSeeder::class);
     }
 }
