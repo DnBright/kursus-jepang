@@ -243,7 +243,13 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
 
 // ADMIN ROUTES
 Route::prefix('admin')->name('admin.')->group(function () {
-    
+    Route::get('/', function () {
+        if (auth()->guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('admin.login');
+    });
+
     // Guest Admin Routes
     Route::middleware('guest:admin')->group(function () {
         Route::get('login', [AdminAuthenticatedSessionController::class, 'create'])->name('login');
