@@ -74,6 +74,38 @@ Route::get('/check-admins', function() {
     }
 });
 
+Route::get('/run-fix-storage', function () {
+    $link = public_path('storage');
+    $target = storage_path('app/public');
+    
+    try {
+        if (file_exists($link)) {
+            if (is_link($link)) {
+                unlink($link);
+            } else {
+                // If it is a directory, rename or delete it
+                $backup = $link . '_backup_' . time();
+                rename($link, $backup);
+            }
+        }
+        
+        // Recreate target directory if it doesn't exist
+        if (!file_exists($target)) {
+            mkdir($target, 0755, true);
+        }
+        
+        if (app()->make('files')->link($target, $link)) {
+            return "Sukses: Link simbolik storage telah berhasil dibuat dari [$link] ke [$target]!";
+        }
+        
+        // Alternative using artisan command
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return "Sukses: Storage link created via artisan!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/verification/notice', function () {
     return view('auth.pending');
 })->name('verification.pending');
