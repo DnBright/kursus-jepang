@@ -66,16 +66,6 @@ Route::get('/run-seed-saidin', function() {
     }
 });
 
-Route::get('/check-articles', function() {
-    try {
-        $articles = \App\Models\Article::all(['id', 'title', 'slug', 'image']);
-        return response()->json($articles);
-    } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
-    }
-});
-
-
 Route::get('/verification/notice', function () {
     return view('auth.pending');
 })->name('verification.pending');

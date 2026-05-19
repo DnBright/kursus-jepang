@@ -91,16 +91,14 @@
             <h3 class="text-2xl font-black text-slate-900 mb-12 tracking-tight">Artikel Menarik Lainnya</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 @foreach($recentArticles as $recent)
-                <div class="group">
+                <a href="{{ route('articles.show', $recent->slug) }}" class="group block">
                     <div class="relative aspect-video rounded-3xl overflow-hidden mb-6 shadow-xl shadow-slate-200/50">
                          @if($recent->image)
                          <img src="{{ str_starts_with($recent->image, 'http') ? $recent->image : Storage::url($recent->image) }}" alt="{{ $recent->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                          @endif
                     </div>
-                    <a href="{{ route('articles.show', $recent->slug) }}" class="block">
-                        <h4 class="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors leading-tight line-clamp-2">{{ $recent->title }}</h4>
-                    </a>
-                </div>
+                    <h4 class="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors leading-tight line-clamp-2">{{ $recent->title }}</h4>
+                </a>
                 @endforeach
             </div>
         </div>
