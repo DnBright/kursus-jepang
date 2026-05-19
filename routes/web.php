@@ -55,6 +55,16 @@ Route::get('/run-migrate', function() {
     }
 });
 
+// Temporary route to seed Saidin Admin
+Route::get('/run-seed-saidin', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'AdminSaidinSeeder', '--force' => true]);
+        return "Akun Admin Saidin berhasil ditambahkan di server!";
+    } catch (\Exception $e) {
+        return "Gagal: " . $e->getMessage();
+    }
+});
+
 Route::get('/verification/notice', function () {
     return view('auth.pending');
 })->name('verification.pending');
