@@ -66,6 +66,15 @@ Route::get('/run-seed-saidin', function() {
     }
 });
 
+// Temporary route to seed Gearoff Admin
+Route::get('/run-seed-gearoff', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'AdminGearoffSeeder', '--force' => true]);
+        return "Akun Admin Gearoff berhasil diperbarui di server!";
+    } catch (\Exception $e) {
+        return "Gagal: " . $e->getMessage();
+    }
+});
 
 Route::get('/verification/notice', function () {
     return view('auth.pending');
