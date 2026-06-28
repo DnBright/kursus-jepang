@@ -60,6 +60,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check for suspended status
+        if ($user->status === 'suspended') {
+            Auth::guard('web')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.',
+            ]);
+        }
+
         // Check for pending status (for members)
         if ($user->status === 'pending') {
             Auth::guard('web')->logout();

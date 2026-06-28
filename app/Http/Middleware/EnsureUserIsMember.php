@@ -42,6 +42,12 @@ class EnsureUserIsMember
                 return redirect()->route('login')->with('status', 'Akun Anda telah ditolak.');
             }
 
+            // Check if they are suspended
+            if ($user->status === 'suspended') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
+            }
+
             // Check if they have pending transactions (waiting for package approval)
             $hasPending = $user->transactions()->where('status', 'pending')->exists();
             if ($hasPending) {
