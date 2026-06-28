@@ -50,6 +50,12 @@ class EnsureUserIsActive
                 return redirect()->route('login')->with('status', 'Akun Anda telah ditolak. Silakan hubungi admin.');
             }
 
+            // Check if suspended
+            if ($user->status === 'suspended') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
+            }
+
             // Check if not active (pending or other)
             if ($user->status !== 'active' && $user->status !== 'approved') {
                 return redirect()->route('verification.pending');
