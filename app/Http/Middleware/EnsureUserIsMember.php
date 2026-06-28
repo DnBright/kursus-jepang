@@ -16,6 +16,21 @@ class EnsureUserIsMember
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 1. Check if web user is logged in, if so check for suspended/rejected status
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->status === 'rejected') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditolak.');
+            }
+
+            if ($user->status === 'suspended') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
+            }
+        }
+
         // Admin bypass - can view member areas for management
         if (Auth::guard('admin')->check()) {
             return $next($request);
@@ -36,18 +51,6 @@ class EnsureUserIsMember
 
         // Check if user has member role
         if ($user->role !== 'member') {
-            // Check if they are rejected
-            if ($user->status === 'rejected') {
-                Auth::guard('web')->logout();
-                return redirect()->route('login')->with('status', 'Akun Anda telah ditolak.');
-            }
-
-            // Check if they are suspended
-            if ($user->status === 'suspended') {
-                Auth::guard('web')->logout();
-                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
-            }
-
             // Check if they have pending transactions (waiting for package approval)
             $hasPending = $user->transactions()->where('status', 'pending')->exists();
             if ($hasPending) {

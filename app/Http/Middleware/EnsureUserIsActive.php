@@ -16,6 +16,21 @@ class EnsureUserIsActive
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 1. Check if web user is suspended or rejected first
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+
+            if ($user->status === 'rejected') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditolak. Silakan hubungi admin.');
+            }
+
+            if ($user->status === 'suspended') {
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
+            }
+        }
+
         // Check if admin is logged in - they bypass all status checks
         if (Auth::guard('admin')->check()) {
             return $next($request);
@@ -43,18 +58,6 @@ class EnsureUserIsActive
         // Check if regular user (member) is logged in via web guard
         if (Auth::guard('web')->check()) {
             $user = Auth::guard('web')->user();
-
-            // Check if rejected first
-            if ($user->status === 'rejected') {
-                Auth::guard('web')->logout();
-                return redirect()->route('login')->with('status', 'Akun Anda telah ditolak. Silakan hubungi admin.');
-            }
-
-            // Check if suspended
-            if ($user->status === 'suspended') {
-                Auth::guard('web')->logout();
-                return redirect()->route('login')->with('status', 'Akun Anda telah ditangguhkan (suspend). Silakan hubungi admin.');
-            }
 
             // Check if not active (pending or other)
             if ($user->status !== 'active' && $user->status !== 'approved') {
