@@ -45,4 +45,12 @@ class UserController extends Controller
 
         return back()->with('success', 'User ' . $user->name . ' telah ditolak.');
     }
+
+    public function suspend($id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'suspended']);
+
+        return back()->with('success', 'User ' . $user->name . ' telah di-suspend.');
+    }
 }

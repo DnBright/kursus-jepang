@@ -307,6 +307,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve.get');
         Route::post('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
         Route::get('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject.get');
+        Route::post('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
+        Route::get('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend.get');
         
         // Transaction approval routes
         Route::post('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve');
