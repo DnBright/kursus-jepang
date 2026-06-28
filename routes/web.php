@@ -24,7 +24,7 @@ Route::get('/', function () {
         $courses = \App\Models\Course::with('instructor')->get();
     }
     return view('landing', compact('articles', 'courses', 'categories'));
-});
+})->name('landing');
 
 // Temporary route to run migrations on server
 Route::get('/run-migrate', function() {
