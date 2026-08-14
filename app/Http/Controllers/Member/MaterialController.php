@@ -38,8 +38,11 @@ class MaterialController extends Controller
         // 2. Filter courses based on purchased levels AND optional level filter
         $myCoursesQuery = Course::where(function($q) use ($purchasedLevels) {
             foreach ($purchasedLevels as $pl) {
+                if (empty($pl)) continue;
                 $q->orWhere('level', 'like', "%$pl%")
-                  ->orWhere('title', 'like', "%$pl%");
+                  ->orWhere('title', 'like', "%$pl%")
+                  ->orWhereRaw('? LIKE CONCAT("%", level, "%") AND level IS NOT NULL AND level != ""', [$pl])
+                  ->orWhereRaw('? LIKE CONCAT("%", title, "%") AND title IS NOT NULL AND title != ""', [$pl]);
             }
         });
 

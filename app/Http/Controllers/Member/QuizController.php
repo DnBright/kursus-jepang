@@ -125,7 +125,11 @@ class QuizController extends Controller
                 if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
                     $course = $quiz->lesson->module->course;
                     foreach ($activePackages as $ap) {
-                        if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                        if (
+                            (!empty($course->title) && stripos($course->title, $ap) !== false) || 
+                            (!empty($course->level) && stripos($course->level, $ap) !== false) || 
+                            (!empty($course->level) && stripos($ap, $course->level) !== false)
+                        ) {
                             $hasAccess = true;
                             break;
                         }
@@ -134,16 +138,23 @@ class QuizController extends Controller
                 
                 // 2. Check Roadmap link
                 if (!$hasAccess) {
+                    $allowedCourseIds = \App\Models\Course::all()->filter(function($c) use ($activePackages) {
+                        foreach ($activePackages as $ap) {
+                            if (
+                                (!empty($c->title) && stripos($c->title, $ap) !== false) || 
+                                (!empty($c->level) && stripos($c->level, $ap) !== false) || 
+                                (!empty($c->level) && stripos($ap, $c->level) !== false)
+                            ) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })->pluck('id')->toArray();
+
                     $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
                         ->where('content_id', $quiz->id)
-                        ->whereHas('course', function($q) use ($activePackages) {
-                            $q->where(function($sq) use ($activePackages) {
-                                foreach ($activePackages as $ap) {
-                                    $sq->orWhere('title', 'like', "%$ap%")
-                                      ->orWhere('level', 'like', "%$ap%");
-                                }
-                            });
-                        })->exists();
+                        ->whereIn('course_id', $allowedCourseIds)
+                        ->exists();
                 }
 
                 // 3. Orphaned quiz fallback
@@ -240,7 +251,11 @@ class QuizController extends Controller
                 if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
                     $course = $quiz->lesson->module->course;
                     foreach ($activePackages as $ap) {
-                        if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                        if (
+                            (!empty($course->title) && stripos($course->title, $ap) !== false) || 
+                            (!empty($course->level) && stripos($course->level, $ap) !== false) || 
+                            (!empty($course->level) && stripos($ap, $course->level) !== false)
+                        ) {
                             $hasAccess = true;
                             break;
                         }
@@ -248,16 +263,23 @@ class QuizController extends Controller
                 }
                 
                 if (!$hasAccess) {
+                    $allowedCourseIds = \App\Models\Course::all()->filter(function($c) use ($activePackages) {
+                        foreach ($activePackages as $ap) {
+                            if (
+                                (!empty($c->title) && stripos($c->title, $ap) !== false) || 
+                                (!empty($c->level) && stripos($c->level, $ap) !== false) || 
+                                (!empty($c->level) && stripos($ap, $c->level) !== false)
+                            ) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })->pluck('id')->toArray();
+
                     $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
                         ->where('content_id', $quiz->id)
-                        ->whereHas('course', function($q) use ($activePackages) {
-                            $q->where(function($sq) use ($activePackages) {
-                                foreach ($activePackages as $ap) {
-                                    $sq->orWhere('title', 'like', "%$ap%")
-                                      ->orWhere('level', 'like', "%$ap%");
-                                }
-                            });
-                        })->exists();
+                        ->whereIn('course_id', $allowedCourseIds)
+                        ->exists();
                 }
 
                 if (!$hasAccess) {

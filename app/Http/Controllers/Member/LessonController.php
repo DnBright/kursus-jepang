@@ -19,7 +19,7 @@ class LessonController extends Controller
             $q->orderBy('id', 'asc');
         }])->findOrFail($courseId);
         
-        if (!Auth::user()->hasActivePackage($course->level)) {
+        if (!Auth::user()->hasActivePackage($course->title) && !Auth::user()->hasActivePackage($course->level)) {
             return redirect()->route('packages.index')->with('error', 'Akses ditolak.');
         }
 
