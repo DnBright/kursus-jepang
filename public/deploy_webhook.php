@@ -17,11 +17,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
         $zip->extractTo(dirname(__DIR__));
         $zip->close();
         
-        // Clear Laravel cache to apply updates
-        $artisanPath = dirname(__DIR__) . '/artisan';
-        $output = shell_exec("php $artisanPath optimize:clear 2>&1");
+        // Direct cache file deletion (most reliable on shared hosting)
+        $cachePath = dirname(__DIR__) . '/bootstrap/cache/';
+        $filesToClear = ['routes-v7.php', 'config.php', 'services.php', 'packages.php', 'events.php'];
+        $cleared = [];
+        foreach ($filesToClear as $f) {
+            $filePath = $cachePath . $f;
+            if (file_exists($filePath)) {
+                if (unlink($filePath)) {
+                    $cleared[] = $f;
+                }
+            }
+        }
         
-        echo "✅ Deployment Sukses! Semua file berhasil diekstrak.\n\nCache status:\n" . $output;
+        // Fallback to artisan clear if shell_exec is allowed
+        $artisanPath = dirname(__DIR__) . '/artisan';
+        $output = '';
+        if (function_exists('shell_exec')) {
+            $output = shell_exec("php $artisanPath optimize:clear 2>&1");
+        }
+        
+        echo "✅ Deployment Sukses!\n";
+        echo "- File cache dihapus: " . implode(', ', $cleared) . "\n";
+        echo "- Output Artisan: " . ($output ?: 'shell_exec dinonaktifkan') . "\n";
     } else {
         http_response_code(500);
         echo "❌ Gagal mengekstrak file ZIP.";
