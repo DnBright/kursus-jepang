@@ -27,5 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
         echo "❌ Gagal mengekstrak file ZIP.";
     }
 } else {
-    echo "Menunggu file dari GitHub Actions...";
+    $parentDir = dirname(__DIR__);
+    $artisanExists = file_exists($parentDir . '/artisan') ? 'YA' : 'TIDAK';
+    $files = file_exists($parentDir) ? scandir($parentDir) : [];
+    
+    echo "Menunggu file dari GitHub Actions...\n\n";
+    echo "Detail Path Server:\n";
+    echo "- Web Root (DIR): " . __DIR__ . "\n";
+    echo "- Project Root (Parent): " . $parentDir . "\n";
+    echo "- File 'artisan' ada di Project Root?: " . $artisanExists . "\n";
+    echo "- Daftar file di Project Root:\n";
+    print_r($files);
 }
