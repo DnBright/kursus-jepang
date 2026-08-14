@@ -23,6 +23,18 @@ class MaterialController extends Controller
             ->pluck('package_type')
             ->toArray();
             
+        if (empty($purchasedLevels)) {
+            return view('member.materials.index', [
+                'myCourses' => collect(),
+                'selectedCourse' => null,
+                'modules' => collect(),
+                'progress' => 0,
+                'selectedLevel' => $selectedLevel,
+                'purchasedLevels' => $purchasedLevels
+            ]);
+        }
+
+            
         // 2. Filter courses based on purchased levels AND optional level filter
         $myCoursesQuery = Course::where(function($q) use ($purchasedLevels) {
             foreach ($purchasedLevels as $pl) {
