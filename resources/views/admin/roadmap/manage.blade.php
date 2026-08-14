@@ -55,7 +55,7 @@
                     if ($step->content) {
                         if ($step->content_type == 'quiz') {
                             $editData['quiz_type'] = $step->content->question_type;
-                            $editData['url'] = route('admin.quizzes.questions', $step->content->id);
+                            // $editData['url'] = route('admin.quizzes.questions', $step->content->id); // Note: Admin doesn't have quiz question management yet
                         } elseif ($step->content_type == 'lesson') {
                             $editData['materi_type'] = $step->content->type;
                             $editData['video_link'] = $step->content->type === 'video' ? $step->content->content : '';
@@ -88,11 +88,7 @@
                     </div>
                     
                     <div class="flex gap-2 items-center pl-4 border-l border-slate-100">
-                        @if($step->content_type == 'quiz' && $step->content)
-                            <a href="{{ route('admin.quizzes.questions', $step->content->id) }}" class="p-3 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors font-bold text-sm whitespace-nowrap hidden lg:block">
-                                Atur Soal
-                            </a>
-                        @endif
+                        <!-- Admin currently does not manage quiz questions directly here -->
                         <form action="{{ route('admin.roadmap.destroy', $step->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kotak ini secara permanen?')">
                             @csrf
                             @method('DELETE')
