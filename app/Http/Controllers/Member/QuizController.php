@@ -47,9 +47,7 @@ class QuizController extends Controller
 
         // Filter quizzes by user's active packages AND selected level
         $quizzes = $allQuizzes->filter(function($quiz) use ($activePackages, $selectedLevel) {
-            // Admin and Sensei bypass filtering
-            if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
-                // If filter is active, still apply it
+            // If filter is active, still apply it
                 if ($selectedLevel !== 'all') {
                     $qLevel = null;
                     if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
@@ -60,8 +58,6 @@ class QuizController extends Controller
                     }
                     if (!$qLevel || stripos($qLevel, $selectedLevel) === false) return false;
                 }
-                return true;
-            }
 
             // Get the quiz level
             $quizLevel = null;
@@ -121,10 +117,8 @@ class QuizController extends Controller
 
         // Authorization check: Ensure user has access to this quiz's package
         $hasAccess = false;
-        if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
-            $hasAccess = true;
-        } else {
-            $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
+        
+        $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
             
             if (!empty($activePackages)) {
                 // 1. Check Course link
@@ -162,7 +156,6 @@ class QuizController extends Controller
                     }
                 }
             }
-        }
 
         if (!$hasAccess) {
             return redirect()->route('quizzes.index')->with('error', 'Akses ditolak. Anda tidak memiliki paket untuk kuis ini.');

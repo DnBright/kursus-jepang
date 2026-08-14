@@ -71,6 +71,8 @@ class User extends Authenticatable
 
     public function hasActivePackage($package)
     {
+        if (empty($package)) return false;
+
         return $this->transactions()
             ->where('status', 'approved')
             ->where(function($q) use ($package) {
