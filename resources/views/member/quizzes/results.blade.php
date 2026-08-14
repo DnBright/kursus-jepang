@@ -117,7 +117,7 @@
                                 <div class="mt-1 p-3 rounded-lg {{ $isEssay ? 'bg-blue-50 border border-blue-200' : ($isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200') }}">
                                     <span class="font-medium {{ $isEssay ? 'text-blue-700' : ($isCorrect ? 'text-green-700' : 'text-red-700') }}">
                                         @if($question->question_type === 'multiple_choice' && isset($question->options[$userAnswer]))
-                                            {{ $userAnswer }}. {{ $question->options[$userAnswer] }}
+                                            {{ $question->options[$userAnswer] }}
                                         @elseif($question->question_type === 'true_false')
                                             {{ $userAnswer === 'true' ? 'Benar (True)' : 'Salah (False)' }}
                                         @else
@@ -141,7 +141,7 @@
                                     <div class="mt-1 p-3 rounded-lg bg-blue-50 border border-blue-200">
                                         <span class="font-medium text-blue-700">
                                             @if($question->question_type === 'multiple_choice' && isset($question->options[$question->correct_answer]))
-                                                {{ $question->correct_answer }}. {{ $question->options[$question->correct_answer] }}
+                                                {{ $question->options[$question->correct_answer] }}
                                             @elseif($question->question_type === 'true_false')
                                                 {{ $question->correct_answer === 'true' ? 'Benar (True)' : 'Salah (False)' }}
                                             @else

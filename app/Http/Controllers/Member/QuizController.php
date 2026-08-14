@@ -294,7 +294,11 @@ class QuizController extends Controller
             $maxScore += $question->points;
 
             if ($question->question_type === 'multiple_choice') {
-                $isCorrect = $userAnswer === $question->correct_answer;
+                $correctIndex = false;
+                if (is_array($question->options)) {
+                    $correctIndex = array_search($question->correct_answer, $question->options);
+                }
+                $isCorrect = ($correctIndex !== false && (string)$userAnswer === (string)$correctIndex);
             } elseif ($question->question_type === 'true_false') {
                 $isCorrect = $userAnswer === $question->correct_answer;
             } elseif ($question->question_type === 'fill_blank') {
