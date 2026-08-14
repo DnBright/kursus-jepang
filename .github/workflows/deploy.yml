@@ -32,21 +32,12 @@ jobs:
         npm install
         npm run build
 
-    - name: Sync Files via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftps
-        server-dir: /public_html/kursusjepangonline.com/
-        log-level: verbose
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          **/vendor/**
-          **/tests/**
-          .env
-          phpunit.xml
-          README.md
+    - name: Package Release
+      run: |
+        zip -r build.zip . -x "*.git*" "node_modules/*" "vendor/*" "tests/*" ".env" "phpunit.xml" "README.md"
+
+    - name: Deploy via Webhook
+      run: |
+        echo "Mengirim kode ke server cPanel..."
+        curl -X POST -F "build=@build.zip" "https://kursusjepangonline.com/deploy_webhook.php?token=${{ secrets.WEBHOOK_TOKEN }}"
+        echo ""
