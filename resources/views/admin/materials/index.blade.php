@@ -177,7 +177,11 @@
                              <td class="p-4 text-sm text-slate-600">{{ $file->program }}</td>
                              <td class="p-4 text-sm text-slate-500">{{ $file->size }}</td>
                              <td class="p-4 text-right">
-                                <button class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Download</button>
+                                @if($file->file_path)
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" download class="text-xs text-blue-600 hover:text-blue-800 hover:underline">Download</a>
+                                @else
+                                    <span class="text-xs text-slate-400">No File</span>
+                                @endif
                              </td>
                         </tr>
                         @empty

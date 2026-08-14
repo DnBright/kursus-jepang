@@ -67,11 +67,37 @@
                         </div>
                         @endif
                     </div>
+                    @elseif($lesson->type == 'pdf')
+                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-8 min-h-[350px] flex flex-col items-center justify-center text-center shadow-sm">
+                        <div class="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mb-4 border border-red-100 shadow-md">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-extrabold text-slate-800 mb-2">Dokumen Modul & Materi</h3>
+                        <p class="text-slate-500 text-sm max-w-md mb-6">Materi ini tersedia dalam format PDF. Anda dapat mengunduh atau membacanya secara langsung.</p>
+                        
+                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <a href="{{ asset('storage/' . $lesson->content) }}" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-slate-800 text-white font-bold text-sm rounded-xl hover:bg-slate-900 transition shadow-lg shadow-slate-800/10">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                Baca Dokumen
+                            </a>
+                            <a href="{{ asset('storage/' . $lesson->content) }}" download class="inline-flex items-center justify-center px-6 py-3 bg-red-600 text-white font-bold text-sm rounded-xl hover:bg-red-700 transition shadow-lg shadow-red-600/20">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                Unduh File PDF
+                            </a>
+                        </div>
+                        
+                        <!-- Embedded PDF preview for premium feel -->
+                        <div class="mt-8 w-full border border-slate-200 rounded-xl overflow-hidden shadow-sm aspect-[4/3] max-w-4xl">
+                            <iframe class="w-full h-full" src="{{ asset('storage/' . $lesson->content) }}#toolbar=0" type="application/pdf"></iframe>
+                        </div>
+                    </div>
                     @else
                     <div class="bg-slate-100 rounded-2xl p-8 min-h-[300px] flex items-center justify-center">
                         <div class="text-center">
                             <h3 class="text-xl font-bold text-slate-700">Materi Teks / Kuis</h3>
-                            <p class="text-slate-500">{{ $lesson->content }}</p>
+                            <div class="prose prose-slate max-w-none mt-2 text-slate-600">
+                                {!! nl2br(e($lesson->content)) !!}
+                            </div>
                         </div>
                     </div>
                     @endif

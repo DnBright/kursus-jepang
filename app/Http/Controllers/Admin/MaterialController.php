@@ -31,7 +31,8 @@ class MaterialController extends Controller
                 'type' => 'PDF',
                 'program' => $lesson->module && $lesson->module->course ? $lesson->module->course->level : '-',
                 'size' => 'Auto', 
-                'status' => 'active'
+                'status' => 'active',
+                'file_path' => $lesson->content
             ];
         });
 
