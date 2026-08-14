@@ -294,8 +294,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Route::post('/certificates/approve', [App\Http\Controllers\Admin\CertificateController::class, 'approve'])->name('certificates.approve');
         Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
         // Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
-        Route::get('/settings', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
-        
+
         Route::get('/roadmap', [App\Http\Controllers\Admin\RoadmapController::class, 'index'])->name('roadmap.index');
         Route::get('/roadmap/{program}', [App\Http\Controllers\Admin\RoadmapController::class, 'manage'])->name('roadmap.manage');
         Route::post('/roadmap/{program}/steps', [App\Http\Controllers\Admin\RoadmapController::class, 'storeStep'])->name('roadmap.store');
