@@ -59,7 +59,7 @@
 
     <!-- User Section -->
     <div class="mt-auto pt-8 border-t border-white/5 space-y-2">
-        <x-sidebar-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" class="!bg-transparent text-slate-400 hover:text-white transition-colors">
+        <x-sidebar-link :href="route('sensei.profile.edit')" :active="request()->routeIs('sensei.profile.edit')" class="!bg-transparent text-slate-400 hover:text-white transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             Settings
         </x-sidebar-link>

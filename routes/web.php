@@ -150,6 +150,9 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
     // Authenticated Sensei Routes
     Route::middleware(['auth:sensei', 'sensei.approved'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Sensei\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [App\Http\Controllers\Sensei\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [App\Http\Controllers\Sensei\ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [App\Http\Controllers\Sensei\ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::get('/api/courses/{course}/modules', function (\App\Models\Course $course) {
             return $course->modules()->where('instructor_id', Auth::guard('sensei')->id())->get();
         })->name('api.course.modules');
