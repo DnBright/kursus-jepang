@@ -81,13 +81,18 @@
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
-                    <!-- Math Captcha -->
+                    <!-- Image Captcha -->
                     <div>
-                        <x-input-label for="math_captcha" :value="__('Berapa hasil dari ' . $num1 . ' + ' . $num2 . '?')" class="text-slate-700 font-medium" />
-                        <x-text-input id="math_captcha" class="block mt-2 w-full px-4 py-3 rounded-xl border-slate-200 focus:border-red-500 focus:ring-red-500 transition-colors bg-slate-50"
-                                        type="number"
-                                        name="math_captcha" required placeholder="Masukkan hasil penjumlahan" />
-                        <x-input-error :messages="$errors->get('math_captcha')" class="mt-2" />
+                        <x-input-label for="captcha" :value="__('Kode Keamanan')" class="text-slate-700 font-medium" />
+                        <div class="mt-2 flex gap-4 items-center">
+                            <div class="flex-shrink-0">
+                                {!! captcha_img('flat') !!}
+                            </div>
+                            <x-text-input id="captcha" class="block w-full px-4 py-3 rounded-xl border-slate-200 focus:border-red-500 focus:ring-red-500 transition-colors bg-slate-50"
+                                            type="text"
+                                            name="captcha" required placeholder="Masukkan kode di samping" />
+                        </div>
+                        <x-input-error :messages="$errors->get('captcha')" class="mt-2" />
                     </div>
 
                     <div>
