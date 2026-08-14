@@ -84,7 +84,7 @@
 
                     <!-- reCAPTCHA Widget -->
                     <div class="flex flex-col items-center sm:items-start">
-                        <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
                         <x-input-error :messages="$errors->get('g-recaptcha-response')" class="mt-2" />
                     </div>
 
