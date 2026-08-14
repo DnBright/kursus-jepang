@@ -32,20 +32,7 @@ jobs:
         npm install
         npm run build
 
-    - name: Sync Files via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /public_html/kursusjepangonline.com/
-        log-level: verbose
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          **/vendor/**
-          **/tests/**
-          .env
-          phpunit.xml
-          README.md
+    - name: Sync Files via lftp
+      run: |
+        sudo apt-get update -qq && sudo apt-get install -y lftp
+        lftp -c "set ftp:ssl-allow true; set ssl:verify-certificate no; open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' ftp://${{ secrets.FTP_SERVER }}; mirror -Rnv --parallel=10 --exclude .git/ --exclude node_modules/ --exclude vendor/ --exclude tests/ --exclude .env --exclude phpunit.xml --exclude README.md . /public_html/kursusjepangonline.com/"
