@@ -33,7 +33,11 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'captcha' => ['required', 'captcha'],
+            'captcha' => ['required', function ($attribute, $value, $fail) {
+                if (strtolower($value) != strtolower(session('native_captcha_code'))) {
+                    $fail('Kode keamanan salah.');
+                }
+            }],
         ]);
 
         $user = User::create([

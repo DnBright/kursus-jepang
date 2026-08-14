@@ -336,3 +336,34 @@ Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index']
 Route::get('/articles/{slug}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 require __DIR__.'/auth.php';
+
+Route::get('/captcha-image', function () {
+    $code = strtoupper(substr(md5(rand()), 0, 5));
+    session(['native_captcha_code' => $code]);
+    
+    $width = 120;
+    $height = 40;
+    $image = imagecreatetruecolor($width, $height);
+    
+    $bg = imagecolorallocate($image, 248, 250, 252); // slate-50
+    $fg = imagecolorallocate($image, 15, 23, 42); // slate-900
+    
+    imagefill($image, 0, 0, $bg);
+    
+    // Add some noise
+    for($i=0; $i<100; $i++) {
+        imagesetpixel($image, rand(0, $width), rand(0, $height), imagecolorallocate($image, rand(100, 200), rand(100, 200), rand(100, 200)));
+    }
+    
+    // Draw text
+    imagestring($image, 5, 35, 12, $code, $fg);
+    
+    ob_start();
+    imagepng($image);
+    $content = ob_get_clean();
+    imagedestroy($image);
+    
+    return response($content)
+        ->header('Content-Type', 'image/png')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+})->name('captcha.image')->middleware('web');

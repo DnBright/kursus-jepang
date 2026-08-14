@@ -86,7 +86,7 @@
                         <x-input-label for="captcha" :value="__('Kode Keamanan')" class="text-slate-700 font-medium" />
                         <div class="mt-2 flex gap-4 items-center">
                             <div class="flex-shrink-0">
-                                {!! captcha_img('flat') !!}
+                                <img src="{{ route('captcha.image') }}" alt="captcha" class="rounded-lg border border-slate-200">
                             </div>
                             <x-text-input id="captcha" class="block w-full px-4 py-3 rounded-xl border-slate-200 focus:border-red-500 focus:ring-red-500 transition-colors bg-slate-50"
                                             type="text"
