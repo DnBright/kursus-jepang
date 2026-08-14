@@ -79,7 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     echo "- Project Root (Parent): " . $parentDir . "\n";
     echo "- File 'artisan' ada di Project Root?: " . $artisanExists . "\n";
     echo "- String 'debug-live' di routes/web.php: " . $hasDebugLive . "\n";
-    echo "- Daftar file di Project Root:\n";
+    
+    echo "\nBatasan Upload PHP Server:\n";
+    echo "- upload_max_filesize: " . ini_get('upload_max_filesize') . "\n";
+    echo "- post_max_size: " . ini_get('post_max_size') . "\n";
+    echo "- memory_limit: " . ini_get('memory_limit') . "\n";
+    
+    echo "\nDaftar file di Project Root:\n";
     print_r($files);
     echo "\n- Daftar file di bootstrap/cache:\n";
     print_r($cacheFiles);
