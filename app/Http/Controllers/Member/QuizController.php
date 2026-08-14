@@ -126,37 +126,39 @@ class QuizController extends Controller
         } else {
             $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
             
-            // 1. Check Course link
-            if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
-                $course = $quiz->lesson->module->course;
-                foreach ($activePackages as $ap) {
-                    if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
-                        $hasAccess = true;
-                        break;
+            if (!empty($activePackages)) {
+                // 1. Check Course link
+                if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                    $course = $quiz->lesson->module->course;
+                    foreach ($activePackages as $ap) {
+                        if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                            $hasAccess = true;
+                            break;
+                        }
                     }
                 }
-            }
-            
-            // 2. Check Roadmap link
-            if (!$hasAccess) {
-                $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
-                    ->where('content_id', $quiz->id)
-                    ->whereHas('course', function($q) use ($activePackages) {
-                        $q->where(function($sq) use ($activePackages) {
-                            foreach ($activePackages as $ap) {
-                                $sq->orWhere('title', 'like', "%$ap%")
-                                  ->orWhere('level', 'like', "%$ap%");
-                            }
-                        });
-                    })->exists();
-            }
+                
+                // 2. Check Roadmap link
+                if (!$hasAccess) {
+                    $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+                        ->where('content_id', $quiz->id)
+                        ->whereHas('course', function($q) use ($activePackages) {
+                            $q->where(function($sq) use ($activePackages) {
+                                foreach ($activePackages as $ap) {
+                                    $sq->orWhere('title', 'like', "%$ap%")
+                                      ->orWhere('level', 'like', "%$ap%");
+                                }
+                            });
+                        })->exists();
+                }
 
-            // 3. Orphaned quiz fallback
-            if (!$hasAccess) {
-                foreach ($activePackages as $ap) {
-                    if (stripos($quiz->title, $ap) !== false) {
-                        $hasAccess = true;
-                        break;
+                // 3. Orphaned quiz fallback
+                if (!$hasAccess) {
+                    foreach ($activePackages as $ap) {
+                        if (stripos($quiz->title, $ap) !== false) {
+                            $hasAccess = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -232,6 +234,54 @@ class QuizController extends Controller
      */
     public function submit(Request $request, Quiz $quiz)
     {
+        $user = Auth::user();
+        
+        // Authorization check: Ensure user has access to submit this quiz
+        $hasAccess = false;
+        if (Auth::guard('admin')->check() || Auth::guard('sensei')->check()) {
+            $hasAccess = true;
+        } else {
+            $activePackages = $user->transactions()->where('status', 'approved')->pluck('package_type')->toArray();
+            
+            if (!empty($activePackages)) {
+                if ($quiz->lesson && $quiz->lesson->module && $quiz->lesson->module->course) {
+                    $course = $quiz->lesson->module->course;
+                    foreach ($activePackages as $ap) {
+                        if (stripos($course->title, $ap) !== false || stripos($course->level, $ap) !== false || stripos($ap, $course->level) !== false) {
+                            $hasAccess = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!$hasAccess) {
+                    $hasAccess = \App\Models\CourseRoadmapStep::where('content_type', 'quiz')
+                        ->where('content_id', $quiz->id)
+                        ->whereHas('course', function($q) use ($activePackages) {
+                            $q->where(function($sq) use ($activePackages) {
+                                foreach ($activePackages as $ap) {
+                                    $sq->orWhere('title', 'like', "%$ap%")
+                                      ->orWhere('level', 'like', "%$ap%");
+                                }
+                            });
+                        })->exists();
+                }
+
+                if (!$hasAccess) {
+                    foreach ($activePackages as $ap) {
+                        if (stripos($quiz->title, $ap) !== false) {
+                            $hasAccess = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!$hasAccess) {
+            return redirect()->route('quizzes.index')->with('error', 'Akses ditolak. Anda tidak memiliki paket untuk kuis ini.');
+        }
+
         $validated = $request->validate([
             'answers' => 'required|array',
             'time_taken' => 'nullable|integer',
