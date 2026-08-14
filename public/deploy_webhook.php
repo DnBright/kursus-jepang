@@ -9,9 +9,26 @@ if (!isset($_GET['token']) || $_GET['token'] !== $secret) {
     die("Akses Ditolak: Token Salah.");
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
-    $zipFile = $_FILES['build']['tmp_name'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $log = "Deployment Log - " . date('Y-m-d H:i:s') . "\n";
+    
+    if (!isset($_FILES['build']) || $_FILES['build']['error'] !== UPLOAD_ERR_OK) {
+        http_response_code(400);
+        $errCode = isset($_FILES['build']) ? $_FILES['build']['error'] : 'NO_FILE';
+        $maxSize = ini_get('upload_max_filesize');
+        $postMax = ini_get('post_max_size');
+        
+        $errorMsg = "❌ Gagal: File upload kosong atau error (Code: $errCode)! " .
+                    "Ukuran file build.zip mungkin melebihi batasan PHP server " .
+                    "(upload_max_filesize: $maxSize, post_max_size: $postMax).";
+                    
+        $log .= $errorMsg . "\n";
+        file_put_contents(__DIR__ . '/deploy_log.txt', $log);
+        echo $errorMsg;
+        exit;
+    }
+    
+    $zipFile = $_FILES['build']['tmp_name'];
     
     $zip = new ZipArchive;
     if ($zip->open($zipFile) === TRUE) {
