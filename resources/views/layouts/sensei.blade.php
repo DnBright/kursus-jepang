@@ -67,8 +67,12 @@
                                 <p class="text-xs lg:text-sm font-bold text-slate-800 leading-tight">{{ Auth::guard('sensei')->user()->name }}</p>
                                 <p class="text-[9px] lg:text-[10px] text-slate-500 font-bold uppercase tracking-wider">Sensei</p>
                             </div>
-                            <div class="h-8 w-8 lg:h-10 lg:w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs lg:text-sm ring-2 lg:ring-4 ring-slate-50">
-                                {{ substr(Auth::guard('sensei')->user()->name, 0, 1) }}
+                            <div class="h-8 w-8 lg:h-10 lg:w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs lg:text-sm ring-2 lg:ring-4 ring-slate-50 overflow-hidden">
+                                @if(Auth::guard('sensei')->user()->avatar_url)
+                                    <img src="{{ Storage::url(Auth::guard('sensei')->user()->avatar_url) }}" alt="Avatar" class="w-full h-full object-cover">
+                                @else
+                                    {{ substr(Auth::guard('sensei')->user()->name, 0, 1) }}
+                                @endif
                             </div>
                         </div>
                     </div>

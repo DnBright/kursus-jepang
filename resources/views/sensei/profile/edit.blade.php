@@ -14,9 +14,26 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white rounded-2xl border border-slate-200 p-6">
                 <h3 class="text-lg font-bold text-slate-900 mb-4">Informasi Pribadi</h3>
-                <form method="POST" action="{{ route('sensei.profile.update') }}" class="space-y-4">
+                <form method="POST" action="{{ route('sensei.profile.update') }}" class="space-y-4" enctype="multipart/form-data">
                     @csrf
                     @method('PATCH')
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="relative w-20 h-20 rounded-full overflow-hidden bg-slate-100 border-2 border-slate-200">
+                            @if($user->avatar_url)
+                                <img src="{{ Storage::url($user->avatar_url) }}" alt="Avatar" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-slate-400 text-2xl font-bold bg-slate-200">
+                                    {{ substr($user->name, 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1">
+                            <x-input-label for="avatar" value="Foto Profil (Maks 2MB)" />
+                            <input id="avatar" name="avatar" type="file" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200" accept="image/jpeg,image/png,image/jpg" />
+                            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                        </div>
+                    </div>
                     
                     <div>
                         <x-input-label for="name" value="Nama Lengkap" />
