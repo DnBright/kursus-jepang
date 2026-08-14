@@ -17,8 +17,8 @@
 
     <div class="w-full max-w-md bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl p-8 relative z-10">
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gray-700/50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner border border-gray-600">
-                <span class="text-4xl">🇯🇵</span>
+            <div class="h-16 flex items-center justify-center mx-auto mb-6">
+                <img src="{{ asset('images/logo.png') }}" alt="Kursus Online Jepang" class="h-full object-contain scale-150">
             </div>
             <h1 class="text-2xl font-bold text-white font-jp">Admin Portal</h1>
             <p class="text-gray-400 text-sm mt-2">Akses terbatas untuk administrator.</p>
