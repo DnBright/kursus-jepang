@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased text-slate-800 bg-white">
@@ -82,10 +81,13 @@
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
-                    <!-- reCAPTCHA Widget -->
-                    <div class="flex flex-col items-center sm:items-start">
-                        <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
-                        <x-input-error :messages="$errors->get('g-recaptcha-response')" class="mt-2" />
+                    <!-- Math Captcha -->
+                    <div>
+                        <x-input-label for="math_captcha" :value="__('Berapa hasil dari ' . $num1 . ' + ' . $num2 . '?')" class="text-slate-700 font-medium" />
+                        <x-text-input id="math_captcha" class="block mt-2 w-full px-4 py-3 rounded-xl border-slate-200 focus:border-red-500 focus:ring-red-500 transition-colors bg-slate-50"
+                                        type="number"
+                                        name="math_captcha" required placeholder="Masukkan hasil penjumlahan" />
+                        <x-input-error :messages="$errors->get('math_captcha')" class="mt-2" />
                     </div>
 
                     <div>

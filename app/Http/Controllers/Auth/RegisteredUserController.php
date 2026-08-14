@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Rules\Recaptcha;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +19,11 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $num1 = rand(1, 9);
+        $num2 = rand(1, 9);
+        session(['math_captcha_answer' => $num1 + $num2]);
+
+        return view('auth.register', compact('num1', 'num2'));
     }
 
     /**
@@ -34,7 +37,11 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'g-recaptcha-response' => ['required', new Recaptcha()],
+            'math_captcha' => ['required', 'numeric', function ($attribute, $value, $fail) {
+                if ($value != session('math_captcha_answer')) {
+                    $fail('Jawaban perhitungan matematika salah, silakan coba lagi.');
+                }
+            }],
         ]);
 
         $user = User::create([
