@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     
     $routesPath = $parentDir . '/routes/web.php';
     $routesContent = file_exists($routesPath) ? file_get_contents($routesPath) : 'File routes/web.php tidak ditemukan!';
+    $hasDebugLive = strpos($routesContent, 'debug-live') !== false ? 'ADA' : 'TIDAK ADA';
     // Get last 1000 characters of routes to see our additions
     $routesTail = strlen($routesContent) > 2000 ? substr($routesContent, 0, 1000) . "\n... [TRUNCATED] ...\n" . substr($routesContent, -1000) : $routesContent;
     
@@ -77,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     echo "- Web Root (DIR): " . __DIR__ . "\n";
     echo "- Project Root (Parent): " . $parentDir . "\n";
     echo "- File 'artisan' ada di Project Root?: " . $artisanExists . "\n";
+    echo "- String 'debug-live' di routes/web.php: " . $hasDebugLive . "\n";
     echo "- Daftar file di Project Root:\n";
     print_r($files);
     echo "\n- Daftar file di bootstrap/cache:\n";
