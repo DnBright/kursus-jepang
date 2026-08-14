@@ -25,25 +25,19 @@ class EnsureHasActivePackage
 
         $user = Auth::guard('web')->user();
 
-        // Check if user has selected a package
-        $package = $user->selected_package;
+        // Check if user has ANY approved package
+        $hasAnyPackage = $user->transactions()->where('status', 'approved')->exists();
 
-        if (!$package) {
-            // If no package selected/purchased at all, redirect to packages list
-            return redirect()->route('packages.index')->with('warning', 'Silakan pilih paket kursus terlebih dahulu.');
+        if (!$hasAnyPackage) {
+            // Check if they have a pending package instead
+            $hasPendingPackage = $user->transactions()->where('status', 'pending')->exists();
+            if ($hasPendingPackage) {
+                return response()->view('errors.package-pending');
+            }
+            
+            return redirect()->route('packages.index')->with('warning', 'Silakan beli paket kursus terlebih dahulu untuk mengakses fitur ini.');
         }
 
-        // Check active status
-        if ($user->hasActivePackage($package)) {
-            return $next($request);
-        }
-
-        // Check pending status
-        if ($user->hasPendingPackage($package)) {
-            return response()->view('errors.package-pending');
-        }
-
-        // Fallback: Has package name in profile but no valid transaction (maybe rejected or expired)
-        return redirect()->route('packages.index')->with('error', 'Status paket Anda tidak aktif. Silakan lakukan pembelian ulang.');
+        return $next($request);
     }
 }
