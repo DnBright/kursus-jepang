@@ -39,10 +39,12 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /public_html/kursusjepangonline.com/
+        log-level: verbose
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
+          **/vendor/**
           **/tests/**
           .env
           phpunit.xml
