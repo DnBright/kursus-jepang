@@ -108,6 +108,9 @@ class DashboardController extends Controller
                 } else {
                     $isCompleted = true; 
                 }
+            } elseif ($contentType === 'live_session') {
+                // Live sessions don't block progression, or they are auto-completed
+                $isCompleted = true;
             }
 
             $stepsWithStatus[] = (object)[

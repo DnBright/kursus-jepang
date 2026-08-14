@@ -149,6 +149,8 @@
                                                         <a href="{{ route('quizzes.show', $step->content_id) }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Mulai Quiz</a>
                                                     @elseif($step->content_type === 'lesson')
                                                         <a href="{{ route('courses.lessons.show', ['course' => $step->course_id, 'lesson' => $step->content_id]) }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Pelajari Materi</a>
+                                                    @elseif($step->content_type === 'live_session')
+                                                        <a href="{{ route('live-class') }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Lihat Jadwal Zoom</a>
                                                     @else
                                                         <a href="{{ route('courses.show', $step->course_id) }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">Buka Modul</a>
                                                     @endif
