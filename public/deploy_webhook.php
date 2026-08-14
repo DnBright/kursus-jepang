@@ -16,7 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     if ($zip->open($zipFile) === TRUE) {
         $zip->extractTo(dirname(__DIR__));
         $zip->close();
-        echo "✅ Deployment Sukses! Semua file berhasil diekstrak.";
+        
+        // Clear Laravel cache to apply updates
+        $artisanPath = dirname(__DIR__) . '/artisan';
+        $output = shell_exec("php $artisanPath optimize:clear 2>&1");
+        
+        echo "✅ Deployment Sukses! Semua file berhasil diekstrak.\n\nCache status:\n" . $output;
     } else {
         http_response_code(500);
         echo "❌ Gagal mengekstrak file ZIP.";
