@@ -15,42 +15,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     
     $zip = new ZipArchive;
     if ($zip->open($zipFile) === TRUE) {
-        $zip->extractTo(dirname(__DIR__));
-        $zip->close();
-        $log .= "✅ ZIP successfully extracted to project root.\n";
-        
-        // Direct cache file deletion
-        $cachePath = dirname(__DIR__) . '/bootstrap/cache/';
-        $filesToClear = ['routes-v7.php', 'config.php', 'services.php', 'packages.php', 'events.php'];
-        $cleared = [];
-        foreach ($filesToClear as $f) {
-            $filePath = $cachePath . $f;
-            if (file_exists($filePath)) {
-                if (unlink($filePath)) {
-                    $cleared[] = $f;
-                } else {
-                    $cleared[] = "$f (FAILED TO UNLINK)";
+        if ($zip->extractTo(dirname(__DIR__)) === TRUE) {
+            $zip->close();
+            $log .= "✅ ZIP successfully extracted to project root.\n";
+            
+            // Direct cache file deletion
+            $cachePath = dirname(__DIR__) . '/bootstrap/cache/';
+            $filesToClear = ['routes-v7.php', 'config.php', 'services.php', 'packages.php', 'events.php'];
+            $cleared = [];
+            foreach ($filesToClear as $f) {
+                $filePath = $cachePath . $f;
+                if (file_exists($filePath)) {
+                    if (unlink($filePath)) {
+                        $cleared[] = $f;
+                    } else {
+                        $cleared[] = "$f (FAILED TO UNLINK)";
+                    }
                 }
             }
-        }
-        $log .= "- Cleared cache files: " . implode(', ', $cleared) . "\n";
-        
-        // Fallback to artisan clear
-        $artisanPath = dirname(__DIR__) . '/artisan';
-        if (function_exists('shell_exec')) {
-            $output = shell_exec("php $artisanPath optimize:clear 2>&1");
-            $log .= "- Artisan optimize:clear output:\n" . $output . "\n";
+            $log .= "- Cleared cache files: " . implode(', ', $cleared) . "\n";
+            
+            // Fallback to artisan clear
+            $artisanPath = dirname(__DIR__) . '/artisan';
+            if (function_exists('shell_exec')) {
+                $output = shell_exec("php $artisanPath optimize:clear 2>&1");
+                $log .= "- Artisan optimize:clear output:\n" . $output . "\n";
+            } else {
+                $log .= "- shell_exec is disabled, skipped artisan command.\n";
+            }
+            
+            file_put_contents(__DIR__ . '/deploy_log.txt', $log);
+            echo "✅ Deployment Sukses!\n";
         } else {
-            $log .= "- shell_exec is disabled, skipped artisan command.\n";
+            $zip->close();
+            http_response_code(500);
+            $log .= "❌ Failed to extract ZIP file to project root (Permission denied?).\n";
+            file_put_contents(__DIR__ . '/deploy_log.txt', $log);
+            echo "❌ Gagal mengekstrak file ZIP ke Project Root (Masalah Hak Akses?).";
         }
-        
-        file_put_contents(__DIR__ . '/deploy_log.txt', $log);
-        echo "✅ Deployment Sukses!\n";
     } else {
         http_response_code(500);
         $log .= "❌ Failed to open ZIP file.\n";
         file_put_contents(__DIR__ . '/deploy_log.txt', $log);
-        echo "❌ Gagal mengekstrak file ZIP.";
+        echo "❌ Gagal membuka file ZIP.";
     }
 } else {
     $parentDir = dirname(__DIR__);
