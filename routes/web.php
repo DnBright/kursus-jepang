@@ -308,6 +308,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject.get');
         Route::post('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend');
         Route::get('/users/{id}/suspend', [App\Http\Controllers\Admin\UserController::class, 'suspend'])->name('users.suspend.get');
+        Route::put('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
         
         // Transaction approval routes
         Route::post('/transactions/{id}/approve', [App\Http\Controllers\AdminController::class, 'approve'])->name('approve');
