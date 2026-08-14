@@ -31,16 +31,6 @@ class EnsureUserIsMember
             }
         }
 
-        // Admin bypass - can view member areas for management
-        if (Auth::guard('admin')->check()) {
-            return $next($request);
-        }
-
-        // Sensei bypass - can view member areas for teaching
-        if (Auth::guard('sensei')->check()) {
-            return $next($request);
-        }
-
         // Check if regular user is logged in via web guard
         $user = Auth::guard('web')->user();
 
