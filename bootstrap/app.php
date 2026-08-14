@@ -24,7 +24,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'package.active' => \App\Http\Middleware\EnsureHasActivePackage::class,
         ]);
 
-        $middleware->redirectUsersTo(function () {
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            if ($request->is('admin/*') || $request->is('admin')) {
+                return route('admin.dashboard');
+            }
+            if ($request->is('sensei/*') || $request->is('sensei')) {
+                return route('sensei.dashboard');
+            }
+
             if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
                 return route('admin.dashboard');
             }
