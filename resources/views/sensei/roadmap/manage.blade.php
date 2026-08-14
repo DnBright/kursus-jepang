@@ -55,7 +55,7 @@
                     if ($step->content) {
                         if ($step->content_type == 'quiz') {
                             $editData['quiz_type'] = $step->content->question_type;
-                            $editData['url'] = route('sensei.quizzes.questions.index', $step->content->id);
+                            $editData['url'] = route('sensei.quizzes.questions', $step->content->id);
                         } elseif ($step->content_type == 'lesson') {
                             $editData['materi_type'] = $step->content->type;
                             $editData['video_link'] = $step->content->type === 'video' ? $step->content->content : '';
@@ -89,7 +89,7 @@
                     
                     <div class="flex gap-2 items-center pl-4 border-l border-slate-100">
                         @if($step->content_type == 'quiz' && $step->content)
-                            <a href="{{ route('sensei.quizzes.questions.index', $step->content->id) }}" class="p-3 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors font-bold text-sm whitespace-nowrap hidden lg:block">
+                            <a href="{{ route('sensei.quizzes.questions', $step->content->id) }}" class="p-3 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-xl transition-colors font-bold text-sm whitespace-nowrap hidden lg:block">
                                 Atur Soal
                             </a>
                         @endif
