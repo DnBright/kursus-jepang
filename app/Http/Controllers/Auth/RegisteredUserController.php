@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class RegisteredUserController extends Controller
 {
@@ -40,13 +41,17 @@ class RegisteredUserController extends Controller
             }],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'status' => 'pending',
-            'role' => 'member',
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'status' => 'pending',
+                'role' => 'member',
+            ]);
+        } catch (UniqueConstraintViolationException $e) {
+            return back()->withInput()->withErrors(['email' => 'Email ini sudah terdaftar.']);
+        }
 
         event(new Registered($user));
 
