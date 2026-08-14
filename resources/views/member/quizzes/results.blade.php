@@ -116,7 +116,11 @@
                                 <span class="text-xs font-bold text-slate-500">Jawaban Anda:</span>
                                 <div class="mt-1 p-3 rounded-lg {{ $isEssay ? 'bg-blue-50 border border-blue-200' : ($isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200') }}">
                                     <span class="font-medium {{ $isEssay ? 'text-blue-700' : ($isCorrect ? 'text-green-700' : 'text-red-700') }}">
-                                        @if($question->question_type === 'multiple_choice' && isset($question->options[$userAnswer]))
+                                        @if(is_string($userAnswer) && str_starts_with($userAnswer, 'FILE:'))
+                                            <div class="mt-2 mb-2">
+                                                <img src="{{ Storage::url(substr($userAnswer, 5)) }}" alt="Jawaban Berkas/Tulisan Tangan" class="max-w-full h-auto max-h-64 rounded-lg border border-slate-300 shadow-sm">
+                                            </div>
+                                        @elseif($question->question_type === 'multiple_choice' && isset($question->options[$userAnswer]))
                                             {{ $question->options[$userAnswer] }}
                                         @elseif($question->question_type === 'true_false')
                                             {{ $userAnswer === 'true' ? 'Benar (True)' : 'Salah (False)' }}

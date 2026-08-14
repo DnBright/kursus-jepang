@@ -53,7 +53,7 @@
         </div>
 
         <!-- Quiz Form -->
-        <form id="quiz-form" method="POST" action="{{ route('quizzes.submit', $quiz->id) }}">
+        <form id="quiz-form" method="POST" action="{{ route('quizzes.submit', $quiz->id) }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="time_taken" id="time_taken" value="0">
 
@@ -97,10 +97,20 @@
                         @elseif($question->question_type === 'fill_blank')
                             <input type="text" name="answers[{{ $question->id }}]" x-model="answers[{{ $question->id }}]" class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 font-medium" placeholder="Ketik jawaban Anda...">
                         
-                        @elseif($question->question_type === 'essay')
-                            <textarea name="answers[{{ $question->id }}]" x-model="answers[{{ $question->id }}]" rows="4" 
-                                class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 font-medium" 
-                                placeholder="Tulis jawaban essai Anda di sini..."></textarea>
+                        @elseif($question->question_type === 'essay' || $question->question_type === 'handwriting')
+                            @if($question->question_type === 'essay')
+                                <textarea name="answers[{{ $question->id }}]" x-model="answers[{{ $question->id }}]" rows="4" 
+                                    class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 font-medium mb-4" 
+                                    placeholder="Tulis jawaban essai Anda di sini..."></textarea>
+                                <p class="text-sm text-slate-500 mb-2 font-medium">Atau unggah foto tulisan tangan Anda (opsional):</p>
+                            @else
+                                <p class="text-sm text-slate-500 mb-2 font-medium">Unggah foto tulisan tangan Anda untuk soal ini:</p>
+                            @endif
+                            <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors">
+                                <label class="cursor-pointer block">
+                                    <input type="file" name="answer_files[{{ $question->id }}]" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                                </label>
+                            </div>
                         @endif
                     </div>
                 </div>

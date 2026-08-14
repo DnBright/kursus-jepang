@@ -276,12 +276,25 @@ class QuizController extends Controller
         }
 
         $validated = $request->validate([
-            'answers' => 'required|array',
+            'answers' => 'nullable|array',
+            'answer_files' => 'nullable|array',
+            'answer_files.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
             'time_taken' => 'nullable|integer',
         ]);
 
         $quiz->load('questions');
-        $userAnswers = $validated['answers'];
+        $userAnswers = $validated['answers'] ?? [];
+        
+        // Handle file uploads for essay/handwriting
+        if ($request->hasFile('answer_files')) {
+            foreach ($request->file('answer_files') as $qId => $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store('quiz_answers', 'public');
+                    // Store the image path as the answer, prefixed with FILE: so the view knows it's an image
+                    $userAnswers[$qId] = 'FILE:' . $path;
+                }
+            }
+        }
         $score = 0;
         $maxScore = 0;
         $hasManualGrading = false;

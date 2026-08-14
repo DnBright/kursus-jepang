@@ -76,7 +76,13 @@
                                 <div class="space-y-4">
                                     <div class="p-6 bg-slate-900 rounded-2xl shadow-inner border border-white/10">
                                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Jawaban Siswa:</p>
-                                        <p class="text-white font-medium whitespace-pre-wrap leading-relaxed">{{ $studentAnswer ?: '(Siswa tidak menjawab)' }}</p>
+                                        @if(is_string($studentAnswer) && str_starts_with($studentAnswer, 'FILE:'))
+                                            <div class="mt-2">
+                                                <img src="{{ Storage::url(substr($studentAnswer, 5)) }}" alt="Jawaban Berkas/Tulisan Tangan" class="max-w-full h-auto max-h-96 rounded-lg border border-slate-700 shadow-sm">
+                                            </div>
+                                        @else
+                                            <p class="text-white font-medium whitespace-pre-wrap leading-relaxed">{{ $studentAnswer ?: '(Siswa tidak menjawab)' }}</p>
+                                        @endif
                                     </div>
                                     
                                     <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
