@@ -39,5 +39,5 @@ jobs:
     - name: Deploy via Webhook
       run: |
         echo "Mengirim kode ke server cPanel..."
-        curl -X POST -F "build=@build.zip" "https://kursusjepangonline.com/deploy_webhook.php?token=${{ secrets.WEBHOOK_TOKEN }}"
+        curl --fail -X POST -F "build=@build.zip" "https://kursusjepangonline.com/deploy_webhook.php?token=${{ secrets.WEBHOOK_TOKEN }}"
         echo ""
