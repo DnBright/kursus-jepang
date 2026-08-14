@@ -67,6 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     $cachePath = $parentDir . '/bootstrap/cache';
     $cacheFiles = file_exists($cachePath) ? scandir($cachePath) : [];
     
+    $routesPath = $parentDir . '/routes/web.php';
+    $routesContent = file_exists($routesPath) ? file_get_contents($routesPath) : 'File routes/web.php tidak ditemukan!';
+    // Get last 1000 characters of routes to see our additions
+    $routesTail = strlen($routesContent) > 2000 ? substr($routesContent, 0, 1000) . "\n... [TRUNCATED] ...\n" . substr($routesContent, -1000) : $routesContent;
+    
     echo "Menunggu file dari GitHub Actions...\n\n";
     echo "Detail Path Server:\n";
     echo "- Web Root (DIR): " . __DIR__ . "\n";
@@ -76,4 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['build'])) {
     print_r($files);
     echo "\n- Daftar file di bootstrap/cache:\n";
     print_r($cacheFiles);
+    echo "\n- Isi File routes/web.php (Tail/Debug):\n";
+    echo $routesTail . "\n";
 }
