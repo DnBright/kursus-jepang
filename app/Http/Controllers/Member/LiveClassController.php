@@ -21,7 +21,25 @@ class LiveClassController extends Controller
             ->where('status', 'approved')
             ->pluck('package_type');
             
-        $courseIds = Course::whereIn('level', $levels)->pluck('id');
+        // Parse levels from package types (e.g. "Paket N5 Reguler" -> "N5")
+        $courseIds = collect();
+        foreach ($levels as $pkg) {
+            $up = strtoupper($pkg);
+            $lvl = null;
+            if (str_contains($up, 'N5')) $lvl = 'N5';
+            elseif (str_contains($up, 'N4')) $lvl = 'N4';
+            elseif (str_contains($up, 'TOKUTEI')) $lvl = 'Tokutei';
+            
+            if ($lvl) {
+                // Find courses matching this level
+                $cIds = Course::where('level', 'like', "%$lvl%")
+                    ->orWhere('title', 'like', "%$lvl%")
+                    ->pluck('id');
+                $courseIds = $courseIds->concat($cIds);
+            }
+        }
+        
+        $courseIds = $courseIds->unique();
 
         // Get sessions for these courses
         $sessions = LiveSession::whereIn('course_id', $courseIds)
