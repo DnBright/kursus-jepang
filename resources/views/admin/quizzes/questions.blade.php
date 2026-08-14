@@ -85,7 +85,7 @@
                 const result = await response.json();
                 if (result.success) {
                     alert('Berhasil! Semua soal telah disimpan.');
-                    window.location.href = '{{ route('sensei.quizzes.index') }}';
+                    window.location.reload();
                 } else {
                     alert('Error: ' + (result.message || 'Gagal menyimpan.'));
                 }
@@ -103,7 +103,7 @@
                 <div>
                     <nav class="flex mb-1" aria-label="Breadcrumb">
                         <ol class="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            <li><a href="{{ route('sensei.quizzes.index') }}" class="hover:text-red-600">Quiz</a></li>
+                            <li><a href="javascript:history.back()" class="hover:text-red-600">Roadmap / Kuis</a></li>
                             <li><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg></li>
                             @php
                                 $quizLevel = $quiz->course ? $quiz->course->level : ($quiz->difficulty === 'beginner' ? 'N5' : ($quiz->difficulty === 'intermediate' ? 'N4' : 'N3'));
