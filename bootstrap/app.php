@@ -31,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('sensei/*') || $request->is('sensei')) {
                 return route('sensei.dashboard');
             }
+            if ($request->is('login') || $request->is('register')) {
+                return route('dashboard');
+            }
 
             if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
                 return route('admin.dashboard');

@@ -81,7 +81,7 @@ Route::get('/verification/notice', function () {
 })->name('verification.pending');
 
 // USER ROUTES
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['member'])->group(function () {
     Route::get('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{package}', [App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout'); // Keeping name 'checkout' for backward compatibility with form actions
     
@@ -93,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'member', 'active'])->group(function () {
+Route::middleware(['member', 'active'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Member\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/packages', [App\Http\Controllers\Member\PackageController::class, 'index'])->name('packages.index');
     Route::get('/my-courses', [App\Http\Controllers\Member\CourseController::class, 'index'])->name('my-courses');
@@ -104,7 +104,7 @@ Route::middleware(['auth', 'member', 'active'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'member', 'active', 'package.active'])->group(function () {
+Route::middleware(['member', 'active', 'package.active'])->group(function () {
 
 
     Route::get('/courses/{id}', [App\Http\Controllers\Member\CourseController::class, 'show'])->name('courses.show');
@@ -148,7 +148,7 @@ Route::prefix('sensei')->name('sensei.')->group(function () {
     });
 
     // Authenticated Sensei Routes
-    Route::middleware(['auth:sensei', 'sensei.approved'])->group(function () {
+    Route::middleware('sensei.approved')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Sensei\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [App\Http\Controllers\Sensei\ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [App\Http\Controllers\Sensei\ProfileController::class, 'update'])->name('profile.update');
@@ -270,7 +270,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Authenticated Admin Routes
-    Route::middleware('auth:admin')->group(function () {
+    Route::middleware('admin')->group(function () {
         Route::post('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout');
         Route::get('logout', [AdminAuthenticatedSessionController::class, 'destroy'])->name('logout.get');
         
