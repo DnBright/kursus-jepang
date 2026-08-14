@@ -36,8 +36,8 @@
                  <!-- Logo -->
                 <div class="flex items-center justify-center h-20 w-full border-b border-slate-800 bg-slate-950">
                      <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 group">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-red-900/20 group-hover:scale-110 transition-transform duration-300">
-                            🇯🇵
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-cover scale-150 group-hover:scale-110 transition-transform duration-300">
                         </div>
                         <span class="text-lg font-bold tracking-tight text-white group-hover:text-red-400 transition-colors">Admin Panel</span>
                     </a>
@@ -76,7 +76,9 @@
                  <!-- Top Header Mobile -->
                 <div class="md:hidden flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm">
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-                         <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-bold shadow-sm">🇯🇵</div>
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+                             <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-full h-full object-cover scale-150">
+                        </div>
                         <span class="font-bold text-slate-900 tracking-tight">Admin Panel</span>
                     </a>
                     <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl focus:outline-none transition-colors border border-slate-200/50">
