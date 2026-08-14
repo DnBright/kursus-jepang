@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased text-slate-800 bg-white">
@@ -79,6 +80,12 @@
                                         name="password_confirmation" required autocomplete="new-password"
                                         placeholder="••••••••" />
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                    </div>
+
+                    <!-- reCAPTCHA Widget -->
+                    <div class="flex flex-col items-center sm:items-start">
+                        <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                        <x-input-error :messages="$errors->get('g-recaptcha-response')" class="mt-2" />
                     </div>
 
                     <div>
