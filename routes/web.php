@@ -305,6 +305,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/roadmap/reorder', [App\Http\Controllers\Admin\RoadmapController::class, 'reorder'])->name('roadmap.reorder');
         Route::delete('/roadmap/steps/{step}', [App\Http\Controllers\Admin\RoadmapController::class, 'destroyStep'])->name('roadmap.destroy');
         
+        // Quizzes (Question Management for Admin Roadmap)
+        Route::get('/quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'questions'])->name('quizzes.questions');
+        Route::post('/quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
+        Route::put('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
+        Route::post('/quizzes/{quiz}/questions/batch', [App\Http\Controllers\Admin\QuizController::class, 'batchUpdateQuestions'])->name('quizzes.questions.batch');
+        Route::delete('/quizzes/{quiz}/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
+        
         Route::post('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
         Route::get('/users/{id}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve.get');
         Route::post('/users/{id}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
