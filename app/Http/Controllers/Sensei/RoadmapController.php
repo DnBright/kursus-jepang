@@ -8,8 +8,10 @@ use App\Models\CourseRoadmapStep;
 use App\Models\Module;
 use App\Models\Quiz;
 use App\Models\Lesson;
+use App\Models\LiveSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class RoadmapController extends Controller
 {
@@ -26,24 +28,81 @@ class RoadmapController extends Controller
         $course = Course::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($id);
         $roadmapSteps = $course->roadmapSteps()->orderBy('order', 'asc')->get();
         
-        $modules = Module::where('course_id', $course->id)->get();
-        $quizzes = Quiz::where('course_id', $course->id)->get();
-        
-        return view('sensei.roadmap.manage', compact('course', 'roadmapSteps', 'modules', 'quizzes'));
+        return view('sensei.roadmap.manage', compact('course', 'roadmapSteps'));
     }
 
     public function storeStep(Request $request, $courseId)
     {
-        $course = Course::where('instructor_id', Auth::guard('sensei')->id())->findOrFail($courseId);
-
+        $senseiId = Auth::guard('sensei')->id();
+        $course = Course::where('instructor_id', $senseiId)->findOrFail($courseId);
+        
         $request->validate([
-            'content_type' => 'required|in:module,quiz,lesson',
-            'content_id' => 'required|integer',
+            'block_type' => 'required|in:quiz,materi,zoom',
+            'title' => 'required|string',
             'order' => 'required|integer',
-            'title' => 'nullable|string'
         ]);
 
-        $course->roadmapSteps()->create($request->all());
+        // Create a default module for this course if none exists
+        $module = Module::firstOrCreate(
+            ['course_id' => $course->id],
+            ['title' => 'Default Module', 'order' => 1]
+        );
+
+        $content_id = null;
+        $content_type = null;
+
+        if ($request->block_type === 'quiz') {
+            $quiz = Quiz::create([
+                'title' => $request->title,
+                'course_id' => $course->id,
+                'module_id' => $module->id,
+                'instructor_id' => $senseiId,
+                'question_type' => $request->quiz_type ?? 'multiple_choice',
+                'duration' => 60,
+                'passing_score' => 70,
+            ]);
+            $content_id = $quiz->id;
+            $content_type = 'quiz';
+        } elseif ($request->block_type === 'materi') {
+            $contentData = '';
+            if ($request->materi_type === 'pdf' && $request->hasFile('materi_file')) {
+                $contentData = $request->file('materi_file')->store('materials', 'public');
+            } elseif ($request->materi_type === 'video') {
+                $contentData = $request->video_link;
+            }
+
+            $lesson = Lesson::create([
+                'module_id' => $module->id,
+                'title' => $request->title,
+                'instructor_id' => $senseiId,
+                'type' => $request->materi_type ?? 'text',
+                'content' => $contentData,
+                'order' => $request->order,
+                'is_free' => false,
+            ]);
+            $content_id = $lesson->id;
+            $content_type = 'lesson';
+        } elseif ($request->block_type === 'zoom') {
+            $live = LiveSession::create([
+                'title' => $request->title,
+                'course_id' => $course->id,
+                'module_id' => $module->id,
+                'instructor_id' => $senseiId,
+                'scheduled_at' => $request->zoom_date . ' ' . $request->zoom_time,
+                'zoom_link' => $request->zoom_link,
+                'duration' => 90,
+                'status' => 'scheduled'
+            ]);
+            $content_id = $live->id;
+            $content_type = 'live_session';
+        }
+
+        $course->roadmapSteps()->create([
+            'title' => $request->title,
+            'content_type' => $content_type,
+            'content_id' => $content_id,
+            'order' => $request->order,
+        ]);
 
         return back()->with('success', 'Langkah roadmap berhasil ditambahkan.');
     }
@@ -55,13 +114,43 @@ class RoadmapController extends Controller
         })->findOrFail($stepId);
 
         $request->validate([
-            'content_type' => 'required|in:module,quiz,lesson',
-            'content_id' => 'required|integer',
-            'order' => 'required|integer',
-            'title' => 'nullable|string'
+            'title' => 'required|string',
         ]);
 
-        $step->update($request->only(['content_type', 'content_id', 'order', 'title']));
+        $step->update(['title' => $request->title]);
+
+        // Update underlying content
+        $content = $step->content;
+        if ($content) {
+            if ($step->content_type === 'quiz') {
+                $content->update([
+                    'title' => $request->title,
+                    'question_type' => $request->quiz_type ?? $content->question_type,
+                ]);
+            } elseif ($step->content_type === 'lesson') {
+                $contentData = $content->content;
+                if ($request->materi_type === 'pdf' && $request->hasFile('materi_file')) {
+                    if ($content->type === 'pdf' && $contentData) {
+                        Storage::disk('public')->delete($contentData);
+                    }
+                    $contentData = $request->file('materi_file')->store('materials', 'public');
+                } elseif ($request->materi_type === 'video') {
+                    $contentData = $request->video_link;
+                }
+                
+                $content->update([
+                    'title' => $request->title,
+                    'type' => $request->materi_type ?? $content->type,
+                    'content' => $contentData,
+                ]);
+            } elseif ($step->content_type === 'live_session') {
+                $content->update([
+                    'title' => $request->title,
+                    'scheduled_at' => $request->zoom_date . ' ' . $request->zoom_time,
+                    'zoom_link' => $request->zoom_link,
+                ]);
+            }
+        }
 
         return back()->with('success', 'Langkah roadmap berhasil diperbarui.');
     }
@@ -71,6 +160,15 @@ class RoadmapController extends Controller
         $step = CourseRoadmapStep::whereHas('course', function($q) {
             $q->where('instructor_id', Auth::guard('sensei')->id());
         })->findOrFail($stepId);
+
+        // Optional: delete underlying content
+        $content = $step->content;
+        if ($content) {
+            if ($step->content_type === 'lesson' && $content->type === 'pdf' && $content->content) {
+                Storage::disk('public')->delete($content->content);
+            }
+            $content->delete();
+        }
 
         $step->delete();
 
@@ -86,7 +184,6 @@ class RoadmapController extends Controller
         ]);
 
         foreach ($request->steps as $item) {
-            // Verify ownership via whereHas
             CourseRoadmapStep::where('id', $item['id'])
                 ->whereHas('course', function($q) {
                     $q->where('instructor_id', Auth::guard('sensei')->id());

@@ -31,6 +31,8 @@ class CourseRoadmapStep extends Model
                 return Quiz::find($this->content_id);
             case 'lesson':
                 return Lesson::find($this->content_id);
+            case 'live_session':
+                return LiveSession::find($this->content_id);
             default:
                 return null;
         }
