@@ -23,6 +23,11 @@ class SecurityHeaders
         $response->headers->set('X-Content-Type-Options', 'nosniff'); // Prevent MIME-sniffing
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         
+        // Prevent browser caching so "Back" button doesn't show old session data
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+        
         // CSP is commented out because it blocks Vite dev server in local development
         // $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self' https://www.youtube.com https://www.google.com;");
 
