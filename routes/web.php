@@ -26,6 +26,50 @@ Route::get('/', function () {
     return view('landing', compact('articles', 'courses', 'categories'));
 })->name('landing');
 
+Route::get('/debug-live', function() {
+    $user = \App\Models\User::where('email', 'coba2@gmail.com')->first();
+    if (!$user) {
+        return [
+            'error' => "User coba2@gmail.com not found",
+            'all_users' => \App\Models\User::pluck('email')
+        ];
+    }
+    
+    $levels = $user->transactions()
+        ->where('status', 'approved')
+        ->pluck('package_type');
+        
+    $courses = \App\Models\Course::all()->map(function($c) {
+        return [
+            'id' => $c->id,
+            'title' => $c->title,
+            'level' => $c->level
+        ];
+    });
+    
+    $sessions = \App\Models\LiveSession::all()->map(function($s) {
+        return [
+            'id' => $s->id,
+            'title' => $s->title,
+            'course_id' => $s->course_id,
+            'scheduled_at' => $s->scheduled_at ? $s->scheduled_at->toIso8601String() : null,
+            'duration' => $s->duration,
+            'status' => $s->status,
+            'calculated_status' => $s->calculated_status
+        ];
+    });
+    
+    return [
+        'user' => [
+            'id' => $user->id,
+            'email' => $user->email,
+            'levels' => $levels
+        ],
+        'courses' => $courses,
+        'sessions' => $sessions
+    ];
+});
+
 // Temporary route to run migrations on server
 Route::get('/run-migrate', function() {
     if (!auth()->guard('admin')->check()) {
