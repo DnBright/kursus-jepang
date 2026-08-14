@@ -15,19 +15,14 @@ class UserController extends Controller
         $students = User::whereIn('role', ['user', 'member', 'student'])
              ->orderBy('created_at', 'desc')
              ->get();
-
-        // Real data for Senseis
-        $senseis = Sensei::orderBy('created_at', 'desc')
-            ->get();
         
         $stats = [
-            'total_active' => $students->where('status', 'active')->count() + $senseis->where('status', 'active')->count(),
+            'total_active' => $students->where('status', 'active')->count(),
             'total_students' => $students->count(),
-            'total_sensei' => $senseis->count(),
-            'total_inactive' => $students->where('status', '!=', 'active')->count() + $senseis->where('status', '!=', 'active')->count()
+            'total_inactive' => $students->where('status', '!=', 'active')->count()
         ];
 
-        return view('admin.users.index', compact('students', 'senseis', 'stats'));
+        return view('admin.users.index', compact('students', 'stats'));
     }
 
     public function approve($id)
